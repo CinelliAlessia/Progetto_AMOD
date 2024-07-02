@@ -1,7 +1,6 @@
 import vrplib
-from src.main.Client import Client
 from src.main.Truck import Truck
-from src.main.Depot import Depot
+from src.main.Node import Node
 
 nameInstance = "resources/vrplib/Instances/P-n16-k8.vrp"
 
@@ -37,7 +36,6 @@ def get_node_coords(instance):
 
 # Prendo il campo edge_weight dell'istanza, che esprime le distanze euclidee tra i nodi come: numpy.ndarray
 def get_edge_weight(instance):
-    print('Le distanze fornite dalla libreria sono:')
     return instance.get('edge_weight')
 
 
@@ -57,7 +55,6 @@ def get_depots_index(instance):
 #    3. Un numero es. "845.26" -> num veicoli min = 0, max = inf
 #    4. Altrimenti -> num veicoli min = 0, max = inf
 def get_truck(instance):
-
     min_truck = 0
     max_truck = float('inf')
 
@@ -81,54 +78,41 @@ def get_truck(instance):
 
 
 def work_on_instance(path):
+    # Creo l'oggetto istanza
     instance = make_instance_from_path_name(path)
-    print(instance)
 
-    list_of_depots = get_depots_index(instance)     # Ottengo gli indici dei depositi
-    num_of_nodes = get_nodes_dimension(instance)    # Ottengo il numero dei nodi
+    truck = get_truck(instance)  # Ottengo il numero dei veicoli
+    list_of_depots = get_depots_index(instance)  # Ottengo gli indici dei depositi
+    num_of_nodes = get_nodes_dimension(instance)  # Ottengo il numero dei nodi
     num_of_clients = num_of_nodes - len(list_of_depots)  # Ottengo il numero dei clienti
-
-    coordinates = get_node_coords(instance)         # Ottengo le coordinate dei nodi
-    if coordinates is None:
-        print("L'istanza ha formato 'EXPLICIT', non è possibile ricavare le coordinate dei nodi.")
-    else:
-        print(f"Coordinate: {coordinates}")
-
-    edge_weight = get_edge_weight(instance)         # Ottengo le distanze tra i nodi
-    print(type(edge_weight))
-    for i in range(len(edge_weight)):
-        print(edge_weight[i])
-
+    edge_weight = get_edge_weight(instance)  # Ottengo le distanze tra i nodi
     demands = get_node_demands(instance)  # Ottengo la lista delle domande dei clienti
 
-    depots = []
+    coordinates = get_node_coords(instance)  # Ottengo le coordinate dei nodi
+    if coordinates is None:
+        print("L'istanza ha formato 'EXPLICIT', non è possibile ricavare le coordinate dei nodi.")
+
+    nodes = []
     for d in list_of_depots:  # Rimuovo i depositi dalle liste
-        depots.append(Depot(d, coordinates[d][0], coordinates[d][1]))
-        print(depots[d])
+        nodes.append(Node(d, coordinates[d][0], coordinates[d][1], edge_weight[d], True, 0))
+
+    for i in range(num_of_nodes):
+        for j in list_of_depots:
+            if i != j:
+                nodes.append(Node(i, coordinates[i][0], coordinates[i][1], edge_weight[i], False, demands[i]))
 
     print(f"numero di nodi: {num_of_nodes}")
     print(f"numero di client: {num_of_clients}")
     print(f"depositi: {list_of_depots}")
     print(f"coordinates: {coordinates}")
     print(f"demands: {demands}")
+    print(f"veicoli: {truck}")
 
-    clients = []
-    for i in range(num_of_nodes):
-        for j in list_of_depots:
-            if i != j:
-                clients.append(Client(i, coordinates[i][0], coordinates[i][1], demands[i], edge_weight[i]))
+    print("Nodi:")
+    for n in nodes:
+        print(n)
 
-    truck = get_truck(instance)
-
-    print("Veicoli:")
-    print(truck)
-    print("Clienti:")
-    for c in clients:
-        print(c)
-    print("Depositi:")
-    for d in depots:
-        print(d)
-    return clients, depots, truck
+    return nodes, truck
 
 
-work_on_instance(nameInstance)
+#work_on_instance(nameInstance)
