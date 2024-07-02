@@ -123,7 +123,7 @@ def work_on_instance(path):
 
     clients = []
     for i in range(num_of_clients):
-        clients.append(Client(i, coordinates[i][0], coordinates[i][1], demands[i]))
+        clients.append(Client(i, coordinates[i][0], coordinates[i][1], demands[i], edge_weight[i]))
         print(clients[i])
 
     truck = get_truck(instance)
