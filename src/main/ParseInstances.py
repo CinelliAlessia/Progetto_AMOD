@@ -35,20 +35,10 @@ def get_node_coords(instance):
         return None
 
 
-# Prendo il campo edge_weight dell'istanza, che esprime le distanze euclidee tra i nodi
+# Prendo il campo edge_weight dell'istanza, che esprime le distanze euclidee tra i nodi come: numpy.ndarray
 def get_edge_weight(instance):
     print('Le distanze fornite dalla libreria sono:')
     return instance.get('edge_weight')
-
-
-# Calcola la distanza euclidea tra nodi a partire dalla lista di coppie di coordinate, viene restituita una matrice
-def calculate_distance_from_coords(list):
-    n = len(list)
-    dist = [[0 for i in range(n)] for j in range(n)]  # Inizializzo la matrice delle distanze
-    for i in range(n):
-        for j in range(n):
-            dist[i][j] = ((list[i][0] - list[j][0]) ** 2 + (list[i][1] - list[j][1]) ** 2) ** 0.5
-    return dist
 
 
 # Restituisce le domande dei nodi andando a leggere il campo 'demands' dell'istanza
@@ -103,11 +93,11 @@ def work_on_instance(path):
         print("L'istanza ha formato 'EXPLICIT', non è possibile ricavare le coordinate dei nodi.")
     else:
         print(f"Coordinate: {coordinates}")
-        distances = calculate_distance_from_coords(coordinates)
-        print(f"Distanze: {distances}")
 
-    edge_weight = get_edge_weight(instance)
-    print(f"Edge weight: {edge_weight}")
+    edge_weight = get_edge_weight(instance)         # Ottengo le distanze tra i nodi
+    print(type(edge_weight))
+    for i in range(len(edge_weight)):
+        print(edge_weight[i])
 
     demands = get_node_demands(instance)  # Ottengo la lista delle domande dei clienti
 
