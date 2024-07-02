@@ -82,5 +82,7 @@ def mergedRoots(saving, trunk):
                         return True
     return False
 
-print(start())
-print("FINE CALCOLO")
+
+roots_final = start()
+for r in roots_final:
+    print(r)
