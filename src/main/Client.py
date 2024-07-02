@@ -11,3 +11,14 @@ class Client:
     def __str__(self):
         return f"Client {self.id} ({self.x}, {self.y}) demand: {self.demand}"
 
+    def get_id(self):
+        return self.id
+
+    def get_x(self):
+        return self.x
+
+    def get_y(self):
+        return self.y
+
+    def get_demand(self):
+        return self.demand

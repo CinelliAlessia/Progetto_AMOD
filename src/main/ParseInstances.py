@@ -1,6 +1,7 @@
 import array
 import vrplib
 from src.main.Client import Client
+from src.main.Truck import Truck
 
 nameInstance = "resources/vrplib/Instances/A-n32-k5.vrp"
 
@@ -58,6 +59,37 @@ def get_node_demands(instance):
 # Restituisce il deposito andando a leggere il campo 'depot' dell'istanza
 def get_depots_index(instance):
     return instance.get('depot').tolist()
+
+
+def get_truck(instance):
+    # Commenti possibili
+    #    1. "Min no of trucks: 5" -> num veicoli min = 5, max = inf
+    #    2. "No of trucks: 5" -> num veicoli min = 5, max = 5
+    #    3. Un numero es. "845.26" -> num veicoli min = 0, max = inf
+    #    4. Altrimenti -> num veicoli min = 0, max = inf
+
+    min_truck = 0
+    max_truck = float('inf')
+
+    comment = instance.get('comment')
+    print(comment)
+
+    if comment is not None:
+        if "Min no of trucks:" in comment:
+            trucks_info = comment.split(":")[1]
+            min_truck = int(trucks_info.split(",")[0])
+            max_truck = float('inf')
+
+        elif "No of trucks:" in comment:
+            trucks_info = comment.split(":")[1]
+            min_truck = int(trucks_info.split(",")[0])
+            max_truck = min_truck
+
+    capacity = instance.get('capacity')
+    trunk = Truck(min_truck, max_truck, capacity)
+
+    print(trunk)
+    return trunk
 
 
 def work_on_instance(path):
