@@ -33,4 +33,4 @@ def downloadInstances():
     print("Download completato")
 
 
-downloadInstances()
+#downloadInstances()

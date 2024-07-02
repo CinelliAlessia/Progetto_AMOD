@@ -1,5 +1,5 @@
 # Classe Truck che identifica i veicoli nel VRP
-# Attributi: numero min di veicoli,  numero massimo di veicoli, capacita dei veicoli
+# Attributi: numero min di veicoli, numero massimo di veicoli, capacita dei veicoli
 
 class Truck:
     def __init__(self, min_num, max_num, capacity):

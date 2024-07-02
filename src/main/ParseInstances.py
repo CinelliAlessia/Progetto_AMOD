@@ -1,7 +1,7 @@
-import array
 import vrplib
 from src.main.Client import Client
 from src.main.Truck import Truck
+from src.main.Depot import Depot
 
 nameInstance = "resources/vrplib/Instances/A-n32-k5.vrp"
 
@@ -88,7 +88,6 @@ def get_truck(instance):
     capacity = instance.get('capacity')
     trunk = Truck(min_truck, max_truck, capacity)
 
-    print(trunk)
     return trunk
 
 
@@ -96,12 +95,10 @@ def work_on_instance(path):
     instance = make_instance_from_path_name(path)
     print(instance)
 
-    depots = get_depots_index(instance)
-    print(f"Indici dei Depositi: {depots}")
+    list_of_depots = get_depots_index(instance)     # Ottengo gli indici dei depositi
+    num_of_clients = get_nodes_dimension(instance) - len(list_of_depots)  # Ottengo il numero dei clienti
 
-    ids = get_nodes_dimension(instance) - len(depots)  # Ottengo il numero dei clienti
-
-    coordinates = get_node_coords(instance)
+    coordinates = get_node_coords(instance)         # Ottengo le coordinate dei nodi
     if coordinates is None:
         print("L'istanza ha formato 'EXPLICIT', non è possibile ricavare le coordinate dei nodi.")
     else:
@@ -112,20 +109,25 @@ def work_on_instance(path):
     edge_weight = get_edge_weight(instance)
     print(f"Edge weight: {edge_weight}")
 
-    demands = get_node_demands(instance)  # Ottengo le domande dei clienti
+    demands = get_node_demands(instance)  # Ottengo la lista delle domande dei clienti
 
-    for d in depots:  # Rimuovo i depositi dalle liste
+    depots = []
+    for d in list_of_depots:  # Rimuovo i depositi dalle liste
         coordinates.pop(d)
         demands.pop(d)
+        depots.append(Depot(d, coordinates[d][0], coordinates[d][1]))
 
-    print(f"id: {ids}")
+    print(f"numero di client: {num_of_clients}")
     print(f"coordinates: {coordinates}")
     print(f"demands: {demands}")
 
     clients = []
-    for i in range(ids):
+    for i in range(num_of_clients):
         clients.append(Client(i, coordinates[i][0], coordinates[i][1], demands[i]))
         print(clients[i])
+
+    truck = get_truck(instance)
+    return clients, depots, truck
 
 
 work_on_instance(nameInstance)
