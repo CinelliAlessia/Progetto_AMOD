@@ -3,7 +3,7 @@ from src.main.Client import Client
 from src.main.Truck import Truck
 from src.main.Depot import Depot
 
-nameInstance = "resources/vrplib/Instances/A-n32-k5.vrp"
+nameInstance = "resources/vrplib/Instances/P-n16-k8.vrp"
 
 
 # Crea l'oggetto dell'istanza
@@ -72,7 +72,6 @@ def get_truck(instance):
     max_truck = float('inf')
 
     comment = instance.get('comment')
-    print(comment)
 
     if comment is not None:
         if "Min no of trucks:" in comment:
@@ -93,10 +92,11 @@ def get_truck(instance):
 
 def work_on_instance(path):
     instance = make_instance_from_path_name(path)
-    print(instance)
+    #print(instance)
 
     list_of_depots = get_depots_index(instance)     # Ottengo gli indici dei depositi
-    num_of_clients = get_nodes_dimension(instance) - len(list_of_depots)  # Ottengo il numero dei clienti
+    num_of_nodes = get_nodes_dimension(instance)    # Ottengo il numero dei nodi
+    num_of_clients = num_of_nodes - len(list_of_depots)  # Ottengo il numero dei clienti
 
     coordinates = get_node_coords(instance)         # Ottengo le coordinate dei nodi
     if coordinates is None:
@@ -113,20 +113,31 @@ def work_on_instance(path):
 
     depots = []
     for d in list_of_depots:  # Rimuovo i depositi dalle liste
-        coordinates.pop(d)
-        demands.pop(d)
         depots.append(Depot(d, coordinates[d][0], coordinates[d][1]))
+        print(depots[d])
 
+    print(f"numero di nodi: {num_of_nodes}")
     print(f"numero di client: {num_of_clients}")
+    print(f"depositi: {list_of_depots}")
     print(f"coordinates: {coordinates}")
     print(f"demands: {demands}")
 
     clients = []
-    for i in range(num_of_clients):
-        clients.append(Client(i, coordinates[i][0], coordinates[i][1], demands[i], edge_weight[i]))
-        print(clients[i])
+    for i in range(num_of_nodes):
+        for j in list_of_depots:
+            if i != j:
+                clients.append(Client(i, coordinates[i][0], coordinates[i][1], demands[i], edge_weight[i]))
 
     truck = get_truck(instance)
+
+    print("Veicoli:")
+    print(truck)
+    print("Clienti:")
+    for c in clients:
+        print(c)
+    print("Depositi:")
+    for d in depots:
+        print(d)
     return clients, depots, truck
 
 
