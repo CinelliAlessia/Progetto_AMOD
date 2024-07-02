@@ -61,12 +61,12 @@ def get_depots_index(instance):
     return instance.get('depot').tolist()
 
 
+# Commenti possibili
+#    1. "Min no of trucks: 5" -> num veicoli min = 5, max = inf
+#    2. "No of trucks: 5" -> num veicoli min = 5, max = 5
+#    3. Un numero es. "845.26" -> num veicoli min = 0, max = inf
+#    4. Altrimenti -> num veicoli min = 0, max = inf
 def get_truck(instance):
-    # Commenti possibili
-    #    1. "Min no of trucks: 5" -> num veicoli min = 5, max = inf
-    #    2. "No of trucks: 5" -> num veicoli min = 5, max = 5
-    #    3. Un numero es. "845.26" -> num veicoli min = 0, max = inf
-    #    4. Altrimenti -> num veicoli min = 0, max = inf
 
     min_truck = 0
     max_truck = float('inf')
@@ -92,7 +92,7 @@ def get_truck(instance):
 
 def work_on_instance(path):
     instance = make_instance_from_path_name(path)
-    #print(instance)
+    print(instance)
 
     list_of_depots = get_depots_index(instance)     # Ottengo gli indici dei depositi
     num_of_nodes = get_nodes_dimension(instance)    # Ottengo il numero dei nodi
