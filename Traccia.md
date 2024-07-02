@@ -4,9 +4,9 @@
 
 - Un paio di euristici:
   - Clarke e Wright, visto a lezione.
-  - Swipe di facile implementazione, accennato solamente a lezione.
+  - Sweep di facile implementazione, accennato solamente a lezione.
   
-- Swipe: immagina di posizionare i clienti in un piano cartesiano, e di avere un veicolo che parte dall'origine deposito (0,0) e deve servire tutti i clienti. Immaginiamo una retta che spazza via il piano, come una lancetta che si muove e incontra mano mano nuovi clienti. 
+- Sweep: immagina di posizionare i clienti in un piano cartesiano, e di avere un veicolo che parte dall'origine deposito (0,0) e deve servire tutti i clienti. Immaginiamo una retta che spazza via il piano, come una lancetta che si muove e incontra mano mano nuovi clienti. 
   Questa procedura serve per fare un clustering dei client, cioè: i clienti incontrati via via a partire dal primo fino a saturare la capacità del veicolo. Quando si arriva a un cliente per il quale servire la sua domanda eccederebbe di capacità del singolo veicolo, la retta "fa un passo indietro" e così è formato il primo clustering. 
 - Clarke e Wright: è un algoritmo di tipo costruttivo, che parte da una soluzione vuota e aggiunge iterativamente archi al grafo. L'algoritmo è basato su un'euristica di risparmio, che consiste nel calcolare il risparmio che si otterrebbe unendo due archi in un unico arco. L'algoritmo di Clarke e Wright è molto efficiente e produce soluzioni di buona qualità, ma non garantisce di trovare la soluzione ottima.
   Root da costruire: si servono nell'ordine in cui lo incontri, si possono successivamente fare degli scambi stra client dello stesso cluster per migliorare la soluzione.
