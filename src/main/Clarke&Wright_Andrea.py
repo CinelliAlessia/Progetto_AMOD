@@ -13,6 +13,7 @@ si genera un risparmio (saves), definito nel passo 1.
 Uno che inizia con ${(0,j)}$ Uno che termina con ${(i,0)}$ Combina questi due percorsi eliminando ${(0,j)}$ e ${(i,0)}$
 e introducendo ${(i, j)}$.
 """
+import os
 
 import vrplib
 import ParseInstances as parser
@@ -33,14 +34,49 @@ def calculate_saves_and_sort_descent(instance):
     saves.sort(key=lambda x: x[2], reverse=True)
     return saves
 
-# Semplice somma delle domande sulla route e verifica se il nuovo nodo può essere aggiunto
-def verify_if_route_feasible(truck_capacity, route, demand):
-    route_demand = 0
-    for node in route:
-        route_demand += demand  # Calcolo domanda attuale sul cammino
-    if route_demand + demand > truck_capacity:  # Verifico se posso aggiungere il nuovo nodo
-        return False
-    return True
+
+def merge_routes_if_possible(routes, i, j, demands, truck_capacity, edges):
+    route_i = None
+    route_j = None
+    for route in routes:
+        if route[-2] == i:  # Il penultimo nodo, perché l'ultimo è il deposito
+            route_i = route
+        elif route[1] == j:  # Il secondo nodo, perché il primo è il deposito
+            route_j = route
+    if route_i and route_j and route_i != route_j:
+        # Calcola la domanda totale per il percorso unito
+        total_demand = sum(demands[node] for node in route_i[1:-1] + route_j[1:-1])
+        if total_demand <= truck_capacity:
+            # Unisci i percorsi
+            new_route = route_i[:-1] + route_j[1:]
+            routes.remove(route_i)
+            routes.remove(route_j)
+            routes.append(new_route)
+            return True
+    return False
+
+
+def save_results_to_file(routes, cw_cost, path):
+    # Estrai il nome dell'istanza dal percorso
+    instance_name = os.path.basename(path).split('/')[0]
+    output_directory = "resources/Heuristic_Solutions/CW_Solutions"
+    output_path = os.path.join(output_directory, f"{instance_name}.sol")
+
+    # Assicurati che la directory di output esista
+    os.makedirs(output_directory, exist_ok=True)
+
+    # Formatta l'output
+    output_lines = []
+    for index, route in enumerate(routes):
+        route_str = " ".join(str(node) for node in route[1:-1])  # Escludi l'ID del deposito
+        output_lines.append(f"Route #{index + 1}: {route_str}")
+    output_lines.append(f"Cost {cw_cost}")
+
+    # Scrivi l'output nel file
+    with open(output_path, 'w') as file:
+        file.write("\n".join(output_lines))
+
+    print(f"Results saved to {output_path}")
 
 
 # Implementazione Euristica di Clarke e Wright
@@ -51,7 +87,7 @@ def clarke_and_wright(path):
     truck_capacity = parser.get_truck(instance).capacity
     edges = parser.get_edge_weight(instance)
     # -------------- Variabili da calcolare --------------
-    routes = [] # Inizializzo le route come vuote
+    routes = []  # Inizializzo le route come vuote
     cw_cost = 0
     # -----------------------------------------------------------------------------------
     # Passo 0: Devo definire un cammino per ogni cliente: (depotIndex, i, depotIndex)
@@ -74,22 +110,19 @@ def clarke_and_wright(path):
     # -----------------------------------------------------------------------------------
     # Passo 2: Unisco le route in modo ammissibile
     for s in saves:
-        i, j, value = s
-        for route in routes:
-            if route[-1] == i and j != depot_index:
-                #  Se il nodo i è l'ultimo nodo di un percorso e j non è il deposito
-                #  Prima di aggiungere devo verificare se la route è ammissibile
-                #  Se la somma delle domande dei clienti è minore della capacità del veicolo
-                #  allora la route è ammissibile
-                if verify_if_route_feasible(truck_capacity, route, demands[j]):  # todo utilizzare un array con la domanda attuale sulla route, riduce i calcoli
-                    route.append(j)  # Aggiungo j al percorso
-                    print(f"Aggiunto {j} a {route}")
-            elif route[0] == j and i != depot_index:
-                #  Se il nodo j è il primo nodo di un percorso e i non è il deposito
-                if verify_if_route_feasible(truck_capacity, route, demands[i]):
-                    route.insert(0, i)  # Aggiungo i al percorso
-                    print(f"Aggiunto {i} a {route}")
-
+        i, j, _ = s
+        if merge_routes_if_possible(routes, i, j, demands, truck_capacity, edges):
+            print(f"Routes merged: {i} and {j}")
+            cw_cost -= s[2]
+            print(f"Updated Cost: {cw_cost}")
+    # -----------------------------------------------------------------------------------
+    # Passo 3: salva il risultato in un file .sol e stampa i risultati
+    save_results_to_file(routes, cw_cost, path)
+    # Stampa i risultati
+    for index, route in enumerate(routes):
+        route_str = " ".join(str(node) for node in route[1:-1])  # Escludi l'ID del deposito
+        print(f"Route #{index + 1}: {route_str}")
+    print(f"Cost {cw_cost}")
 
 
 # -------------------------- Test -----------------------------
