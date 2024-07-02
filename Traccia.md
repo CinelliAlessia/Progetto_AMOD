@@ -19,3 +19,6 @@ Cosa fare: Confronto tra le due euristiche, tra costo complessivo delle soluzion
 3) Prestazioni dei tagli di Gomory, cosa succede se aggiungo iterativamente i tagli al PLI.
 4) Algoritmi randomizzati, anche VRP, e usare un algoritmo random SEMPLICE vedendo che soluzione esce fuori, e confrontarla con la soluzione ottima. 
 Iterando più volte il run dell'algoritmo random e valutando la soluzione migliore ottenuta con il valore della soluzione ottima o con algoritmi euristici.
+
+
+Link ai dataset: http://www.vrp-rep.org/datasets.html
