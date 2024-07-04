@@ -1,8 +1,6 @@
 import gurobipy as gp
 from gurobipy import GRB
 
-from src.main.ParseInstances import work_on_instance
-
 
 # Soluzione ottima delle istanze di VRP
 def solve_vrp(nodes, truck, distances):
