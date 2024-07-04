@@ -2,8 +2,6 @@ import vrplib
 from src.main.Truck import Truck
 from src.main.Node import Node
 
-nameInstance = "resources/vrplib/Instances/P-n16-k8.vrp"
-
 
 # Crea l'oggetto dell'istanza
 def make_instance_from_path_name(path):
@@ -114,5 +112,3 @@ def work_on_instance(path):
 
     return nodes, truck
 
-
-#work_on_instance(nameInstance)

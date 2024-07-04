@@ -1,13 +1,8 @@
-from src.main.ParseInstances import work_on_instance
 import matplotlib.pyplot as plt
 import networkx as nx
 
 
-nameInstance = "resources/vrplib/Instances/P-n16-k8.vrp"
-nodes, truck = work_on_instance(nameInstance)
-
-
-def direct_tour():
+def direct_tour(nodes):
     x_dep = 0
     y_dep = 0
 
@@ -26,7 +21,7 @@ def direct_tour():
             plt.plot([x_coord, x_dep], [y_coord, y_dep])
 
 
-def plotFigure():
+def plotFigure(nodes):
 
     x_coords = []
     y_coords = []
@@ -47,18 +42,17 @@ def plotFigure():
     # Collega i punti con delle rette
     #plt.plot(x_coords, y_coords)
 
-    # Aggiungi titolo e etichette agli assi
+    # Aggiungi titolo ed etichette agli assi
     plt.title('Grafico dei Nodi')
     plt.xlabel('X')
     plt.ylabel('Y')
     plt.grid(True)
 
-    direct_tour()
     # Mostra il grafico
     plt.show()
 
 
-def plotGraph():
+def plot_graph(nodes):
 
     # Creazione del grafo
     G = nx.Graph()
@@ -102,5 +96,25 @@ def plotGraph():
     plt.show()
 
 
-plotFigure()
-plotGraph()
+def plot_roots_graph(nodes, roots):
+    # Creazione del grafo
+    G = nx.Graph()
+
+    # Aggiunta dei nodi con attributi (indice) in una posizione specifica
+    for n in nodes:
+        G.add_node(n.get_id(), pos=(n.get_x(), n.get_y()))
+        if n.get_is_depots():
+            id_depot = n.get_id()
+            G.nodes[id_depot]['color'] = 'red'
+
+    # Aggiunta degli archi
+    for r in roots:
+        for i in range(len(r)-1):
+            G.add_edge(r[i], r[i+1])
+
+    # Disegno del grafo
+    pos = nx.get_node_attributes(G, 'pos')
+    nx.draw(G, pos, with_labels=True, node_size=500, edge_color='k')
+
+    # Mostra il grafo
+    plt.show()
