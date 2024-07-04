@@ -1,3 +1,5 @@
+import time
+
 import Clarke_Wright_Andrea as Cw
 import ParseInstances as Parser
 import os
@@ -15,7 +17,18 @@ def solve_cw_4all():
             print(f"Solving {file}...")
             opt = Parser.get_optimal_cost_from_path(path)
             # Esegui l'euristica di Clarke e Wright
+
+            # Registra il tempo di inizio
+            start_time = time.time()
+            # Chiamata alla funzione che vuoi misurare
             cw_cost, _ = Cw.solve_clarke_and_wright(path)
+            # Registra il tempo di fine
+            end_time = time.time()
+
+            # Calcola la durata dell'esecuzione
+            execution_time = end_time - start_time
+            print(f"Tempo di esecuzione: {execution_time} secondi")
+
             # Stampa informazioni sull'istanza: nome, numero di nodi, numero di veicoli
             # Stampa il valore ottimo affiancato al risultato dell'euristica
             print("#Nodi: TROVARE MODO", )
