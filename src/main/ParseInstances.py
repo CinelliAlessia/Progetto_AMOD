@@ -1,8 +1,6 @@
 import vrplib
-from src.main.Client import Client
 from src.main.Node import Node
 from src.main.Truck import Truck
-from src.main.Depot import Depot
 
 
 # Crea l'oggetto dell'istanza
@@ -14,7 +12,6 @@ def make_instance_from_path_name(path):
 def get_optimal_cost_from_path(path):
     instance = make_instance_from_path_name(path)
     comment = instance.get('comment')
-    parts = 0
     if comment is not None:
         if "Optimal value:" in comment:
             parts = comment.split("Optimal value:")[1]
@@ -73,19 +70,25 @@ def get_truck(instance):
 
     if comment is not None:
         if "Min no of trucks:" in comment:
-            trucks_info = comment.split(":")[1]
-            min_truck = int(trucks_info.split(",")[0])
-            max_truck = float('inf')
+            trucks_info = comment.split("Min no of trucks:")[1].strip()
+            try:
+                min_truck = int(trucks_info.split(",")[0])
+                max_truck = float('inf')
+            except ValueError:
+                print(f"Error converting '{trucks_info.split(",")[0]}' to int")
 
         elif "No of trucks:" in comment:
-            trucks_info = comment.split(":")[1]
-            min_truck = int(trucks_info.split(",")[0])
-            max_truck = min_truck
+            trucks_info = comment.split("No of trucks:")[1].strip()
+            try:
+                min_truck = int(trucks_info.split(",")[0])
+                max_truck = min_truck
+            except ValueError:
+                print(f"Error converting '{trucks_info.split(",")[0]}' to int")
 
     capacity = instance.get('capacity')
-    trunk = Truck(min_truck, max_truck, capacity)
+    truck = Truck(min_truck, max_truck, capacity)
 
-    return trunk
+    return truck
 
 
 def work_on_instance(path):
@@ -105,13 +108,12 @@ def work_on_instance(path):
         print("L'istanza ha formato 'EXPLICIT', non è possibile ricavare le coordinate dei nodi.")
 
     nodes = []
-    for d in list_of_depots:  # Rimuovo i depositi dalle liste
-        nodes.append(Node(d, coordinates[d][0], coordinates[d][1], edge_weight[d], True, 0))
-
     for i in range(num_of_nodes):
-        for j in list_of_depots:
-            if i != j:
-                nodes.append(Node(i, coordinates[i][0], coordinates[i][1], edge_weight[i], False, demands[i]))
+        if i in list_of_depots:
+            is_depots = True
+        else:
+            is_depots = False
+        nodes.append(Node(i, coordinates[i][0], coordinates[i][1], edge_weight[i], is_depots, demands[i]))
 
     print(f"numero di nodi: {num_of_nodes}")
     print(f"numero di client: {num_of_clients}")
@@ -120,9 +122,4 @@ def work_on_instance(path):
     print(f"demands: {demands}")
     print(f"veicoli: {truck}")
 
-    print("Nodi:")
-    for n in nodes:
-        print(n)
-
     return nodes, truck
-
