@@ -26,8 +26,11 @@ class Node:
     def get_demand(self):
         return self.demand
 
-    def get_distance(self):
+    def get_all_distance(self):
         return self.distance
+
+    def get_distance(self, id):
+        return self.distance[id]
 
     def get_is_depots(self):
         return self.is_depots
