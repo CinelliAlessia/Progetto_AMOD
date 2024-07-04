@@ -1,12 +1,25 @@
 import vrplib
-from src.main.Truck import Truck
+from src.main.Client import Client
 from src.main.Node import Node
+from src.main.Truck import Truck
+from src.main.Depot import Depot
 
 
 # Crea l'oggetto dell'istanza
 def make_instance_from_path_name(path):
     instance = vrplib.read_instance(path)
     return instance
+
+
+def get_optimal_cost_from_path(path):
+    instance = make_instance_from_path_name(path)
+    comment = instance.get('comment')
+    parts = 0
+    if comment is not None:
+        if "Optimal value:" in comment:
+            parts = comment.split("Optimal value:")[1]
+            return float(parts[:-1])
+    return None
 
 
 # Restituisce il numero dei nodi (compreso deposito) andando a leggere il campo 'dimension' dell'istanza
@@ -78,6 +91,7 @@ def get_truck(instance):
 def work_on_instance(path):
     # Creo l'oggetto istanza
     instance = make_instance_from_path_name(path)
+    print(instance)
 
     truck = get_truck(instance)  # Ottengo il numero dei veicoli
     list_of_depots = get_depots_index(instance)  # Ottengo gli indici dei depositi

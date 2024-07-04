@@ -16,6 +16,9 @@ e introducendo ${(i, j)}$.
 import os
 import ParseInstances as Parser
 
+VERBOSE = False  # Se True, stampa valori delle istanze e i passaggi dell'euristica di Clarke e Wright
+SAVE_sOLUTION_ON_FILE = True  # Se True, salva i risultati in un file .sol
+
 
 # Utilizzando i metodi definiti in ParseInstances.py,
 # calcola i risparmi per ogni coppia di nodi e li ordina in modo decrescente
@@ -47,7 +50,6 @@ def merge_routes_if_possible(routes, i, j, demands, truck_capacity):
 
     if route_i and route_j and route_i != route_j:
         # Calcola la domanda totale per il percorso unito
-        new_route = None
         total_demand = sum(demands[node] for node in route_i[1:-1] + route_j[1:-1])
         if total_demand <= truck_capacity:
             # Unisci i percorsi, Devo differenziare i due casi:
@@ -91,14 +93,14 @@ def save_results_to_file(routes, cw_cost, path):
 
 
 # Implementazione Euristica di Clarke e Wright
-def clarke_and_wright(path):
+# input: path del file .vrp
+# output: costo totale dei percorsi e lista di percorsi
+def solve_clarke_and_wright(path):
     # --------------- Dati del problema ---------------
     instance = Parser.make_instance_from_path_name(path)  # todo controllo se funziona
     demands = Parser.get_node_demands(instance)  # Ci sono anche le domande del deposito
     truck_capacity = Parser.get_truck(instance).capacity
     edges = Parser.get_edge_weight(instance)  # Pesi degli archi
-    for e in edges:
-        print(e)
     depots = Parser.get_depots_index(instance)  # Indici dei depositi
     depot_index = depots[0]  # todo !!!Assunto inizialmente un solo deposito, per semplicità di ragionamento!!
     # -------------- Variabili da calcolare --------------
@@ -111,35 +113,38 @@ def clarke_and_wright(path):
         if i not in depots:  # Se il cliente i non è un deposito
             routes.append([depot_index, i, depot_index])
             cw_cost += edges[depot_index][i] + edges[i][depot_index]
-    print(f"First n Route: {routes} \nCost {cw_cost}")
+    if VERBOSE: print(f"First n Route: {routes} \nCost {cw_cost}")
     # -----------------------------------------------------------------------------------
     # Passo 1: Calcolo saves per ogni coppia di nodi e li ordino in modo decrescente
     saves = calculate_saves_and_sort_descent(instance)
-    print("Saves Ordered:")
-    for s in saves:
-        print(s)
+    if VERBOSE:
+        print("Saves Ordered:")
+        for s in saves:
+            print(s)
     # -----------------------------------------------------------------------------------
     # Passo 2: Unisco le route in modo ammissibile (Provo solo save positivi)
     for s in saves:
         i, j, save_value = s
         if save_value >= 0:
             if merge_routes_if_possible(routes, i, j, demands, truck_capacity):
-                print(f"Merged {i} and {j} in the same route with save {save_value}")
                 cw_cost -= save_value
-                print(f"Updated Cost: {cw_cost}")
+                if VERBOSE:
+                    print(f"Merged {i} and {j} in the same route with save {save_value}")
+                    print(f"Updated Cost: {cw_cost}")
         # Se il save è negativo, non ha senso unire i percorsi
     # -----------------------------------------------------------------------------------
     # Passo 3: salva il risultato in un file .sol e stampa i risultati
-    save_results_to_file(routes, cw_cost, path)
+    if SAVE_sOLUTION_ON_FILE: save_results_to_file(routes, cw_cost, path)
     # Stampa i risultati a schermo
-    for index, route in enumerate(routes):
-        route_str = " ".join(str(node) for node in route[1:-1])  # Escludi l'ID del deposito
-        total_demand = sum(demands[node] for node in route[1:-1])  # Escludi il deposito
-        print(
-            f"Route #{index + 1}: {route_str} |total demand: {total_demand} |route cost: {sum(edges[route[i]][route[i + 1]] for i in range(len(route) - 1))}")
-    print(f"Cost {cw_cost}")
-
+    if VERBOSE:
+        for index, route in enumerate(routes):
+            route_str = " ".join(str(node) for node in route[1:-1])  # Escludi l'ID del deposito
+            total_demand = sum(demands[node] for node in route[1:-1])  # Escludi il deposito
+            print(
+                f"Route #{index + 1}: {route_str} |total demand: {total_demand} |route cost: {sum(edges[route[i]][route[i + 1]] for i in range(len(route) - 1))}")
+        print(f"Cost {cw_cost}")
+    return cw_cost, routes
 
 # -------------------------- Test -----------------------------
-clarke_and_wright("resources/vrplib/Instances/A-n32-k5.vrp")
-#clarke_and_wright("resources/vrplib/Instances/CopilotInstance.vrp")
+# solve_clarke_and_wright("resources/vrplib/Instances/A-n32-k5.vrp")
+# solve_clarke_and_wright("resources/vrplib/Instances/CopilotInstance.vrp")
