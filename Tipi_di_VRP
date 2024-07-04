@@ -1,0 +1,88 @@
+1. CVRP - Capacitated Vehicle Routing Problem
+Il problema di routing con veicoli a capacità limitata.
+I veicoli hanno una capacità massima di carico e l'obiettivo è minimizzare il costo totale del percorso, rispettando i vincoli di capacità.
+
+2. MDVRP - Multi-Depot Vehicle Routing Problem
+Il problema di routing con più depositi. I veicoli possono partire e tornare a depositi diversi.
+L'obiettivo è minimizzare il costo totale del percorso, gestendo l'assegnazione dei clienti ai depositi.
+
+3. VRPTW - Vehicle Routing Problem with Time Windows
+Il problema di routing con finestre temporali. Ogni cliente deve essere servito entro un intervallo di tempo specifico.
+L'obiettivo è minimizzare il costo totale del percorso, rispettando le finestre temporali.
+
+4. VRPPD - Vehicle Routing Problem with Pick-up and Delivery
+Il problema di routing con ritiro e consegna. I veicoli devono ritirare e consegnare merci tra coppie di località.
+L'obiettivo è minimizzare il costo totale del percorso, rispettando i vincoli di capacità e le coppie di ritiro e consegna.
+
+5. DVRP - Dynamic Vehicle Routing Problem
+Il problema di routing dinamico. Le richieste di clienti possono arrivare in tempo reale durante l'operazione.
+L'obiettivo è adattare continuamente le rotte per minimizzare il costo totale del percorso.
+
+6. OVRP - Open Vehicle Routing Problem
+Il problema di routing aperto. I veicoli non devono necessariamente tornare al deposito dopo aver completato le consegne.
+L'obiettivo è minimizzare il costo totale del percorso senza il vincolo di ritorno al deposito.
+
+7. PVRP - Periodic Vehicle Routing Problem
+Il problema di routing periodico.
+Le consegne devono essere effettuate su un orizzonte temporale multiplo (ad esempio, settimanale) con frequenze specifiche.
+L'obiettivo è minimizzare il costo totale del percorso su tutto l'orizzonte.
+
+8. VRPB - Vehicle Routing Problem with Backhauls
+Il problema di routing con backhauls. I veicoli devono effettuare sia consegne (linehauls) che ritiri (backhauls).
+L'obiettivo è minimizzare il costo totale del percorso, rispettando la sequenza di consegne e ritiri.
+
+9. SVRP - Split Delivery Vehicle Routing Problem
+Il problema di routing con consegne frazionate. È permesso dividere le consegne a un cliente tra diversi veicoli.
+L'obiettivo è minimizzare il costo totale del percorso, permettendo consegne frazionate.
+
+10. VRPSD - Vehicle Routing Problem with Stochastic Demands
+Il problema di routing con domande stocastiche.
+La domanda dei clienti non è deterministica ma segue una distribuzione di probabilità.
+L'obiettivo è minimizzare il costo totale del percorso considerando l'incertezza nella domanda.
+
+11. VRPSF - Vehicle Routing Problem with Stochastic Fleet
+Il problema di routing con flotta stocastica.
+La disponibilità e le capacità dei veicoli non sono deterministiche ma seguono distribuzioni di probabilità.
+L'obiettivo è minimizzare il costo totale del percorso considerando l'incertezza nella flotta.
+
+12. VRPSDP - Vehicle Routing Problem with Simultaneous Delivery and Pickup
+Il problema di routing con consegne e ritiri simultanei. Ogni cliente richiede sia la consegna di merci che il ritiro di altre.
+L'obiettivo è minimizzare il costo totale del percorso, gestendo simultaneamente consegne e ritiri.
+
+13. HFVRP - Heterogeneous Fleet Vehicle Routing Problem
+Il problema di routing con flotta eterogenea. La flotta di veicoli ha diverse capacità e costi operativi.
+L'obiettivo è minimizzare il costo totale del percorso, scegliendo il veicolo più appropriato per ciascuna rotta.
+
+14. VRPM - Vehicle Routing Problem with Multiple Trips
+Il problema di routing con viaggi multipli. I veicoli possono effettuare più viaggi durante l'orizzonte temporale.
+L'obiettivo è minimizzare il costo totale del percorso, permettendo viaggi multipli per ciascun veicolo.
+
+15. VRPSTT - Vehicle Routing Problem with Soft Time Windows
+Il problema di routing con finestre temporali flessibili.
+Le finestre temporali possono essere violate con un costo di penalizzazione associato.
+L'obiettivo è minimizzare il costo totale del percorso,
+bilanciando i costi operativi e le penalizzazioni per le violazioni delle finestre temporali.
+
+16. VRPB - Vehicle Routing Problem with Backhauls
+Il problema di routing con backhauls. I veicoli devono effettuare sia consegne (linehauls) che ritiri (backhauls).
+L'obiettivo è minimizzare il costo totale del percorso, rispettando la sequenza di consegne e ritiri.
+
+17. 2E-VRP - Two-Echelon Vehicle Routing Problem
+Il problema di routing a due livelli.
+Le merci vengono trasportate dai depositi principali a depositi intermedi e poi dai depositi intermedi ai clienti.
+L'obiettivo è minimizzare il costo totale del percorso considerando due livelli di distribuzione.
+
+18. LRP - Location Routing Problem
+Il problema di localizzazione e routing.
+Si tratta di ottimizzare contemporaneamente la localizzazione dei depositi e il routing dei veicoli.
+L'obiettivo è minimizzare i costi complessivi di costruzione e operativi.
+
+19. GVRP - Green Vehicle Routing Problem
+Il problema di routing con veicoli ecologici.
+Si considera l'uso di veicoli a basse emissioni e si ottimizzano le rotte in modo da ridurre l'impatto ambientale.
+L'obiettivo è minimizzare il costo totale del percorso e/o le emissioni di CO2.
+
+20. VRPMP - Vehicle Routing Problem with Multiple Products
+Il problema di routing con prodotti multipli.
+I veicoli devono trasportare diversi tipi di prodotti, ognuno con specifici vincoli di capacità e compatibilità.
+L'obiettivo è minimizzare il costo totale del percorso rispettando i vincoli di prodotti.

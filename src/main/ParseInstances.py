@@ -24,6 +24,16 @@ def get_nodes_dimension(instance):
     return instance.get('dimension')
 
 
+def get_edge_weight_type(instance):
+    return instance.get('edge_weight_type')
+
+
+def get_edge_weight_format(instance):
+    if instance.get('edge_weight_type') == 'EXPLICIT':
+        return instance.get('edge_weight_format')
+    return None
+
+
 # Restituisce le coordinate dei nodi andando a leggere il campo 'node_coords' dell'istanza,
 # nel caso di formato: EXPLICIT restituisce None
 def get_node_coords(instance):
