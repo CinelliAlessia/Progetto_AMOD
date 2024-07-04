@@ -17,7 +17,7 @@ import os
 import ParseInstances as Parser
 
 VERBOSE = False  # Se True, stampa valori delle istanze e i passaggi dell'euristica di Clarke e Wright
-SAVE_sOLUTION_ON_FILE = True  # Se True, salva i risultati in un file .sol
+SAVE_SOLUTION_ON_FILE = False  # Se True, salva i risultati in un file .sol
 
 
 # Utilizzando i metodi definiti in ParseInstances.py,
@@ -134,7 +134,7 @@ def solve_clarke_and_wright(path):
         # Se il save è negativo, non ha senso unire i percorsi
     # -----------------------------------------------------------------------------------
     # Passo 3: salva il risultato in un file .sol e stampa i risultati
-    if SAVE_sOLUTION_ON_FILE: save_results_to_file(routes, cw_cost, path)
+    if SAVE_SOLUTION_ON_FILE: save_results_to_file(routes, cw_cost, path)
     # Stampa i risultati a schermo
     if VERBOSE:
         for index, route in enumerate(routes):
