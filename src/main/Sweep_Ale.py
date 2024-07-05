@@ -5,8 +5,8 @@ def sweep_algorithm(clients, vehicle_capacity):
 
     # Sort clients by angle
     clients.sort(key=lambda client: client.angle)
-    for client in clients:
-        print(f"Client ID: {client.get_id()}, Coordinates: ({client.get_x()}, {client.get_y()}), Demand: {client.get_demand()}, Angle: {client.angle}")
+    # for client in clients:
+        # print(f"Client ID: {client.get_id()}, Coordinates: ({client.get_x()}, {client.get_y()}), Demand: {client.get_demand()}, Angle: {client.angle}")
     clusters = []
     current_cluster = []
     current_capacity = 0
