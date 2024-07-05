@@ -48,5 +48,40 @@ def found_avrp_instances(directory_path="resources/vrplib/Instances"):
     return avrp_file, avrp_count
 
 
-found_avrp_instances()
+# Algoritmo per contare il numero di istanze di tipo small, mid-small, mid, mid-large, large e x-large
+def found_instance_size(directory_path="resources/vrplib/Instances"):
+    small = 0
+    mid_small = 0
+    mid = 0
+    mid_large = 0
+    large = 0
+    x_large = 0
+    for file in os.listdir(directory_path):
+        if file.endswith(".vrp"):
+            with open(os.path.join(directory_path, file), "r") as f:
+                content = f.read()
+                if 'DIMENSION' in content:
+                    dimension = int(content.split('DIMENSION : ')[1].split('\n')[0])
+                    if dimension <= 50:
+                        small += 1
+                    elif dimension <= 100:
+                        mid_small += 1
+                    elif dimension <= 250:
+                        mid += 1
+                    elif dimension <= 500:
+                        mid_large += 1
+                    elif dimension <= 1000:
+                        large += 1
+                    else:
+                        x_large += 1
+    print(f"Small: {small}")
+    print(f"Mid-Small: {mid_small}")
+    print(f"Mid: {mid}")
+    print(f"Mid-Large: {mid_large}")
+    print(f"Large: {large}")
+    print(f"X-Large: {x_large}")
+
+
+#found_avrp_instances()
 #found_mdvrp_instances()
+found_instance_size()
