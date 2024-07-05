@@ -5,7 +5,7 @@ import Clarke_Wright_Alessia as cwAle
 import Sweep_Ale as sweepAle
 from src.main.Plotter import plot_roots_graph
 
-path_instance = "resources/vrplib/Instances/P-n16-k8.vrp"
+path_instance = "resources/vrplib/Instances/A-n32-k5.vrp"
 instance = Parse.make_instance_from_path_name(path_instance)
 nodes, truck = Parse.work_on_instance(path_instance)
 
@@ -33,7 +33,7 @@ def calculateCost(roots):
 # Registra il tempo di inizio
 start_time = time.time()
 # Chiamata alla funzione che vuoi misurare
-roots_cw_ale, cost_cw = cwAle.start(nodes, truck)
+roots_cw_ale = cwAle.start(nodes, truck)
 # Registra il tempo di fine
 end_time = time.time()
 # Calcola la durata dell'esecuzione
@@ -58,9 +58,6 @@ plot_roots_graph(nodes, roots_cw_ale)
 
 # Sweep ALESSIA
 roots_sweep_ale = sweepAle.sweep_algorithm(nodes, truck.get_capacity())
-for i, cluster in enumerate(roots_sweep_ale):
-    print(cluster)
-
 plot_roots_graph(nodes, roots_sweep_ale)
 
 
