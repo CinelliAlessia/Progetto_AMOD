@@ -39,7 +39,9 @@ def solve_vrp(instance):
     m.addConstr(quicksum(x[j, 0] for j in range(1, n_customers)) == 1)
 
     # 3. Vincoli di capacità (subtour elimination constraints)
-    m.addConstrs((u[i] - u[j] + vehicle_capacity * x[i, j] <= vehicle_capacity - demands[j] for i in range(n_customers) for j in range(1, n_customers) if i != j), "Capacity")
+    m.addConstrs(
+        (u[i] - u[j] + vehicle_capacity * x[i, j] <= vehicle_capacity - demands[j] for i in range(n_customers) for j in
+         range(1, n_customers) if i != j), "Capacity")
 
     # 4. Domanda del deposito è zero
     m.addConstr(u[0] == 0)
@@ -47,7 +49,7 @@ def solve_vrp(instance):
     # Risoluzione del modello
     m.optimize()
 
-    # Stampa dei risultati
+    # Verifica lo stato del modello
     if m.status == GRB.OPTIMAL:
         print("Costo totale del percorso: ", m.objVal)
         solution = m.getAttr('x', x)
@@ -61,5 +63,5 @@ def solve_vrp(instance):
         print("Nessuna soluzione ottimale trovata.")
 
 
-make_instance = ip.make_instance_from_path_name("resources/vrplib/Instances/P-n16-k8.vrp")
+make_instance = ip.make_instance_from_path_name("resources/vrplib/Instances/E-n13-k4.vrp")
 solve_vrp(make_instance)
