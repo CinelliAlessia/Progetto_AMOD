@@ -114,6 +114,10 @@ def plot_roots_graph(nodes, roots):
 
     # Disegno del grafo
     pos = nx.get_node_attributes(G, 'pos')
+    # Abilita la griglia
+    plt.grid(True, which='both', linestyle='--', linewidth=0.5)
+
+    # Disegno del grafo
     nx.draw(G, pos, with_labels=True, node_size=500, edge_color='k')
 
     # Mostra il grafo

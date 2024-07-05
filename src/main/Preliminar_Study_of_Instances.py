@@ -14,8 +14,10 @@ def found_mdvrp_instances(directory_path="resources/vrplib/Instances"):
                 content = f.read()
                 if 'DEPOT_SECTION' in content:
                     depot_section = content.split('DEPOT_SECTION')[1].split('EOF')[0]
-                    depots = [line for line in depot_section.strip().split('\n') if line.strip() != '-1']
+                    depots = depot_section.strip().split('\n')
+                    print(depots)
                     if len(depots) > 1:
+                        #print(depots)
                         mdvrp_file.append(file)
                         mdvrp_count += 1
     print(f"Trovate: {mdvrp_count} MDVRP istanze su {file_count} istanze totali")
