@@ -81,7 +81,7 @@ def calculate_saving(costo, roots):
                         # Mark the pair as considered
                         considered_pairs.add((u, v))
     saving = sorted(saving, key=lambda x: x[2], reverse=True)
-    #print(saving)
+    print(saving)
     return saving
 
 
@@ -109,7 +109,7 @@ def mergedRoots(saving, roots, truck, nodes):
                     roots.remove(r_i)
                     roots.remove(r_j)
                     roots.append(new_root)
-                    #print(f"Merge tra {r_i} e {r_j}, new route: {new_root}")
+                    print(f"Merge tra {r_i} e {r_j}, new route: {new_root}")
                     return True
 
     return False

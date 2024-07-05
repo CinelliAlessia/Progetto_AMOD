@@ -1,7 +1,11 @@
 from gurobipy import Model, GRB, quicksum
 from src.main import ParseInstances as ip
+from amplpy import ampl, add_to_path
+
+from src.main.ParseInstances import get_truck, get_nodes_dimension, get_node_demands, get_edge_weight, get_depots_index
 
 
+# Risolve il problema del Vehicle Routing Problem (VRP) utilizzando il modello matematico
 def solve_vrp(instance):
     # Parametri del problema
     n_customers = ip.get_nodes_dimension(instance)  # Numero di nodi nel sistema, incluso il deposito
@@ -63,5 +67,57 @@ def solve_vrp(instance):
         print("Nessuna soluzione ottimale trovata.")
 
 
-make_instance = ip.make_instance_from_path_name("resources/vrplib/Instances/E-n13-k4.vrp")
-solve_vrp(make_instance)
+from amplpy import AMPL, Environment
+
+
+def solve_vrp_with_ampl(instance):
+    # 1. Leggere i dati dell'istanza utilizzando le tue funzioni esistenti
+    truck = get_truck(instance)
+    num_of_nodes = get_nodes_dimension(instance)
+    edge_weight = get_edge_weight(instance)
+    demands = get_node_demands(instance)
+    list_of_depots = get_depots_index(instance)
+
+
+    # Aggiungi il percorso di installazione di AMPL
+    add_to_path(r"C:\Users\cinel\AMPL")
+
+
+    # 2. Creare il modello AMPL
+    ampl = AMPL(Environment())
+
+    # Lettura del modello AMPL e definizione dei dati
+    with open('vrp_model.mod', 'r') as f:
+        ampl.eval(f.read())
+
+    # Definizione dei dati letti dall'istanza VRP
+    ampl.set('N', num_of_nodes)
+    ampl.set('capacity', truck.capacity)
+    ampl.set('demand', range(1, num_of_nodes + 1), demands)
+
+    # Definizione della matrice delle distanze
+    dist = {(i, j): edge_weight[i-1][j-1] for i in range(1, num_of_nodes + 1) for j in range(1, num_of_nodes + 1)}
+    ampl.set('dist', dist)
+
+    # Definizione dei depositi
+    ampl.set('depots', list_of_depots)
+
+    # 3. Risoluzione del modello AMPL
+    ampl.solve()
+
+    # 4. Recupero dei risultati
+    total_cost = ampl.getObjective('TotalCost').value()
+
+    # 5. Chiusura dell'istanza AMPL
+    ampl.close()
+
+    return total_cost
+
+
+instance_path = "resources/vrplib/Instances/E-n13-k4.vrp"
+# Esempio di utilizzo
+make_instance = ip.make_instance_from_path_name(instance_path)
+optimal_cost = solve_vrp_with_ampl(make_instance)
+print(f"Costo totale ottimale: {optimal_cost}")
+
+#solve_vrp(make_instance)

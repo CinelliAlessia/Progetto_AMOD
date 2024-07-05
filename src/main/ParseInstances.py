@@ -104,7 +104,7 @@ def get_truck(instance):
 def work_on_instance(path):
     # Creo l'oggetto istanza
     instance = make_instance_from_path_name(path)
-    print(instance)
+    #print(instance)
 
     truck = get_truck(instance)  # Ottengo il numero dei veicoli
     list_of_depots = get_depots_index(instance)  # Ottengo gli indici dei depositi

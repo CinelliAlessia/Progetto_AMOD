@@ -1,5 +1,7 @@
 # Classe Node che identifica sia il client nel VRP che
 # Attributi: id cliente, coordinate, domanda
+import math
+
 
 class Node:
 
@@ -10,6 +12,7 @@ class Node:
         self.demand = demand
         self.distance = distance
         self.is_depots = is_depots
+        self.angle = self.calculate_angle()
 
     def __str__(self):
         return f"Node {self.id}, coord ({self.x}, {self.y}), demand: {self.demand}, distanza: {self.distance}, isDepots: {self.is_depots}"
@@ -34,3 +37,6 @@ class Node:
 
     def get_is_depots(self):
         return self.is_depots
+
+    def calculate_angle(self):
+        return math.atan2(self.y, self.x)
