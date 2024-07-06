@@ -1,23 +1,10 @@
-"""
-Algoritmo Euristico di Clarke e Wright (1964) per il problema del Vehicle Routing Problem (VRP).
-Utilizzato quando il numero di veicoli non è fissato a priori.
-
-Passaggio 1. Calcola i risparmi ${s_{ij}=c_{i0}+c_{0j}-c_{ij}}$ per ${i, j=1,…, n}$ e ${i \neq j}$.
-Crea ${n}$ percorsi di veicoli ${(0,i,0)}$ per ${i=1,…, n}$. Ordina i risparmi in modo non crescente.
-
-Passaggio 2. Partendo dall'alto della lista dei risparmi, esegui quanto segue:
-Dato un risparmio ${s_{ij}}$, determina se esistono due percorsi che possono essere fusi in modo ammissibile:
-Quando due percorsi ${(0,…, i,0)}$ e ${(0,j, …,0)}$
-possono essere fusi in modo ammissibile in un unico percorso: ${(0,…, i, j, …,0)}$,
-si genera un risparmio (saves), definito nel passo 1.
-Uno che inizia con ${(0,j)}$ Uno che termina con ${(i,0)}$ Combina questi due percorsi eliminando ${(0,j)}$ e ${(i,0)}$
-e introducendo ${(i, j)}$.
-"""
-import os
 import ParseInstances as Parser
+import Utils
+
 
 VERBOSE = False  # Se True, stampa valori delle istanze e i passaggi dell'euristica di Clarke e Wright
 SAVE_SOLUTION_ON_FILE = False  # Se True, salva i risultati in un file .sol
+RESULT_DIRECTORY = "resources/Heuristic_Solutions/CW_Solutions"  # Directory di output per i risultati
 
 
 # Utilizzando i metodi definiti in ParseInstances.py,
@@ -69,29 +56,6 @@ def merge_routes_if_possible(routes, i, j, demands, truck_capacity):
     return False
 
 
-def save_results_to_file(routes, cw_cost, path):
-    # Estrai il nome dell'istanza dal percorso
-    instance_name = os.path.basename(path).split('/')[0]
-    output_directory = "resources/Heuristic_Solutions/CW_Solutions"
-    output_path = os.path.join(output_directory, f"{instance_name}.sol")
-
-    # Assicurati che la directory di output esista
-    os.makedirs(output_directory, exist_ok=True)
-
-    # Formatta l'output
-    output_lines = []
-    for index, route in enumerate(routes):
-        route_str = " ".join(str(node) for node in route[1:-1])  # Escludi l'ID del deposito
-        output_lines.append(f"Route #{index + 1}: {route_str}")
-    output_lines.append(f"Cost {cw_cost}")
-
-    # Scrivi l'output nel file
-    with open(output_path, 'w') as file:
-        file.write("\n".join(output_lines))
-
-    print(f"Results saved to {output_path}")
-
-
 # Implementazione Euristica di Clarke e Wright
 # input: path del file .vrp
 # output: costo totale dei percorsi e lista di percorsi
@@ -113,7 +77,8 @@ def solve_clarke_and_wright(path):
         if i not in depots:  # Se il cliente i non è un deposito
             routes.append([depot_index, i, depot_index])
             cw_cost += edges[depot_index][i] + edges[i][depot_index]
-    if VERBOSE: print(f"First n Route: {routes} \nCost {cw_cost}")
+    if VERBOSE:
+        print(f"First n Route: {routes} \nCost {cw_cost}")
     # -----------------------------------------------------------------------------------
     # Passo 1: Calcolo saves per ogni coppia di nodi e li ordino in modo decrescente
     saves = calculate_saves_and_sort_descent(instance)
@@ -134,14 +99,15 @@ def solve_clarke_and_wright(path):
         # Se il save è negativo, non ha senso unire i percorsi
     # -----------------------------------------------------------------------------------
     # Passo 3: salva il risultato in un file .sol e stampa i risultati
-    if SAVE_SOLUTION_ON_FILE: save_results_to_file(routes, cw_cost, path)
+    if SAVE_SOLUTION_ON_FILE:
+        Utils.save_results_to_file(routes, cw_cost, RESULT_DIRECTORY, path)
     # Stampa i risultati a schermo
     if VERBOSE:
         for index, route in enumerate(routes):
             route_str = " ".join(str(node) for node in route[1:-1])  # Escludi l'ID del deposito
             total_demand = sum(demands[node] for node in route[1:-1])  # Escludi il deposito
-            print(
-                f"Route #{index + 1}: {route_str} |total demand: {total_demand} |route cost: {sum(edges[route[i]][route[i + 1]] for i in range(len(route) - 1))}")
+            print(f"Route #{index + 1}: {route_str} |total demand: {total_demand} |route cost: "
+                  f"{sum(edges[route[i]][route[i + 1]] for i in range(len(route) - 1))}")
         print(f"Cost {cw_cost}")
     return cw_cost, routes
 
