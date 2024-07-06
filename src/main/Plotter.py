@@ -27,17 +27,51 @@ def plotFigure(nodes):
     y_coords = []
 
     # Estrai le coordinate x e y dei client
-    for c in nodes:
-        if not c.get_is_depots():
-            x_coords.append(c.get_x())
-            y_coords.append(c.get_y())
+    for n in nodes:
+        if not n.get_is_depots():
+            x_coords.append(n.get_x())
+            y_coords.append(n.get_y())
+        else:
+            plt.scatter(n.get_x(), n.get_y(), color='red')
 
     # Crea il grafico a dispersione
     plt.scatter(x_coords, y_coords, color='blue')
 
-    for d in nodes:
-        if d.get_is_depots():
-            plt.scatter(d.get_x(), d.get_y(), color='red')
+
+    # Collega i punti con delle rette
+    #plt.plot(x_coords, y_coords)
+
+    # Aggiungi titolo ed etichette agli assi
+    plt.title('Grafico dei Nodi')
+    plt.xlabel('X')
+    plt.ylabel('Y')
+    plt.grid(True)
+
+    # Mostra il grafico
+    plt.show()
+
+
+def plot_roots_figure(nodes, roots):
+    x_coords = []
+    y_coords = []
+
+    # Estrai le coordinate x e y dei client
+    for n in nodes:
+        if not n.get_is_depots():
+            x_coords.append(n.get_x())
+            y_coords.append(n.get_y())
+        else:
+            plt.scatter(n.get_x(), n.get_y(), color='red')
+
+    # Crea il grafico a dispersione
+    plt.scatter(x_coords, y_coords, color='blue')
+
+    # Disegna le rette tra nodi consecutivi per ogni root
+    for root in roots:
+        for i in range(len(root)-1):
+            x1, y1 = nodes[i].get_x(), nodes[i].get_y()
+            x2, y2 = nodes[i+1].get_x(), nodes[i+1].get_y()
+            plt.plot([x1, y1], [x2, y2], 'k-')  # 'k-' per una linea nera
 
     # Collega i punti con delle rette
     #plt.plot(x_coords, y_coords)
@@ -102,10 +136,12 @@ def plot_roots_graph(nodes, roots):
 
     # Aggiunta dei nodi con attributi (indice) in una posizione specifica
     for n in nodes:
-        G.add_node(n.get_id(), pos=(n.get_x(), n.get_y()))
+        G.add_node(n.get_id(), pos=(n.get_x(), n.get_y()), weight=n.get_demand())
+
         if n.get_is_depots():
-            id_depot = n.get_id()
-            G.nodes[id_depot]['color'] = 'red'
+            G.nodes[n.get_id()]['color'] = 'red'
+        else:
+            G.nodes[n.get_id()]['color'] = 'cyan'
 
     # Aggiunta degli archi
     for r in roots:
@@ -114,11 +150,14 @@ def plot_roots_graph(nodes, roots):
 
     # Disegno del grafo
     pos = nx.get_node_attributes(G, 'pos')
-    # Abilita la griglia
-    plt.grid(True, which='both', linestyle='--', linewidth=0.5)
+    colors = nx.get_node_attributes(G, 'color').values()
+    weights = nx.get_node_attributes(G, 'weight')
 
-    # Disegno del grafo
-    nx.draw(G, pos, with_labels=True, node_size=500, edge_color='k')
+    nx.draw(G, pos, with_labels=False, node_size=500, node_color=colors, edge_color='k')
+
+    # Etichette dei nodi con il loro peso
+    node_labels = {node: f"{node}\n({weight})" for node, weight in weights.items()}
+    nx.draw_networkx_labels(G, pos, labels=node_labels)
 
     # Mostra il grafo
     plt.show()
