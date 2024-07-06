@@ -21,3 +21,24 @@ def save_results_to_file(routes, cw_cost, directory, path):
         file.write("\n".join(output_lines))
 
     print(f"Results saved to {output_path}")
+
+
+""" Calcola il costo totale di una lista di percorsi, sommando le distanze tra i nodi 
+    roots: lista di percorsi, ognuno rappresentato come una lista di nodi
+    dist: matrice delle distanze tra i nodi """
+
+
+def calculateCost(roots, dist):
+    total_cost = []
+
+    for r in roots:
+        cost = 0
+        for i in range(len(r)-1):
+            cost += dist[r[i]][r[i + 1]]
+
+        #print(f"Route: {r} - Cost: {cost}")
+        total_cost.append(cost)
+
+    #print(f"Total cost: {sum(total_cost)}")
+    return sum(total_cost)
+

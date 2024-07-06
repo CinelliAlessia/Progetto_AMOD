@@ -34,8 +34,8 @@ class Node:
     def get_all_distance(self):
         return self.distance
 
-    def get_distance(self, id):
-        return self.distance[id]
+    def get_distance(self, node_id):
+        return self.distance[node_id]
 
     def get_is_depots(self):
         return self.is_depots
