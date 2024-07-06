@@ -68,6 +68,7 @@ def solve_sweep_on_instance(path):
             polar_angle.append(calculate_polar_angle(node_coords[i], depot_coord))
     # Ordinare i nodi in base all'angolo polare rispetto al deposito
     sorted_nodes = [x for _, x in sorted(zip(polar_angle, range(len(polar_angle))))]  # todo, non ho capito, me fido
+    print(sorted_nodes)
     # -----------------------------------------------------------------------
     # Generare, scorrendo i nodi in ordine crescente di angolo, i tour rispettando la capacità del veicolo
     sweep_cost = 0
