@@ -143,20 +143,22 @@ def plot_roots_graph(nodes, roots):
         else:
             G.nodes[n.get_id()]['color'] = 'cyan'
 
-    # Aggiunta degli archi
-    for r in roots:
+    # Aggiunta degli archi con colori specifici per ogni root
+    colori = ['blue', 'green', 'magenta', 'yellow', 'black', 'orange', 'purple', 'brown', 'pink', 'gray', 'olive', 'maroon']
+    for index, r in enumerate(roots):
+        colore_arco = colori[index % len(colori)]  # Seleziona un colore dalla lista, usa modulo per evitare errori di indice
         for i in range(len(r)-1):
-            G.add_edge(r[i], r[i+1])
+            G.add_edge(r[i], r[i+1], color=colore_arco)
 
     # Disegno del grafo
     pos = nx.get_node_attributes(G, 'pos')
-    colors = nx.get_node_attributes(G, 'color').values()
-    weights = nx.get_node_attributes(G, 'weight')
-
-    nx.draw(G, pos, with_labels=False, node_size=500, node_color=colors, edge_color='k')
+    colors = [G.nodes[n]['color'] for n in G.nodes()]
+    edge_colors = [G[u][v]['color'] for u,v in G.edges()]
 
     # Etichette dei nodi con il loro peso
-    node_labels = {node: f"{node}\n({weight})" for node, weight in weights.items()}
+    node_labels = {node: f"{node}\n({G.nodes[node]['weight']})" for node in G.nodes()}
+
+    nx.draw(G, pos, node_size=500, node_color=colors, edge_color=edge_colors)
     nx.draw_networkx_labels(G, pos, labels=node_labels)
 
     # Mostra il grafo
