@@ -5,6 +5,7 @@ import ParseInstances as Parse
 import Plotter as plotter
 import Sweep_Ale as sweepAle
 from src.main import Utils
+from src.main.Random_Ale import vrp_random_1, vrp_random_2
 from src.main.Sweep_Andrea import solve_sweep_on_instance
 
 
@@ -20,8 +21,9 @@ print("FINE PARSING")
 
 CW_ALE = False
 CW_ANDRE = False
-SWEEP_ALE = True
-SWEEP_ANDRE = True
+SWEEP_ALE = False
+SWEEP_ANDRE = False
+RANDOM = True
 
 # ALESSIA CW
 if CW_ALE:
@@ -93,3 +95,31 @@ if SWEEP_ANDRE:
     print(f"Costi SWEEP ANDREA {cost}")
 
 
+if RANDOM:
+    best_cost = float("inf")
+    best_root = []
+    print("RANDOM 1")
+    for i in range(1000):
+        roots = vrp_random_1(nodes, truck.get_capacity())
+        cost = Utils.calculate_cost(roots, nodes)
+        if cost < best_cost:
+            best_cost = cost
+            best_root = roots
+
+    plotter.plot_roots_graph(nodes, best_root)
+    print_roots(best_root)
+    print(f"Costi random_1 {best_cost}")
+
+    print("RANDOM 2")
+    best_cost = float("inf")
+    best_root = []
+    for i in range(1000):
+        roots = vrp_random_2(nodes, truck.get_capacity())
+        cost = Utils.calculate_cost(roots, nodes)
+        if cost < best_cost:
+            best_cost = cost
+            best_root = roots
+
+    plotter.plot_roots_graph(nodes, best_root)
+    print_roots(best_root)
+    print(f"Costi random_2 {best_cost}")
