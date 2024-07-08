@@ -1,10 +1,8 @@
 import itertools
-
-from src.main.Plotter import plot_roots_graph
 from src.main.Utils import calculate_cost
 
-TWO_OPT = False
-THREE_OPT = True
+TWO_OPT = True
+THREE_OPT = False
 
 PRINT = False
 
@@ -48,9 +46,7 @@ def sweep_algorithm(nodes, vehicle_capacity):
             current_cluster.append(id_depots)  # Aggiungo il deposito in ultima posizione
             clusters.append(current_cluster)  # Aggiungo il cluster alla lista
 
-            current_cluster = []  # Svuoto il cluster corrente
-            current_cluster.append(id_depots)  # Aggiungo il deposito in prima posizione
-            current_cluster.append(client.get_id())  # Aggiungo il cliente sarà sicuramente possibile servire
+            current_cluster = [id_depots, client.get_id()]  # Svuoto il cluster corrente
             current_capacity = client.get_demand()  # Aggiorno la capacità
 
     # Se l'ultimo cluster non contiene il deposito, lo aggiungo
@@ -65,12 +61,12 @@ def sweep_algorithm(nodes, vehicle_capacity):
         print(calculate_cost(clusters, nodes))
 
     if TWO_OPT or THREE_OPT:
-        clusters = optimize_clusters(clusters, nodes)
+        clusters = optimize_clusters(clusters)
 
     return clusters
 
 
-def optimize_clusters(clusters, nodes):
+def optimize_clusters(clusters):
     # Return immediately if no optimization is enabled
     if not (TWO_OPT or THREE_OPT):
         return clusters
@@ -132,8 +128,8 @@ def three_opt(route):
     """
     Algoritmo 3-opt per migliorare una soluzione di un problema di instradamento dei veicoli (VRP).
 
-    :param route: Lista degli indici dei nodi che rappresentano il route.
-    :return: Un route ottimizzato e la sua distanza totale.
+    :param route: Lista degli indici dei nodi che rappresentano il percorso.
+    :return: Un percorso ottimizzato e la sua distanza totale.
     """
     improved = True
     best_distance = calculate_total_distance(route)
@@ -141,16 +137,14 @@ def three_opt(route):
 
     while improved:
         improved = False
-        for (i, j, k) in itertools.combinations(range(1, len(route)), 3):
-            if k <= j or j <= i:
-                continue
-
-            new_routes = []
-            new_routes.append(route[:i] + route[i:j][::-1] + route[j:k] + route[k:])
-            new_routes.append(route[:i] + route[i:j] + route[j:k][::-1] + route[k:])
-            new_routes.append(route[:i] + route[j:k] + route[i:j] + route[k:])
-            new_routes.append(route[:i] + route[j:k][::-1] + route[i:j][::-1] + route[k:])
-            new_routes.append(route[:i] + route[i:j][::-1] + route[j:k][::-1] + route[k:])
+        for (i, j, k) in itertools.combinations(range(1, len(route) - 1), 3):
+            new_routes = [
+                route[:i] + route[i:j][::-1] + route[j:k] + route[k:],  # Reverse segment between i and j
+                route[:i] + route[i:j] + route[j:k][::-1] + route[k:],  # Reverse segment between j and k
+                route[:i] + route[j:k] + route[i:j] + route[k:],        # Swap segments i:j and j:k
+                route[:i] + route[j:k][::-1] + route[i:j][::-1] + route[k:],  # Reverse both segments
+                route[:i] + route[j:k][::-1] + route[i:j] + route[k:]   # Reverse first segment and swap
+            ]
 
             for new_route in new_routes:
                 new_distance = calculate_total_distance(new_route)

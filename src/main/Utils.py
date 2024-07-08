@@ -44,12 +44,17 @@ def calculate_cost(roots, nodes):
 
 # Calcola la matrice delle distanze tra tutti i nodi, sarà sempre simmetrica poiché abbiamo istanze CVRP
 def get_distance(nodes):
-    # Inizializzazione della matrice dei costi con 0
-    costo = [[0 for _ in range(len(nodes))] for _ in range(len(nodes))]
+    # Determine the maximum ID value among all nodes
+    max_id = max(node.get_id() for node in nodes)
+
+    # Initialize the costo matrix with 0s, with dimensions [max_id + 1][max_id + 1]
+    costo = [[0 for _ in range(max_id + 1)] for _ in range(max_id + 1)]
+
     for i, u in enumerate(nodes):
-        for j in range(i + 1, len(nodes)):  # Inizia da i + 1 per evitare ripetizioni e auto-confronti
+        for j in range(i + 1, len(nodes)):  # Start from i + 1 to avoid repetitions and self-comparisons
             v = nodes[j]
-            # Calcolo del costo e assegnazione ai valori simmetrici nella matrice
+            # Calculate the cost and assign it to the symmetric values in the matrix
             costo[u.get_id()][v.get_id()] = u.get_distance(v.get_id())
             costo[v.get_id()][u.get_id()] = costo[u.get_id()][v.get_id()]
+
     return costo
