@@ -1,5 +1,4 @@
 import time
-import matplotlib.pyplot as plt
 import Clarke_Wright_Alessia as cwAle
 import Clarke_Wright_Andrea as Cw
 import ParseInstances as Parse
@@ -14,10 +13,7 @@ def print_roots(roots):
         print(r)
 
 
-# Chiude tutte le figure aperte
-plt.close('all')
-
-path_instance = "resources/vrplib/Instances/P-n50-k8.vrp"
+path_instance = "resources/vrplib/Instances/A-n32-k5.vrp"
 instance = Parse.make_instance_from_path_name(path_instance)
 nodes, truck = Parse.work_on_instance(path_instance)
 print("FINE PARSING")

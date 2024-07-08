@@ -1,7 +1,7 @@
 from gurobipy import Model, GRB, quicksum
 from src.main import ParseInstances as ip
 from amplpy import ampl, add_to_path
-
+from amplpy import AMPL, Environment
 from src.main.ParseInstances import get_truck, get_nodes_dimension, get_node_demands, get_edge_weight, get_depots_index
 
 
@@ -65,9 +65,6 @@ def solve_vrp(instance):
         print("Route ottimale: ", route)
     else:
         print("Nessuna soluzione ottimale trovata.")
-
-
-from amplpy import AMPL, Environment
 
 
 def solve_vrp_with_ampl(instance):

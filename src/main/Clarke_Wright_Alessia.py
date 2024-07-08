@@ -1,4 +1,3 @@
-#
 from src.main.Utils import get_distance
 
 
@@ -57,11 +56,11 @@ def calculate_saving(costo, roots):
                         # Mark the pair as considered
                         considered_pairs.add((u, v))
     saving = sorted(saving, key=lambda x: x[2], reverse=True)
-    #print(saving)
     return saving
 
 
 def mergedRoots(saving, roots, truck, nodes):
+    # Trova le due root interessate all'unione
     r_i, r_j = 0, 0
     check = 0
     for r in roots:
@@ -83,7 +82,7 @@ def mergedRoots(saving, roots, truck, nodes):
     # Se i è l'ultimo e j il primo -> i[:-1] + j[1:]
     if r_i[-2] == saving[0] and r_j[1] == saving[1]:
         new_root = r_i[:-1] + r_j[1:]
-    # Se j è l'ultimo e i il primo -> j[:-1] + i[1:]
+    # Se i il primo e j è l'ultimo -> j[:-1] + i[1:]
     elif r_j[-2] == saving[1] and r_i[1] == saving[0]:
         new_root = r_j[:-1] + r_i[1:]
     else:
