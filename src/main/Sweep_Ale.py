@@ -64,12 +64,12 @@ def sweep_algorithm(nodes, vehicle_capacity):
 
     if TWO_OPT or THREE_OPT:
         plot_roots_graph(nodes, clusters)
-        clusters = optimize_clusters(clusters, nodes)
+        clusters = optimize_clusters(clusters)
 
     return clusters
 
 
-def optimize_clusters(clusters, nodes):
+def optimize_clusters(clusters):
     # Return immediately if no optimization is enabled
     if not (TWO_OPT or THREE_OPT):
         return clusters
@@ -85,13 +85,13 @@ def optimize_clusters(clusters, nodes):
 
     # Apply the selected optimization function to each cluster
     for cluster in clusters:
-        optimized_cluster, _ = optimization_function(cluster, nodes)
+        optimized_cluster, _ = optimization_function(cluster)
         optimized_clusters.append(optimized_cluster)
 
     return optimized_clusters
 
 
-def two_opt(route, nodes):
+def two_opt(route):
     best_route = route
     best_distance = 0
     improved = True
@@ -128,12 +128,11 @@ def two_opt_swap(route, i, k):
     return new_route
 
 
-def three_opt(route, nodes):
+def three_opt(route):
     """
     Algoritmo 3-opt per migliorare una soluzione di un problema di instradamento dei veicoli (VRP).
 
     :param route: Lista degli indici dei nodi che rappresentano il route.
-    :param nodes: Lista di tutti i nodi.
     :return: Un route ottimizzato e la sua distanza totale.
     """
     improved = True
@@ -142,7 +141,7 @@ def three_opt(route, nodes):
         for i in range(1, len(route) - 3):  # Inizia da 1 per mantenere fisso il deposito all'inizio
             for j in range(i + 2, len(route) - 2):  # Evita l'ultimo nodo (deposito)
                 for k in range(j + 2, len(route) - 1):  # Evita l'ultimo nodo (deposito)
-                    new_tour = apply_3opt(route, i, j, k, nodes)
+                    new_tour = apply_3opt(route, i, j, k)
                     if calculate_total_distance(new_tour) < calculate_total_distance(route):
                         route = new_tour
                         improved = True
@@ -150,13 +149,12 @@ def three_opt(route, nodes):
     return route, calculate_total_distance(route)
 
 
-def apply_3opt(tour, i, j, k, nodes):
+def apply_3opt(tour, i, j, k):
     """
     Applica una mossa 3-opt al tour dato i, j, k.
 
     :param tour: Lista degli indici dei nodi che rappresentano il tour.
     :param i, j, k: Indici dei nodi in cui verrà applicata la mossa 3-opt.
-    :param nodes: Lista di tutti i nodi.
     :return: Nuovo tour dopo aver applicato la mossa 3-opt.
     """
 
