@@ -75,6 +75,7 @@ def found_instance_size(directory_path="resources/vrplib/Instances"):
                     elif dimension <= 1000:
                         large += 1
                     else:
+                        print(file, dimension)
                         x_large += 1
     print(f"Small: {small}")
     print(f"Mid-Small: {mid_small}")
