@@ -23,7 +23,7 @@ dist = src.main.Utils.get_distance(nodes)
 CW_ALE = False
 CW_ANDRE = False
 SWEEP_ALE = True
-SWEEP_ANDRE = True
+SWEEP_ANDRE = False
 
 # ALESSIA CW
 if CW_ALE:
@@ -78,7 +78,7 @@ if SWEEP_ANDRE:
     # Registra il tempo di inizio
     start_time = time.time()
     # Chiamata alla funzione che vuoi misurare
-    roots_sweep_andre, _ = solve_sweep_on_instance(path_instance, True, False)
+    roots_sweep_andre, _ = solve_sweep_on_instance(path_instance, False, True)
     # Registra il tempo di fine
     end_time = time.time()
     # Calcola la durata dell'esecuzione

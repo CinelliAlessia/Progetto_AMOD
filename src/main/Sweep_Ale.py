@@ -1,8 +1,8 @@
 from src.main.Plotter import plot_roots_graph
 from src.main.Utils import calculate_cost
 
-TWO_OPT = True
-THREE_OPT = False
+TWO_OPT = False
+THREE_OPT = True
 
 
 # Calcolo l'angolo tra tutti i nodi e il deposito
@@ -90,18 +90,13 @@ def two_opt(route, nodes):
     return best_route, best_distance
 
 
-def three_opt(route, nodes):
-    # TODO
-    return []
-
-
 def optimize_clusters(clusters, nodes):
     optimized_clusters = []
     for cluster in clusters:
         if TWO_OPT:
             optimized_cluster, _ = two_opt(cluster, nodes)
         elif THREE_OPT:
-            optimized_cluster = three_opt(cluster, nodes)
+            optimized_cluster, _ = three_opt(cluster, nodes)
         else:
             return
         optimized_clusters.append(optimized_cluster)
@@ -116,6 +111,13 @@ def find_node_by_id(node_id, nodes):
 
 
 def calculate_total_distance(route, nodes):
+    """
+    Calcola la distanza totale di un tour dato.
+
+    :param route: Lista degli indici dei nodi che rappresentano il tour.
+    :param nodes: Lista di tutti i nodi
+    :return: Distanza totale del tour.
+    """
     total_distance = 0
     for i in range(len(route) - 1):
         node = find_node_by_id(route[i], nodes)
@@ -127,3 +129,65 @@ def calculate_total_distance(route, nodes):
 def two_opt_swap(route, i, k):
     new_route = route[:i] + route[i:k + 1][::-1] + route[k + 1:]
     return new_route
+
+
+def three_opt(route, nodes):
+    """
+    Algoritmo 3-opt per migliorare una soluzione di un problema di instradamento dei veicoli (VRP).
+
+    :param route: Lista degli indici dei nodi che rappresentano il tour.
+    :param distance_matrix: Matrice delle distanze tra i nodi.
+    :return: Un tour ottimizzato e la sua distanza totale.
+    """
+    improved = True
+    while improved:
+        improved = False
+        for i in range(len(route) - 2):
+            for j in range(i + 2, len(route) - 1):
+                for k in range(j + 2, len(route) + (i > 0)):  # k può girare e toccare l'inizio del tour
+                    new_tour = apply_3opt(route, i, j, k % len(route), nodes)
+                    if calculate_total_distance(new_tour, nodes) < calculate_total_distance(route, nodes):
+                        route = new_tour
+                        improved = True
+
+    return route, calculate_total_distance(route, nodes)
+
+
+def apply_3opt(tour, i, j, k, nodes):
+    """
+    Applica una mossa 3-opt al tour dato i, j, k.
+
+    :param tour: Lista degli indici dei nodi che rappresentano il tour.
+    :param i, j, k: Indici dei nodi in cui verrà applicata la mossa 3-opt.
+    :return: Nuovo tour dopo aver applicato la mossa 3-opt.
+    """
+    new_tours = []
+
+    # Segmenti: [0...i-1], [i...j-1], [j...k-1], [k...n-1]
+
+    # Nessun cambiamento (Originale)
+    new_tours.append(tour[:])
+
+    # Cambia il segmento (i...j-1)
+    new_tours.append(tour[:i] + tour[i:j][::-1] + tour[j:])
+
+    # Cambia il segmento (j...k-1)
+    new_tours.append(tour[:j] + tour[j:k][::-1] + tour[k:])
+
+    # Cambia i segmenti (i...j-1) e (j...k-1)
+    new_tours.append(tour[:i] + tour[i:j][::-1] + tour[j:k][::-1] + tour[k:])
+
+    # Cambia i segmenti (i...k-1)
+    new_tours.append(tour[:i] + tour[i:k][::-1] + tour[k:])
+
+    # Scambio tra i segmenti
+    new_tours.append(tour[:i] + tour[j:k] + tour[i:j] + tour[k:])
+    new_tours.append(tour[:i] + tour[j:k][::-1] + tour[i:j][::-1] + tour[k:])
+    new_tours.append(tour[:i] + tour[j:k][::-1] + tour[i:j] + tour[k:])
+    new_tours.append(tour[:i] + tour[j:k] + tour[i:j][::-1] + tour[k:])
+
+    best_tour = min(new_tours, key=lambda t: calculate_total_distance(t, nodes))
+
+    return best_tour
+
+

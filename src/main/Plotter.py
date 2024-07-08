@@ -1,5 +1,6 @@
 import matplotlib.pyplot as plt
 import networkx as nx
+import src.main.Utils
 
 
 def direct_tour(nodes):
@@ -115,7 +116,7 @@ def plot_graph(nodes):
         u = nodes[u]
         v = nodes[v]
 
-        d = u.get_distance(v.get_id())
+        d = src.main.Utils.get_distance(v.get_id())
         print(f"(u: {u.get_id()}, v: {v.get_id()}) = {d}")
 
         # Aggiungi l'etichetta all'arco
