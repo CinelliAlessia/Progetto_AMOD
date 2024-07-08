@@ -1,5 +1,4 @@
 # Implementazione dell'euristica Sweep
-
 import numpy as np
 import ParseInstances as Parser
 import Utils
@@ -8,13 +7,16 @@ VERBOSE = True  # Se True, stampa valori delle istanze e i passaggi dell'euristi
 SAVE_SOLUTION_ON_FILE = False  # Se True, salva i risultati in un file .sol
 RESULT_DIRECTORY = "resources/Heuristic_Solution/Sweep_Solutions"  # Directory di output per i risultati
 
+# ------------ Definisco le variabili globali che descrivono l'istanza specifica ------------------------
+global node_coords, weights, demands, depot_index, depot_coord, vehicle_capacity  # Imposto variabili globali
+
 
 # Calcola le coordinate polari(solo angolo) di un nodo rispetto al deposito
 def calculate_polar_angle(client, depot):
     return np.arctan2(client[1] - depot[1], client[0] - depot[0]) % (2 * np.pi)
 
 
-def calculate_2opt_swap_cost(tour, weights, i, j):
+def calculate_2opt_swap_cost(tour, i, j):
     if i == 0:
         prev_i = tour[-1]
     else:
@@ -29,21 +31,9 @@ def calculate_2opt_swap_cost(tour, weights, i, j):
     return new_edges_cost - old_edges_cost
 
 
-def calculate_3opt_swap_cost(tour, weights, i, j, k):
-    prev_i = tour[i - 1]
-    next_k = tour[(k + 1) % len(tour)]
-
-    # Calcolo i valori dei costi degli archi prima dello swap
-    old_edges_cost = weights[prev_i][tour[i]] + weights[tour[j]][tour[k]] + weights[tour[j + 1]][next_k]
-    # Calcolo i valori dei costi degli archi dopo lo swap
-    new_edges_cost = weights[prev_i][tour[j]] + weights[tour[i]][tour[k]] + weights[tour[j + 1]][next_k]
-
-    return new_edges_cost - old_edges_cost
-
-
 # Implementazione dell'algoritmo di ottimizzazione locale 2-opt per migliorare il costo di un tour (se possibile)
 # Attualmente, l'euristica è implementata con la variante First Improvement
-def two_opt(tour, weights, initial_cost):
+def two_opt(tour, initial_cost):
     # Se il tour ha meno di 4 nodi, non è possibile eseguire 2-opt
     if len(tour) < 4:
         return tour, 0
@@ -55,7 +45,7 @@ def two_opt(tour, weights, initial_cost):
         improved = False
         for i in range(1, len(best) - 2):
             for j in range(i + 1, len(best) - 1):
-                cost_diff = calculate_2opt_swap_cost(best, weights, i, j)
+                cost_diff = calculate_2opt_swap_cost(best, i, j)
                 if cost_diff < 0:
                     if VERBOSE:
                         print(f"2-Opt ---> Swap between {best[i]} and {best[j]} with saves {abs(cost_diff)}")
@@ -71,35 +61,8 @@ def two_opt(tour, weights, initial_cost):
     return best, saves
 
 
-# Implementazione dell'algoritmo di ottimizzazione locale 3-opt per migliorare il costo di un tour (se possibile)
-def three_opt(tour, weights, initial_cost):
-    best = tour[:]
-    best_cost = initial_cost
-    improved = True
-
-    while improved:  # Variante First Improvement
-        improved = False
-        for i in range(1, len(best) - 3):
-            for j in range(i + 1, len(best) - 2):
-                for k in range(j + 1, len(best) - 1):
-                    cost_diff = calculate_3opt_swap_cost(best, weights, i, j, k)
-                    if cost_diff < 0:
-                        if VERBOSE:
-                            print(
-                                f"3-Opt | Swap between {best[i]} and {best[j]} and {best[k]} with saves {abs(cost_diff)}")
-                        new_tour = best[:]
-                        new_tour[i:j + 1] = reversed(new_tour[i:j + 1])
-                        best = new_tour
-                        best_cost += cost_diff
-                        improved = True
-                        break
-                if improved:
-                    break
-            if improved:
-                break
-
-    saves = initial_cost - best_cost
-    return best, saves
+def three_opt(tour, initial_cost):
+    pass
 
 
 def solve_sweep_on_instance(path, run_two_opt=False, run_three_opt=False):
@@ -107,6 +70,7 @@ def solve_sweep_on_instance(path, run_two_opt=False, run_three_opt=False):
         raise ValueError('Il file deve essere un\'istanza del CVRP in formato .vrp')
     # Creare l'istanza dal file e ottenere le informazioni necessarie
     instance = Parser.make_instance_from_path_name(path)
+    global node_coords, weights, demands, depot_index, depot_coord, vehicle_capacity
     node_coords = Parser.get_node_coords(instance)
     weights = Parser.get_edge_weight(instance)
     demands = Parser.get_node_demands(instance)
@@ -158,7 +122,7 @@ def solve_sweep_on_instance(path, run_two_opt=False, run_three_opt=False):
             tour_cost = 0
             for j in range(1, len(tours[i])):
                 tour_cost += weights[tours[i][j - 1]][tours[i][j]]
-            tours[i], saves = two_opt(tours[i], weights, tour_cost)
+            tours[i], saves = two_opt(tours[i], tour_cost)
             sweep_cost -= saves
     # -----------------------------------------------------------------------
     # Eseguo 3-opt per migliorare la soluzione se RUN_THREE_OPT è True
@@ -168,7 +132,7 @@ def solve_sweep_on_instance(path, run_two_opt=False, run_three_opt=False):
             tour_cost = 0
             for j in range(1, len(tours[i])):
                 tour_cost += weights[tours[i][j - 1]][tours[i][j]]
-            tours[i], saves = three_opt(tours[i], weights, tour_cost)
+            tours[i], saves = three_opt(tours[i], tour_cost)
             sweep_cost -= saves
     # -----------------------------------------------------------------------
     # Print dei risultati nello stesso formato dei file .sol
@@ -186,4 +150,4 @@ def solve_sweep_on_instance(path, run_two_opt=False, run_three_opt=False):
     return tours, sweep_cost
 
 
-solve_sweep_on_instance("resources/vrplib/Instances/A-n32-k5.vrp", True)
+solve_sweep_on_instance("resources/vrplib/Instances/A-n32-k5.vrp", False, True)
