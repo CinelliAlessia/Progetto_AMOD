@@ -17,8 +17,15 @@ Cosa fare: Confronto tra le due euristiche, tra costo complessivo delle soluzion
 **Altri problemi**
 2) Studio della qualità ottenuti dai rilassamenti, qualità di un bound. Esistono anche altri rilassamenti ma meglio lagrangiano, tipo ascesa duale.
 3) Prestazioni dei tagli di Gomory, cosa succede se aggiungo iterativamente i tagli al PLI.
-4) Algoritmi randomizzati, anche VRP, e usare un algoritmo random SEMPLICE vedendo che soluzione esce fuori, e confrontarla con la soluzione ottima. 
+4) Algoritmi randomizzati, anche VRP, e usare un algoritmo random SEMPLICE (rapida esecuzione) vedendo che soluzione esce fuori, e confrontarla con la soluzione ottima. 
 Iterando più volte il run dell'algoritmo random e valutando la soluzione migliore ottenuta con il valore della soluzione ottima o con algoritmi euristici.
 
 
 Link ai dataset: http://www.vrp-rep.org/datasets.html
+
+
+# Presentazione non più di 15-20 min
+- Power Point: 
+  - come sono fatte le istanze
+  - Solo pezzi importanti di codice se lo riteniamo necessario
+  - Risultati ottenuti, con tabelle o Grafici
