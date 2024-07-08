@@ -1,7 +1,7 @@
 from src.main.Plotter import plot_roots_graph
 from src.main.Utils import calculate_cost
 
-TWO_OPT = False
+TWO_OPT = True
 THREE_OPT = True
 
 
@@ -28,9 +28,6 @@ def initialize(nodes):
 
 def sweep_algorithm(nodes, vehicle_capacity):
     nodes, id_depots = initialize(nodes)  # Ottengo i nodi ordinati per angolo minore
-    print("Nodi ordinati:")
-    for n in nodes:
-        print(n.get_id(), n.angle)
 
     clusters = []
     current_cluster = []
@@ -71,6 +68,19 @@ def sweep_algorithm(nodes, vehicle_capacity):
     return optimized_clusters
 
 
+def optimize_clusters(clusters, nodes):
+    optimized_clusters = []
+    for cluster in clusters:
+        if TWO_OPT:
+            optimized_cluster, _ = two_opt(cluster, nodes)
+        elif THREE_OPT:
+            optimized_cluster, _ = three_opt(cluster, nodes)
+        else:
+            return
+        optimized_clusters.append(optimized_cluster)
+    return optimized_clusters
+
+
 def two_opt(route, nodes):
     best_route = route
     best_distance = calculate_total_distance(best_route, nodes)
@@ -88,19 +98,6 @@ def two_opt(route, nodes):
                     best_distance = new_distance
                     improved = True
     return best_route, best_distance
-
-
-def optimize_clusters(clusters, nodes):
-    optimized_clusters = []
-    for cluster in clusters:
-        if TWO_OPT:
-            optimized_cluster, _ = two_opt(cluster, nodes)
-        elif THREE_OPT:
-            optimized_cluster, _ = three_opt(cluster, nodes)
-        else:
-            return
-        optimized_clusters.append(optimized_cluster)
-    return optimized_clusters
 
 
 def find_node_by_id(node_id, nodes):
@@ -135,17 +132,17 @@ def three_opt(route, nodes):
     """
     Algoritmo 3-opt per migliorare una soluzione di un problema di instradamento dei veicoli (VRP).
 
-    :param route: Lista degli indici dei nodi che rappresentano il tour.
-    :param distance_matrix: Matrice delle distanze tra i nodi.
-    :return: Un tour ottimizzato e la sua distanza totale.
+    :param route: Lista degli indici dei nodi che rappresentano il route.
+    :param nodes: Lista di tutti i nodi.
+    :return: Un route ottimizzato e la sua distanza totale.
     """
     improved = True
     while improved:
         improved = False
-        for i in range(len(route) - 2):
-            for j in range(i + 2, len(route) - 1):
-                for k in range(j + 2, len(route) + (i > 0)):  # k può girare e toccare l'inizio del tour
-                    new_tour = apply_3opt(route, i, j, k % len(route), nodes)
+        for i in range(1, len(route) - 3):  # Inizia da 1 per mantenere fisso il deposito all'inizio
+            for j in range(i + 2, len(route) - 2):  # Evita l'ultimo nodo (deposito)
+                for k in range(j + 2, len(route) - 1):  # Evita l'ultimo nodo (deposito)
+                    new_tour = apply_3opt(route, i, j, k, nodes)
                     if calculate_total_distance(new_tour, nodes) < calculate_total_distance(route, nodes):
                         route = new_tour
                         improved = True
