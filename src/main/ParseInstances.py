@@ -1,3 +1,5 @@
+import re
+
 import vrplib
 from src.main.Model.Node import Node
 from src.main.Model.Truck import Truck
@@ -10,13 +12,20 @@ def make_instance_from_path_name(path):
 
 
 def get_optimal_cost_from_path(path):
-    instance = make_instance_from_path_name(path)
-    comment = instance.get('comment')
-    if comment is not None:
-        if "Optimal value:" in comment:
-            parts = comment.split("Optimal value:")[1]
-            return float(parts[:-1])
-    return None
+    pattern = re.compile(r"Optimal value: (\d+(\.\d+)?)")
+    with open(path, 'r') as file:
+        content = file.read()
+        match = pattern.search(content)
+        if match:
+            try:
+                optimal_value = float(match.group(1))
+                return optimal_value
+            except ValueError:
+                print("Could not convert optimal value to float.")
+                return None
+        else:
+            print("Optimal value not found in the file.")
+            return None
 
 
 # Restituisce il numero dei nodi (compreso deposito) andando a leggere il campo 'dimension' dell'istanza
