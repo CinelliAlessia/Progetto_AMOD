@@ -2,12 +2,13 @@ from src.main.Plotter import plot_roots_graph
 from src.main.Utils import calculate_cost
 
 TWO_OPT = True
-THREE_OPT = True
+THREE_OPT = False
+
+PRINT = False
 
 
 # Calcolo l'angolo tra tutti i nodi e il deposito
 def initialize(nodes):
-    nodes.sort(key=lambda node: node.get_id())
     id_depots = 0
     x_dep = 0
     y_dep = 0
@@ -52,39 +53,52 @@ def sweep_algorithm(nodes, vehicle_capacity):
         current_cluster.append(id_depots)
         clusters.append(current_cluster)
 
-    plot_roots_graph(nodes, clusters)
+    if PRINT:
+        print("Clusters non opt:")
+        for c in clusters:
+            print(c)
+        print(calculate_cost(clusters, nodes))
 
-    print("Clusters non opt:")
-    for c in clusters:
-        print(c)
-    print(calculate_cost(clusters, nodes))
+    if TWO_OPT or THREE_OPT:
+        plot_roots_graph(nodes, clusters)
 
-    optimized_clusters = optimize_clusters(clusters, nodes)
+        clusters = optimize_clusters(clusters, nodes)
 
-    print("Clusters opt:")
-    for c in optimized_clusters:
-        print(c)
+        if PRINT:
+            print("Clusters opt:")
+            for c in clusters:
+                print(c)
 
-    return optimized_clusters
+    return clusters
 
 
 def optimize_clusters(clusters, nodes):
+    # Return immediately if no optimization is enabled
+    if not (TWO_OPT or THREE_OPT):
+        return clusters
+
     optimized_clusters = []
+    optimization_function = None
+
+    # Determine which optimization function to use
+    if TWO_OPT:
+        optimization_function = two_opt
+    elif THREE_OPT:
+        optimization_function = three_opt
+
+    # Apply the selected optimization function to each cluster
     for cluster in clusters:
-        if TWO_OPT:
-            optimized_cluster, _ = two_opt(cluster, nodes)
-        elif THREE_OPT:
-            optimized_cluster, _ = three_opt(cluster, nodes)
-        else:
-            return
+        optimized_cluster, _ = optimization_function(cluster, nodes)
         optimized_clusters.append(optimized_cluster)
+
     return optimized_clusters
 
 
 def two_opt(route, nodes):
     best_route = route
-    best_distance = calculate_total_distance(best_route, nodes)
+    best_distance = 0
     improved = True
+
     while improved:
         improved = False
         best_distance = calculate_total_distance(best_route, nodes)
@@ -156,8 +170,10 @@ def apply_3opt(tour, i, j, k, nodes):
 
     :param tour: Lista degli indici dei nodi che rappresentano il tour.
     :param i, j, k: Indici dei nodi in cui verrà applicata la mossa 3-opt.
+    :param nodes: Lista di tutti i nodi.
     :return: Nuovo tour dopo aver applicato la mossa 3-opt.
     """
+
     new_tours = []
 
     # Segmenti: [0...i-1], [i...j-1], [j...k-1], [k...n-1]
@@ -186,5 +202,3 @@ def apply_3opt(tour, i, j, k, nodes):
     best_tour = min(new_tours, key=lambda t: calculate_total_distance(t, nodes))
 
     return best_tour
-
-

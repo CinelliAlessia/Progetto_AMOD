@@ -12,18 +12,15 @@ import matplotlib.pyplot as plt
 # Chiude tutte le figure aperte
 plt.close('all')
 
-path_instance = "resources/vrplib/Instances/A-n32-k5.vrp"
+path_instance = "resources/vrplib/Instances/P-n20-k2.vrp"
 instance = Parse.make_instance_from_path_name(path_instance)
 nodes, truck = Parse.work_on_instance(path_instance)
 print("FINE PARSING")
 
-# Calcolo della matrice dei costi
-dist = src.main.Utils.get_distance(nodes)
-
 CW_ALE = False
 CW_ANDRE = False
 SWEEP_ALE = True
-SWEEP_ANDRE = False
+SWEEP_ANDRE = True
 
 # ALESSIA CW
 if CW_ALE:
@@ -60,11 +57,11 @@ if CW_ANDRE:
 # SWEEP ALESSIA
 if SWEEP_ALE:
     # Registra il tempo di inizio
-    start_time = time.time()
+    start_time = time.perf_counter()
     # Chiamata alla funzione che vuoi misurare
     roots_sweep_ale = sweepAle.sweep_algorithm(nodes, truck.get_capacity())
     # Registra il tempo di fine
-    end_time = time.time()
+    end_time = time.perf_counter()
     # Calcola la durata dell'esecuzione
     execution_time = end_time - start_time
     print(f"Tempo di esecuzione sweep Ale: {execution_time} secondi")
