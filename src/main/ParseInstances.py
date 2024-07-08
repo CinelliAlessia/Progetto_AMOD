@@ -40,7 +40,7 @@ def get_node_coords(instance):
     # Se il campo 'edge_weight_type' è EUC_2D, FLOOR_2D o EXACT_2D,
     # le coordinate sono fornite come coppie di valori (x, y)
     if instance.get('edge_weight_type') in ['EUC_2D', 'FLOOR_2D', 'EXACT_2D']:
-        return instance.get('node_coord').tolist(), None
+        return instance.get('node_coord').tolist()
 
     # Se il campo 'edge_weight_type' è EXPLICIT, sono fornite le distanze come matrice in due modi differenti,
     # specificati dal campo 'edge_weight_format':
@@ -48,7 +48,7 @@ def get_node_coords(instance):
     # FULL_MATRIX: matrice completa
     elif instance.get('edge_weight_type') == 'EXPLICIT':
         if instance.get('edge_weight_format') == 'LOWER_ROW':
-            return None, instance.get('edge_weight_section').tolist()
+            return None
         return None
 
 
@@ -120,7 +120,7 @@ def work_on_instance(path):
     edge_weight = get_edge_weight(instance)  # Ottengo le distanze tra i nodi
     demands = get_node_demands(instance)  # Ottengo la lista delle domande dei clienti
 
-    coordinates, _ = get_node_coords(instance)  # Ottengo le coordinate dei nodi
+    coordinates = get_node_coords(instance)  # Ottengo le coordinate dei nodi
     if coordinates is None:
         print("L'istanza ha formato 'EXPLICIT', non è possibile ricavare le coordinate dei nodi.")
 
