@@ -4,7 +4,9 @@ from src.main.Utils import calculate_cost
 TWO_OPT = True
 THREE_OPT = False
 
-PRINT = False
+PRINT = True
+
+matrix_distance = []
 
 
 # Calcolo l'angolo tra tutti i nodi e il deposito
@@ -20,6 +22,7 @@ def initialize(nodes):
             break
 
     for client in nodes:
+        matrix_distance.append(client.get_all_distance())
         client.angle = client.calculate_angle_to_depots(x_dep, y_dep)
 
     # Ordino tutti i nodi in base all'angolo minore
@@ -61,13 +64,7 @@ def sweep_algorithm(nodes, vehicle_capacity):
 
     if TWO_OPT or THREE_OPT:
         plot_roots_graph(nodes, clusters)
-
         clusters = optimize_clusters(clusters, nodes)
-
-        if PRINT:
-            print("Clusters opt:")
-            for c in clusters:
-                print(c)
 
     return clusters
 
@@ -101,12 +98,12 @@ def two_opt(route, nodes):
 
     while improved:
         improved = False
-        best_distance = calculate_total_distance(best_route, nodes)
+        best_distance = calculate_total_distance(best_route)
         for i in range(1, len(best_route) - 2):
             for j in range(i + 1, len(best_route) - 1):
                 if j - i == 1: continue  # Salta i nodi adiacenti
                 new_route = two_opt_swap(best_route, i, j)
-                new_distance = calculate_total_distance(new_route, nodes)
+                new_distance = calculate_total_distance(new_route)
                 if new_distance < best_distance:
                     best_route = new_route
                     best_distance = new_distance
@@ -114,26 +111,15 @@ def two_opt(route, nodes):
     return best_route, best_distance
 
 
-def find_node_by_id(node_id, nodes):
-    for node in nodes:
-        if node.get_id() == node_id:
-            return node
-    return None
-
-
-def calculate_total_distance(route, nodes):
+def calculate_total_distance(route):
     """
     Calcola la distanza totale di un tour dato.
-
     :param route: Lista degli indici dei nodi che rappresentano il tour.
-    :param nodes: Lista di tutti i nodi
     :return: Distanza totale del tour.
     """
     total_distance = 0
     for i in range(len(route) - 1):
-        node = find_node_by_id(route[i], nodes)
-        if node is not None:
-            total_distance += node.get_distance(route[i + 1])
+        total_distance += matrix_distance[route[i]][route[i + 1]]
     return total_distance
 
 
@@ -157,11 +143,11 @@ def three_opt(route, nodes):
             for j in range(i + 2, len(route) - 2):  # Evita l'ultimo nodo (deposito)
                 for k in range(j + 2, len(route) - 1):  # Evita l'ultimo nodo (deposito)
                     new_tour = apply_3opt(route, i, j, k, nodes)
-                    if calculate_total_distance(new_tour, nodes) < calculate_total_distance(route, nodes):
+                    if calculate_total_distance(new_tour) < calculate_total_distance(route):
                         route = new_tour
                         improved = True
 
-    return route, calculate_total_distance(route, nodes)
+    return route, calculate_total_distance(route)
 
 
 def apply_3opt(tour, i, j, k, nodes):
@@ -199,6 +185,6 @@ def apply_3opt(tour, i, j, k, nodes):
     new_tours.append(tour[:i] + tour[j:k][::-1] + tour[i:j] + tour[k:])
     new_tours.append(tour[:i] + tour[j:k] + tour[i:j][::-1] + tour[k:])
 
-    best_tour = min(new_tours, key=lambda t: calculate_total_distance(t, nodes))
+    best_tour = min(new_tours, key=lambda t: calculate_total_distance(t))
 
     return best_tour
