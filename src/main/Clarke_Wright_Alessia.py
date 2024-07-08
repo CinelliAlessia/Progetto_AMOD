@@ -1,4 +1,7 @@
 #
+from src.main.Utils import get_distance
+
+
 def check_merge(r_i, r_j, capacity, nodes):
     # Controllo se la capacità del veicolo è rispettata
     demand = sum([nodes[elem_i].get_demand() for elem_i in r_i[:-1]]) + sum([nodes[elem_j].get_demand() for elem_j in r_j[1:]])
@@ -19,7 +22,7 @@ def start(nodes, truck):
             clients.append(u)
     depots = depots[0] # !!! todo Attenzione, ora il deposito è sempre e solo uno
 
-    # Calcolo della matrice dei costi
+    # Calcolo della matrice delle distanze (costi)
     costo = get_distance(nodes)
 
     # Creo le root iniziali
@@ -34,18 +37,6 @@ def start(nodes, truck):
             mergedRoots(saving, roots, truck, nodes)
 
     return roots
-
-
-def get_distance(nodes):
-    # Inizializzazione della matrice dei costi con 0
-    costo = [[0 for _ in range(len(nodes))] for _ in range(len(nodes))]
-    for i, u in enumerate(nodes):
-        for j in range(i + 1, len(nodes)):  # Inizia da i + 1 per evitare ripetizioni e auto-confronti
-            v = nodes[j]
-            # Calcolo del costo e assegnazione ai valori simmetrici nella matrice
-            costo[u.get_id()][v.get_id()] = u.get_distance(v.get_id())
-            costo[v.get_id()][u.get_id()] = costo[u.get_id()][v.get_id()]
-    return costo
 
 
 # Calcolo i savings ! attenzione se inserisce nel saving 3,8 non inserisce 8,3

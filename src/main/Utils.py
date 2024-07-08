@@ -28,7 +28,8 @@ def save_results_to_file(routes, cw_cost, directory, path):
     dist: matrice delle distanze tra i nodi """
 
 
-def calculateCost(roots, dist):
+def calculate_cost(roots, nodes):
+    dist = get_distance(nodes)
     total_cost = []
 
     for r in roots:
@@ -36,9 +37,19 @@ def calculateCost(roots, dist):
         for i in range(len(r)-1):
             cost += dist[r[i]][r[i + 1]]
 
-        #print(f"Route: {r} - Cost: {cost}")
         total_cost.append(cost)
 
-    #print(f"Total cost: {sum(total_cost)}")
     return sum(total_cost)
 
+
+# Calcola la matrice delle distanze tra tutti i nodi, sarà sempre simmetrica poiché abbiamo istanze CVRP
+def get_distance(nodes):
+    # Inizializzazione della matrice dei costi con 0
+    costo = [[0 for _ in range(len(nodes))] for _ in range(len(nodes))]
+    for i, u in enumerate(nodes):
+        for j in range(i + 1, len(nodes)):  # Inizia da i + 1 per evitare ripetizioni e auto-confronti
+            v = nodes[j]
+            # Calcolo del costo e assegnazione ai valori simmetrici nella matrice
+            costo[u.get_id()][v.get_id()] = u.get_distance(v.get_id())
+            costo[v.get_id()][u.get_id()] = costo[u.get_id()][v.get_id()]
+    return costo
