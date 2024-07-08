@@ -64,12 +64,12 @@ def sweep_algorithm(nodes, vehicle_capacity):
 
     if TWO_OPT or THREE_OPT:
         plot_roots_graph(nodes, clusters)
-        clusters = optimize_clusters(clusters)
+        clusters = optimize_clusters(clusters, nodes)
 
     return clusters
 
 
-def optimize_clusters(clusters):
+def optimize_clusters(clusters, nodes):
     # Return immediately if no optimization is enabled
     if not (TWO_OPT or THREE_OPT):
         return clusters
@@ -85,30 +85,30 @@ def optimize_clusters(clusters):
 
     # Apply the selected optimization function to each cluster
     for cluster in clusters:
-        optimized_cluster, _ = optimization_function(cluster)
+        optimized_cluster, _ = optimization_function(cluster, nodes)
         optimized_clusters.append(optimized_cluster)
 
     return optimized_clusters
 
 
-def two_opt(route):
+def two_opt(route, nodes):
+    initialize(nodes)
     best_route = route
-    best_distance = 0
     improved = True
 
     while improved:
         improved = False
-        best_distance = calculate_total_distance(best_route)
-        for i in range(1, len(best_route) - 2):
-            for j in range(i + 1, len(best_route) - 1):
-                if j - i == 1: continue  # Salta i nodi adiacenti
-                new_route = two_opt_swap(best_route, i, j)
-                new_distance = calculate_total_distance(new_route)
-                if new_distance < best_distance:
+        for i in range(1, len(route) - 2):
+            for j in range(i + 1, len(route)):
+                if j - i == 1:
+                    continue  # no point in reversing two adjacent edges
+                new_route = route[:]
+                new_route[i:j] = route[j - 1:i - 1:-1]  # reverse the subsection
+                if calculate_total_distance(new_route) < calculate_total_distance(best_route):
                     best_route = new_route
-                    best_distance = new_distance
                     improved = True
-    return best_route, best_distance
+                    route = best_route
+    return best_route
 
 
 def calculate_total_distance(route):
@@ -117,15 +117,12 @@ def calculate_total_distance(route):
     :param route: Lista degli indici dei nodi che rappresentano il tour.
     :return: Distanza totale del tour.
     """
-    total_distance = 0
+    distance = 0
     for i in range(len(route) - 1):
-        total_distance += matrix_distance[route[i]][route[i + 1]]
-    return total_distance
-
-
-def two_opt_swap(route, i, k):
-    new_route = route[:i] + route[i:k + 1][::-1] + route[k + 1:]
-    return new_route
+        start_node = route[i]
+        next_node = route[i + 1]
+        distance += matrix_distance[start_node][next_node]
+    return distance
 
 
 def three_opt(route):
