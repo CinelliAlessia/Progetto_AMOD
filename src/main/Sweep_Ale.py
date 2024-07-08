@@ -1,10 +1,12 @@
+import itertools
+
 from src.main.Plotter import plot_roots_graph
 from src.main.Utils import calculate_cost
 
-TWO_OPT = True
-THREE_OPT = False
+TWO_OPT = False
+THREE_OPT = True
 
-PRINT = True
+PRINT = False
 
 matrix_distance = []
 
@@ -63,7 +65,6 @@ def sweep_algorithm(nodes, vehicle_capacity):
         print(calculate_cost(clusters, nodes))
 
     if TWO_OPT or THREE_OPT:
-        plot_roots_graph(nodes, clusters)
         clusters = optimize_clusters(clusters, nodes)
 
     return clusters
@@ -85,28 +86,30 @@ def optimize_clusters(clusters, nodes):
 
     # Apply the selected optimization function to each cluster
     for cluster in clusters:
-        optimized_cluster, _ = optimization_function(cluster, nodes)
+        optimized_cluster, _ = optimization_function(cluster)
         optimized_clusters.append(optimized_cluster)
 
     return optimized_clusters
 
 
-def two_opt(route, nodes):
+def two_opt(route):
     best_route = route
-    best_distance = 0
+    best_distance = calculate_total_distance(route)
     improved = True
 
     while improved:
         improved = False
-        best_distance = calculate_total_distance(best_route)
-        for i in range(1, len(best_route) - 2):
-            for j in range(i + 1, len(best_route) - 1):
-                if j - i == 1: continue  # Salta i nodi adiacenti
-                new_route = two_opt_swap(best_route, i, j)
+        for i in range(1, len(route) - 2):
+            for j in range(i + 1, len(route)):
+                if j - i == 1:
+                    continue  # no point in reversing two adjacent edges
+                new_route = route[:]
+                new_route[i:j] = route[j - 1:i - 1:-1]  # reverse the subsection
                 new_distance = calculate_total_distance(new_route)
                 if new_distance < best_distance:
-                    best_route = new_route
                     best_distance = new_distance
+                    best_route = new_route
+                    route = best_route
                     improved = True
     return best_route, best_distance
 
@@ -117,74 +120,46 @@ def calculate_total_distance(route):
     :param route: Lista degli indici dei nodi che rappresentano il tour.
     :return: Distanza totale del tour.
     """
-    total_distance = 0
+    distance = 0
     for i in range(len(route) - 1):
-        total_distance += matrix_distance[route[i]][route[i + 1]]
-    return total_distance
+        start_node = route[i]
+        next_node = route[i + 1]
+        distance += matrix_distance[start_node][next_node]
+    return distance
 
 
-def two_opt_swap(route, i, k):
-    new_route = route[:i] + route[i:k + 1][::-1] + route[k + 1:]
-    return new_route
-
-
-def three_opt(route, nodes):
+def three_opt(route):
     """
     Algoritmo 3-opt per migliorare una soluzione di un problema di instradamento dei veicoli (VRP).
 
     :param route: Lista degli indici dei nodi che rappresentano il route.
-    :param nodes: Lista di tutti i nodi.
     :return: Un route ottimizzato e la sua distanza totale.
     """
     improved = True
+    best_distance = calculate_total_distance(route)
+    best_route = route
+
     while improved:
         improved = False
-        for i in range(1, len(route) - 3):  # Inizia da 1 per mantenere fisso il deposito all'inizio
-            for j in range(i + 2, len(route) - 2):  # Evita l'ultimo nodo (deposito)
-                for k in range(j + 2, len(route) - 1):  # Evita l'ultimo nodo (deposito)
-                    new_tour = apply_3opt(route, i, j, k, nodes)
-                    if calculate_total_distance(new_tour) < calculate_total_distance(route):
-                        route = new_tour
-                        improved = True
+        for (i, j, k) in itertools.combinations(range(1, len(route)), 3):
+            if k <= j or j <= i:
+                continue
 
-    return route, calculate_total_distance(route)
+            new_routes = []
+            new_routes.append(route[:i] + route[i:j][::-1] + route[j:k] + route[k:])
+            new_routes.append(route[:i] + route[i:j] + route[j:k][::-1] + route[k:])
+            new_routes.append(route[:i] + route[j:k] + route[i:j] + route[k:])
+            new_routes.append(route[:i] + route[j:k][::-1] + route[i:j][::-1] + route[k:])
+            new_routes.append(route[:i] + route[i:j][::-1] + route[j:k][::-1] + route[k:])
 
+            for new_route in new_routes:
+                new_distance = calculate_total_distance(new_route)
+                if new_distance < best_distance:
+                    best_route = new_route
+                    best_distance = new_distance
+                    improved = True
+                    break
+            if improved:
+                break
 
-def apply_3opt(tour, i, j, k, nodes):
-    """
-    Applica una mossa 3-opt al tour dato i, j, k.
-
-    :param tour: Lista degli indici dei nodi che rappresentano il tour.
-    :param i, j, k: Indici dei nodi in cui verrà applicata la mossa 3-opt.
-    :param nodes: Lista di tutti i nodi.
-    :return: Nuovo tour dopo aver applicato la mossa 3-opt.
-    """
-
-    new_tours = []
-
-    # Segmenti: [0...i-1], [i...j-1], [j...k-1], [k...n-1]
-
-    # Nessun cambiamento (Originale)
-    new_tours.append(tour[:])
-
-    # Cambia il segmento (i...j-1)
-    new_tours.append(tour[:i] + tour[i:j][::-1] + tour[j:])
-
-    # Cambia il segmento (j...k-1)
-    new_tours.append(tour[:j] + tour[j:k][::-1] + tour[k:])
-
-    # Cambia i segmenti (i...j-1) e (j...k-1)
-    new_tours.append(tour[:i] + tour[i:j][::-1] + tour[j:k][::-1] + tour[k:])
-
-    # Cambia i segmenti (i...k-1)
-    new_tours.append(tour[:i] + tour[i:k][::-1] + tour[k:])
-
-    # Scambio tra i segmenti
-    new_tours.append(tour[:i] + tour[j:k] + tour[i:j] + tour[k:])
-    new_tours.append(tour[:i] + tour[j:k][::-1] + tour[i:j][::-1] + tour[k:])
-    new_tours.append(tour[:i] + tour[j:k][::-1] + tour[i:j] + tour[k:])
-    new_tours.append(tour[:i] + tour[j:k] + tour[i:j][::-1] + tour[k:])
-
-    best_tour = min(new_tours, key=lambda t: calculate_total_distance(t))
-
-    return best_tour
+    return best_route, best_distance
