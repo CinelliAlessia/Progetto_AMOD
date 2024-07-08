@@ -1,9 +1,8 @@
 import os
 
 
-def save_results_to_file(routes, cw_cost, directory, path):
+def save_results_to_file(routes, cw_cost, directory, instance_name):
     # Estrai il nome dell'istanza dal percorso
-    instance_name = os.path.basename(path).split('/')[0]
     output_path = os.path.join(directory, f"{instance_name}.sol")
 
     # Assicurati che la directory di output esista

@@ -1,5 +1,13 @@
 import os
 
+# Definizione delle soglie per le dimensioni delle istanze, (se cambiate, run found_instance_size() per aggiornare)
+SMALL_THRESHOLD = 50
+MID_SMALL_THRESHOLD = 100
+MID_THRESHOLD = 250
+MID_LARGE_THRESHOLD = 500
+LARGE_THRESHOLD = 1000
+OUTPUT_DIRECTORY = "resources/vrplib/Name_of_instances_by_dimension"
+
 
 # Scorre tutti i file nella directory delle istanze e cerca le istanze di tipo MDVRP (Multi Depot VRP)
 # Restituisce una lista con i nomi dei file delle istanze MDVRP e il numero di istanze trovate
@@ -52,37 +60,52 @@ def found_avrp_instances(directory_path="resources/vrplib/Instances"):
 
 # Algoritmo per contare il numero di istanze di tipo small, mid-small, mid, mid-large, large e x-large
 def found_instance_size(directory_path="resources/vrplib/Instances"):
+    # Definizioni delle soglie come già presente
     small = 0
     mid_small = 0
     mid = 0
     mid_large = 0
     large = 0
     x_large = 0
+    # Dizionario per tenere traccia dei file aperti
+    files = {
+        "small": open(f"{OUTPUT_DIRECTORY}/small_instances_name.txt", "a"),
+        "mid_small": open(f"{OUTPUT_DIRECTORY}/mid_small_instances_name.txt", "a"),
+        "mid": open(f"{OUTPUT_DIRECTORY}/mid_instances_name.txt", "a"),
+        "mid_large": open(f"{OUTPUT_DIRECTORY}/mid_large_instances_name.txt", "a"),
+        "large": open(f"{OUTPUT_DIRECTORY}/large_instances_name.txt", "a"),
+        "x_large": open(f"{OUTPUT_DIRECTORY}/x_large_instances_name.txt", "a")
+    }
     for file in os.listdir(directory_path):
         if file.endswith(".vrp"):
             with open(os.path.join(directory_path, file), "r") as f:
                 content = f.read()
                 if 'DIMENSION' in content:
                     dimension = int(content.split('DIMENSION : ')[1].split('\n')[0])
-                    if dimension <= 50:
+                    if dimension <= SMALL_THRESHOLD:
                         small += 1
-                    elif dimension <= 100:
+                    # Continuation of the conditionals to categorize and write instance names
+                    elif dimension <= MID_SMALL_THRESHOLD:
                         mid_small += 1
-                    elif dimension <= 250:
+                        files["mid_small"].write(file + "\n")
+                    elif dimension <= MID_THRESHOLD:
                         mid += 1
-                    elif dimension <= 500:
+                        files["mid"].write(file + "\n")
+                    elif dimension <= MID_LARGE_THRESHOLD:
                         mid_large += 1
-                    elif dimension <= 1000:
+                        files["mid_large"].write(file + "\n")
+                    elif dimension <= LARGE_THRESHOLD:
                         large += 1
+                        files["large"].write(file + "\n")
                     else:
-                        print(file, dimension)
                         x_large += 1
-    print(f"Small: {small}")
-    print(f"Mid-Small: {mid_small}")
-    print(f"Mid: {mid}")
-    print(f"Mid-Large: {mid_large}")
-    print(f"Large: {large}")
-    print(f"X-Large: {x_large}")
+                        files["x_large"].write(file + "\n")
+    # Close all the files after processing
+    for file in files.values():
+        file.close()
+    # Optionally, print the counts for each category
+    print(f"Small: {small}, Mid-Small: {mid_small}, Mid: {mid}, Mid-Large: {mid_large}, Large: {large}, "
+          f"X-Large: {x_large}, \nNomi delle istanze scritti in {OUTPUT_DIRECTORY}")
 
 
 #found_avrp_instances()
