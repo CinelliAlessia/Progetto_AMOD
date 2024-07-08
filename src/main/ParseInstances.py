@@ -1,6 +1,6 @@
 import vrplib
-from src.main.Node import Node
-from src.main.Truck import Truck
+from src.main.Model.Node import Node
+from src.main.Model.Truck import Truck
 
 
 # Crea l'oggetto dell'istanza
@@ -52,6 +52,10 @@ def get_node_coords(instance):
         return None
 
 
+def get_truck_capacity(instance):
+    return instance.get('capacity')
+
+
 # Prendo il campo edge_weight dell'istanza, che esprime le distanze euclidee tra i nodi come: numpy.ndarray
 def get_edge_weight(instance):
     return instance.get('edge_weight')
@@ -78,7 +82,8 @@ def get_truck(instance):
 
     comment = instance.get('comment')
 
-    if comment is not None:
+    # se commento non è none e non è un numero
+    if comment is not None and not str(comment).replace('.', '', 1).isdigit():
         if "Min no of trucks:" in comment:
             trucks_info = comment.split("Min no of trucks:")[1].strip()
             try:
@@ -94,7 +99,9 @@ def get_truck(instance):
                 max_truck = min_truck
             except ValueError:
                 print(f"Error converting '{trucks_info.split(",")[0]}' to int")
-
+        else:
+            min_truck = 0
+            max_truck = float('inf')
     capacity = instance.get('capacity')
     truck = Truck(min_truck, max_truck, capacity)
 
@@ -104,7 +111,7 @@ def get_truck(instance):
 def work_on_instance(path):
     # Creo l'oggetto istanza
     instance = make_instance_from_path_name(path)
-    #print(instance)
+    # print(instance)
 
     truck = get_truck(instance)  # Ottengo il numero dei veicoli
     list_of_depots = get_depots_index(instance)  # Ottengo gli indici dei depositi
