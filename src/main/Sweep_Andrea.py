@@ -8,7 +8,7 @@ SAVE_SOLUTION_ON_FILE = False  # Se True, salva i risultati in un file .sol
 RESULT_DIRECTORY = "resources/Heuristic_Solution/Sweep_Solutions"  # Directory di output per i risultati
 
 # ------------ Definisco le variabili globali che descrivono l'istanza specifica ------------------------
-global node_coords, weights, demands, depot_index, depot_coord, vehicle_capacity, path  # Imposto variabili globali
+global node_coords, weights, demands, depot_index, depot_coord, vehicle_capacity, name  # Imposto variabili globali
 
 
 # Calcola le coordinate polari(solo angolo) di un nodo rispetto al deposito
@@ -68,7 +68,7 @@ def three_opt(tour, initial_cost):
 # Esegue l'euristica Sweep su un'istanza specifica (Istanza già creata in precedenza)
 def solve_sweep_on_instance(instance, run_two_opt=False, run_three_opt=False):
     # Inizializzo le variabili globali
-    global node_coords, weights, demands, depot_index, depot_coord, vehicle_capacity, path
+    global node_coords, weights, demands, depot_index, depot_coord, vehicle_capacity, name
     node_coords = Parser.get_node_coords(instance)
     weights = Parser.get_edge_weight(instance)
     demands = Parser.get_node_demands(instance)

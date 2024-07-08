@@ -21,7 +21,7 @@ def solve_cw_4all():
             # Registra il tempo di inizio
             start_time = time.time()
             # Chiamata alla funzione che vuoi misurare
-            cw_cost, _ = Cw.solve_clarke_and_wright(path)
+            cw_cost, _ = Cw.solve_clarke_and_wright_on_instance(path)
             # Registra il tempo di fine
             end_time = time.time()
 

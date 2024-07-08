@@ -5,14 +5,13 @@ import Utils
 VERBOSE = False  # Se True, stampa valori delle istanze e i passaggi dell'euristica di Clarke e Wright
 SAVE_SOLUTION_ON_FILE = False  # Se True, salva i risultati in un file .sol
 RESULT_DIRECTORY = "resources/Heuristic_Solutions/CW_Solutions"  # Directory di output per i risultati
+# ------------ Definisco le variabili globali che descrivono l'istanza specifica ------------------------
+global weights, demands, depots, depot_index, truck_capacity, name  # Imposto variabili globali
 
 
 # Utilizzando i metodi definiti in ParseInstances.py,
 # calcola i risparmi per ogni coppia di nodi e li ordina in modo decrescente
 def calculate_saves_and_sort_descent(instance):
-    dist = Parser.get_edge_weight(instance)
-    depots = Parser.get_depots_index(instance)
-    depot_index = depots[0]  # todo !!!!! Assunto inizialmente un solo deposito, per semplicità di ragionamento
     n = Parser.get_nodes_dimension(instance)
     saves = []
     for i in range(0, n):
@@ -20,12 +19,12 @@ def calculate_saves_and_sort_descent(instance):
             # formato di un save: (nodo, nodo, valore)
             # deve essere calcolato solo se i e j non sono depositi
             if i not in depots or j not in depots:
-                saves.append((i, j, dist[depot_index][i] + dist[j][depot_index] - dist[i][j]))
+                saves.append((i, j, weights[depot_index][i] + weights[j][depot_index] - weights[i][j]))
     saves.sort(key=lambda x: x[2], reverse=True)
     return saves
 
 
-def merge_routes_if_possible(routes, i, j, demands, truck_capacity):
+def merge_routes_if_possible(routes, i, j):
     route_i = None
     route_j = None
     # Trova i due percorsi che hanno i come ultimo e j come primo, o viceversa
@@ -59,14 +58,14 @@ def merge_routes_if_possible(routes, i, j, demands, truck_capacity):
 # Implementazione Euristica di Clarke e Wright
 # input: path del file .vrp
 # output: costo totale dei percorsi e lista di percorsi
-def solve_clarke_and_wright(path):
-    # --------------- Dati del problema ---------------
-    instance = Parser.make_instance_from_path_name(path)  # todo controllo se funziona
-    demands = Parser.get_node_demands(instance)  # Ci sono anche le domande del deposito
+def solve_clarke_and_wright_on_instance(instance):
+    # --------------- Inizializzo le variabili globali ---------------
+    global demands, weights, depots, depot_index, truck_capacity, name
+    demands = Parser.get_node_demands(instance)
     truck_capacity = Parser.get_truck(instance).capacity
-    edges = Parser.get_edge_weight(instance)  # Pesi degli archi
-    depots = Parser.get_depots_index(instance)  # Indici dei depositi
-    depot_index = depots[0]  # todo !!!Assunto inizialmente un solo deposito, per semplicità di ragionamento!!
+    weights = Parser.get_edge_weight(instance)
+    depots = Parser.get_depots_index(instance)
+    depot_index = depots[0]  # todo !!!Assunto inizialmente un solo deposito, per semplicità di ragionamento!!!
     # -------------- Variabili da calcolare --------------
     routes = []  # Inizializzo le route come vuote (inizialmente ogni cliente ha un proprio veicolo, n route)
     cw_cost = 0  # Variabile che esprime il costo totale dei percorsi
@@ -76,7 +75,7 @@ def solve_clarke_and_wright(path):
     for i in range(0, n):
         if i not in depots:  # Se il cliente i non è un deposito
             routes.append([depot_index, i, depot_index])
-            cw_cost += edges[depot_index][i] + edges[i][depot_index]
+            cw_cost += weights[depot_index][i] + weights[i][depot_index]
     if VERBOSE:
         print(f"First n Route: {routes} \nCost {cw_cost}")
     # -----------------------------------------------------------------------------------
@@ -91,7 +90,7 @@ def solve_clarke_and_wright(path):
     for s in saves:
         i, j, save_value = s
         if save_value >= 0:
-            if merge_routes_if_possible(routes, i, j, demands, truck_capacity):
+            if merge_routes_if_possible(routes, i, j):
                 cw_cost -= save_value
                 if VERBOSE:
                     print(f"Merged {i} and {j} in the same route with save {save_value}")
@@ -100,17 +99,24 @@ def solve_clarke_and_wright(path):
     # -----------------------------------------------------------------------------------
     # Passo 3: salva il risultato in un file .sol e stampa i risultati
     if SAVE_SOLUTION_ON_FILE:
-        Utils.save_results_to_file(routes, cw_cost, RESULT_DIRECTORY, path)
+        name = Parser.get_name(instance)
+        Utils.save_results_to_file(routes, cw_cost, RESULT_DIRECTORY, name)
     # Stampa i risultati a schermo
     if VERBOSE:
         for index, route in enumerate(routes):
             route_str = " ".join(str(node) for node in route[1:-1])  # Escludi l'ID del deposito
             total_demand = sum(demands[node] for node in route[1:-1])  # Escludi il deposito
             print(f"Route #{index + 1}: {route_str} |total demand: {total_demand} |route cost: "
-                  f"{sum(edges[route[i]][route[i + 1]] for i in range(len(route) - 1))}")
+                  f"{sum(weights[route[i]][route[i + 1]] for i in range(len(route) - 1))}")
         print(f"Cost {cw_cost}")
     return cw_cost, routes
 
+
+def solve_clarke_and_wright_from_file(file_path):
+    instance = Parser.make_instance_from_path_name(file_path)
+    return solve_clarke_and_wright_on_instance(instance)
+
+
 # -------------------------- Test -----------------------------
-# solve_clarke_and_wright("resources/vrplib/Instances/A-n32-k5.vrp")
+solve_clarke_and_wright_from_file("resources/vrplib/Instances/A-n32-k5.vrp")
 # solve_clarke_and_wright("resources/vrplib/Instances/CopilotInstance.vrp")

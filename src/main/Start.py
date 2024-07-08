@@ -19,11 +19,11 @@ instance = Parse.make_instance_from_path_name(path_instance)
 nodes, truck = Parse.work_on_instance(path_instance)
 print("FINE PARSING")
 
-CW_ALE = False
-CW_ANDRE = False
+CW_ALE = True
+CW_ANDRE = True
 SWEEP_ALE = False
 SWEEP_ANDRE = False
-RANDOM = True
+RANDOM = False
 
 # ALESSIA CW
 if CW_ALE:
@@ -47,7 +47,7 @@ if CW_ANDRE:
     # Registra il tempo di inizio
     start_time = time.time()
     # Chiamata alla funzione che vuoi misurare
-    _ , roots = Cw.solve_clarke_and_wright(path_instance)
+    _ , roots = Cw.solve_clarke_and_wright_on_instance(path_instance)
     # Registra il tempo di fine
     end_time = time.time()
     # Calcola la durata dell'esecuzione
