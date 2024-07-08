@@ -3,7 +3,7 @@ import Utils
 
 
 VERBOSE = False  # Se True, stampa valori delle istanze e i passaggi dell'euristica di Clarke e Wright
-SAVE_SOLUTION_ON_FILE = False  # Se True, salva i risultati in un file .sol
+SAVE_SOLUTION_ON_FILE = True  # Se True, salva i risultati in un file .sol
 RESULT_DIRECTORY = "resources/Heuristic_Solutions/CW_Solutions"  # Directory di output per i risultati
 # ------------ Definisco le variabili globali che descrivono l'istanza specifica ------------------------
 global weights, demands, depots, depot_index, truck_capacity, name  # Imposto variabili globali
@@ -100,7 +100,7 @@ def solve_clarke_and_wright_on_instance(instance):
     # Passo 3: salva il risultato in un file .sol e stampa i risultati
     if SAVE_SOLUTION_ON_FILE:
         name = Parser.get_name(instance)
-        Utils.save_results_to_file(routes, cw_cost, RESULT_DIRECTORY, name)
+        Utils.save_results_to_file(routes, cw_cost, RESULT_DIRECTORY, "CW_"+name)
     # Stampa i risultati a schermo
     if VERBOSE:
         for index, route in enumerate(routes):
