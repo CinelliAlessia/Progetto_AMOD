@@ -8,7 +8,7 @@ SAVE_SOLUTION_ON_FILE = False  # Se True, salva i risultati in un file .sol
 RESULT_DIRECTORY = "resources/Heuristic_Solution/Sweep_Solutions"  # Directory di output per i risultati
 
 # ------------ Definisco le variabili globali che descrivono l'istanza specifica ------------------------
-global node_coords, weights, demands, depot_index, depot_coord, vehicle_capacity  # Imposto variabili globali
+global node_coords, weights, demands, depot_index, depot_coord, vehicle_capacity, path  # Imposto variabili globali
 
 
 # Calcola le coordinate polari(solo angolo) di un nodo rispetto al deposito
@@ -62,24 +62,23 @@ def two_opt(tour, initial_cost):
 
 
 def three_opt(tour, initial_cost):
-    pass
+    return tour, 0
 
 
-def solve_sweep_on_instance(path, run_two_opt=False, run_three_opt=False):
-    if not path.endswith('.vrp'):
-        raise ValueError('Il file deve essere un\'istanza del CVRP in formato .vrp')
-    # Creare l'istanza dal file e ottenere le informazioni necessarie
-    instance = Parser.make_instance_from_path_name(path)
-    global node_coords, weights, demands, depot_index, depot_coord, vehicle_capacity
+# Esegue l'euristica Sweep su un'istanza specifica (Istanza già creata in precedenza)
+def solve_sweep_on_instance(instance, run_two_opt=False, run_three_opt=False):
+    # Inizializzo le variabili globali
+    global node_coords, weights, demands, depot_index, depot_coord, vehicle_capacity, path
     node_coords = Parser.get_node_coords(instance)
     weights = Parser.get_edge_weight(instance)
     demands = Parser.get_node_demands(instance)
     depot_index = Parser.get_depots_index(instance)[0]
     depot_coord = node_coords[depot_index]
     vehicle_capacity = Parser.get_truck(instance).get_capacity()  # todo attenzione, sto usando classe truck
+    path = Parser.get_name(instance)
     # -----------------------------------------------------------------------
-    polar_angle = [0.0]  # Il deposito ha angolo 0 rispetto a se stesso
     # Convertire le coordinate cartesiane in polari e calcolare l'angolo per ogni nodo
+    polar_angle = [0.0]  # Il deposito ha angolo 0 rispetto a se stesso
     for i in range(len(node_coords)):
         if i != depot_index:
             polar_angle.append(calculate_polar_angle(node_coords[i], depot_coord))
@@ -150,4 +149,10 @@ def solve_sweep_on_instance(path, run_two_opt=False, run_three_opt=False):
     return tours, sweep_cost
 
 
-solve_sweep_on_instance("resources/vrplib/Instances/A-n32-k5.vrp", False, True)
+# Esegue l'euristica se viene usando il file .vrp
+def solve_sweep_from_file(file_path, run_two_opt=False, run_three_opt=False):
+    instance = Parser.make_instance_from_path_name(file_path)
+    return solve_sweep_on_instance(instance, run_two_opt, run_three_opt)
+
+
+# solve_sweep_on_instance("resources/vrplib/Instances/A-n32-k5.vrp", True, False)
