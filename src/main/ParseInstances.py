@@ -108,6 +108,10 @@ def get_truck(instance):
     return truck
 
 
+def get_name(instance):
+    return instance.get('name')
+
+
 def work_on_instance(path):
     # Creo l'oggetto istanza
     instance = make_instance_from_path_name(path)
