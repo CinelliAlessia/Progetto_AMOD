@@ -116,4 +116,4 @@ def solve_clarke_and_wright_from_file(file_path):
 
 
 # -------------------------- Test -----------------------------
-solve_clarke_and_wright_from_file("resources/vrplib/Instances/CMT13.vrp")
+solve_clarke_and_wright_from_file("../resources/vrplib/Instances/CMT13.vrp")

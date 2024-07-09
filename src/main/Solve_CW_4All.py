@@ -12,9 +12,9 @@ CW_SELECTOR = 0
 # Selezionando come primo parametro selector = 2, verrà eseguiti entrambi, con risultati nello stesso file  # todo da fare
 # ------------------------------------------------------------------------------------------------------------
 
-OUTPUT_DIRECTORY = "resources/Heuristic_Solutions/"  # Directory di output per i risultati
+OUTPUT_DIRECTORY = "../resources/Heuristic_Solutions/"  # Directory di output per i risultati
 FILE_NAME = "CW_APX_and_Time.csv"  # Aggiungere come prefisso il numero del run
-INSTANCES_DIRECTORY = "resources/vrplib/Instances"  # Directory delle istanze
+INSTANCES_DIRECTORY = "../resources/vrplib/Instances"  # Directory delle istanze
 
 
 # Esegui l'euristica di Clarke e Wright per le istanze elencate nel file_path (tramite nome), le istanze verranno
@@ -47,7 +47,7 @@ def solve_cw_for_instance_name_in_file(size, file_path):
         file_name = line.strip()
         if file_name.endswith(".vrp"):
             print(f"Solving {file_name}...")
-            instance = Parser.make_instance_from_path_name(f"resources/vrplib/Instances/{file_name}")
+            instance = Parser.make_instance_from_path_name(f"../resources/vrplib/Instances/{file_name}")
             print("Fine parsing")
             if CW_SELECTOR == 0:  # CW Andrea
                 # Registra il tempo di inizio
@@ -71,7 +71,7 @@ def solve_cw_for_instance_name_in_file(size, file_path):
                 # Calcola la durata dell'esecuzione
                 execution_time = end_time - start_time
 
-            path = f"resources/vrplib/Instances/{file_name}"
+            path = f"../resources/vrplib/Instances/{file_name}"
             opt = Parser.get_optimal_cost_from_path(path)
             if opt is not None:
                 apx = cw_cost / opt
@@ -86,8 +86,22 @@ def solve_cw_for_instance_name_in_file(size, file_path):
 
 
 # Esegui l'euristica per tutte le size delle istanze
-#solve_cw_for_instance_name_in_file("small", "resources/vrplib/Name_of_instances_by_dimension/small_instances_name.txt")
-#solve_cw_for_instance_name_in_file("mid_small", "resources/vrplib/Name_of_instances_by_dimension/mid_small_instances_name.txt")
-#solve_cw_for_instance_name_in_file("mid", "resources/vrplib/Name_of_instances_by_dimension/mid_instances_name.txt")
-#solve_cw_for_instance_name_in_file("mid_large", "resources/vrplib/Name_of_instances_by_dimension/mid_large_instances_name.txt")
-#solve_cw_for_instance_name_in_file("large", "resources/vrplib/Name_of_instances_by_dimension/large_instances_name.txt")
+# Esegui l'euristica per tutte le size delle istanze
+path_dim = "../resources/vrplib/Name_of_instances_by_dimension/"
+
+SMALL = True
+MID_SMALL = False
+MID = False
+MID_LARGE = False
+LARGE = False
+
+if SMALL:
+    solve_cw_for_instance_name_in_file("small", f"{path_dim}small_instances_name.txt")
+elif MID_SMALL:
+    solve_cw_for_instance_name_in_file("mid_small", f"{path_dim}mid_small_instances_name.txt")
+elif MID:
+    solve_cw_for_instance_name_in_file("mid", f"{path_dim}mid_instances_name.txt")
+elif MID_LARGE:
+    solve_cw_for_instance_name_in_file("mid_large", f"{path_dim}mid_large_instances_name.txt")
+elif LARGE:
+    solve_cw_for_instance_name_in_file("large", f"{path_dim}large_instances_name.txt")

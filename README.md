@@ -96,3 +96,6 @@ Miglioramento Necessario: Spesso richiede ulteriori passaggi di ottimizzazione p
 7. Large Neighborhood Search (LNS): 
 
     Simile al VNS, ma focalizzato su grandi cambiamenti nella soluzione corrente per esplorare nuovi spazi di soluzione.
+
+8. 3-opt:
+   ![roots_3opt.jpg](src/photos/roots_3opt.jpg)

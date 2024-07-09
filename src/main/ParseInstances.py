@@ -37,8 +37,8 @@ def get_optimal_cost_from_instance(instance):
         elif re.match(r"^\d+(\.\d+)?$", str_comment):
             return float(str_comment)
     # Caso 4, leggo il file .sol (se esiste) nella directory resources/vrplib/Solutions
-    if os.path.exists(f"resources/vrplib/Solutions/{get_name(instance)}.sol"):
-        with open(f"resources/vrplib/Solutions/{get_name(instance)}.sol", "r") as f:
+    if os.path.exists(f"../resources/vrplib/Solutions/{get_name(instance)}.sol"):
+        with open(f"../resources/vrplib/Solutions/{get_name(instance)}.sol", "r") as f:
             # Cerco la linea che inizia con "Cost VALUE"
             for line in f:
                 if line.startswith("Cost"):

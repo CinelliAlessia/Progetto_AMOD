@@ -21,7 +21,7 @@ SWEEP_ANDRE = False
 RANDOM = False
 
 if CW_ALE or CW_ANDRE or SWEEP_ALE or SWEEP_ANDRE or RANDOM:
-    path_instance = "resources/vrplib/Instances/A-n33-k5.vrp"
+    path_instance = "../resources/vrplib/Instances/A-n33-k5.vrp"
     instance = Parse.make_instance_from_path_name(path_instance)
     nodes, truck = Parse.work_on_instance(instance)
     print("FINE PARSING")

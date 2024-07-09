@@ -111,7 +111,7 @@ def solve_vrp_with_ampl(instance):
     return total_cost
 
 
-instance_path = "resources/vrplib/Instances/E-n13-k4.vrp"
+instance_path = "../resources/vrplib/Instances/E-n13-k4.vrp"
 # Esempio di utilizzo
 make_instance = ip.make_instance_from_path_name(instance_path)
 optimal_cost = solve_vrp_with_ampl(make_instance)
