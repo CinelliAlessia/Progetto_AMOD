@@ -11,6 +11,8 @@ distance_matrix = []
 
 # Calcolo l'angolo tra tutti i nodi e il deposito
 def initialize(nodes):
+    distance_matrix.clear()
+
     id_depots = 0
     x_dep = 0
     y_dep = 0
