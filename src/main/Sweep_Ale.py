@@ -2,8 +2,7 @@ import itertools
 from src.main.Utils import calculate_cost
 
 TWO_OPT = True
-THREE_OPT = False
-
+THREE_OPT = True
 PRINT = False
 
 matrix_distance = []
@@ -60,10 +59,13 @@ def sweep_algorithm(nodes, vehicle_capacity):
             print(c)
         print(calculate_cost(clusters, nodes))
 
-    if TWO_OPT or THREE_OPT:
-        clusters = optimize_clusters(clusters)
+    clusters_2 = None
+    clusters_3 = None
 
-    return clusters
+    if TWO_OPT or THREE_OPT:
+        clusters_2, clusters_3 = optimize_clusters(clusters)
+
+    return clusters_2, clusters_3
 
 
 def optimize_clusters(clusters):
@@ -71,21 +73,22 @@ def optimize_clusters(clusters):
     if not (TWO_OPT or THREE_OPT):
         return clusters
 
-    optimized_clusters = []
-    optimization_function = None
+    optimized_clusters_2 = []
+    optimized_clusters_3 = []
 
     # Determine which optimization function to use
     if TWO_OPT:
         optimization_function = two_opt
-    elif THREE_OPT:
-        optimization_function = three_opt
+        for cluster in clusters:
+            optimized_cluster_2, _ = optimization_function(cluster)
+            optimized_clusters_2.append(optimized_cluster_2)
 
-    # Apply the selected optimization function to each cluster
-    for cluster in clusters:
-        optimized_cluster, _ = optimization_function(cluster)
-        optimized_clusters.append(optimized_cluster)
+    if THREE_OPT:
+        for cluster in clusters:
+            optimized_cluster_3, _ = three_opt(cluster)
+            optimized_clusters_3.append(optimized_cluster_3)
 
-    return optimized_clusters
+    return optimized_clusters_2, optimized_clusters_3
 
 
 def two_opt(route):
@@ -131,29 +134,31 @@ def three_opt(route):
     :param route: Lista degli indici dei nodi che rappresentano il percorso.
     :return: Un percorso ottimizzato e la sua distanza totale.
     """
-    improved = True
+
     best_distance = calculate_total_distance(route)
     best_route = route
 
-    while improved:
-        improved = False
-        for (i, j, k) in itertools.combinations(range(1, len(route) - 1), 3):
-            new_routes = [
-                route[:i] + route[i:j][::-1] + route[j:k] + route[k:],  # Reverse segment between i and j
-                route[:i] + route[i:j] + route[j:k][::-1] + route[k:],  # Reverse segment between j and k
-                route[:i] + route[j:k] + route[i:j] + route[k:],        # Swap segments i:j and j:k
-                route[:i] + route[j:k][::-1] + route[i:j][::-1] + route[k:],  # Reverse both segments
-                route[:i] + route[j:k][::-1] + route[i:j] + route[k:]   # Reverse first segment and swap
-            ]
+    for (i, j, k) in itertools.combinations(range(1, len(route) - 1), 3):
+        new_routes = apply_3opt(route, i, j, k)
 
-            for new_route in new_routes:
-                new_distance = calculate_total_distance(new_route)
-                if new_distance < best_distance:
-                    best_route = new_route
-                    best_distance = new_distance
-                    improved = True
-                    break
-            if improved:
-                break
+        for new_route in new_routes:
+            new_distance = calculate_total_distance(new_route)
+            if new_distance < best_distance:
+                best_route = new_route
+                best_distance = new_distance
 
     return best_route, best_distance
+
+
+def apply_3opt(route, i, j, k):
+    new_tours = [
+        route[:i] + route[i:j] + route[j:k] + route[k:],  # No change
+        route[:i] + route[i:j] + route[j:k][::-1] + route[k:],  # Reversing tour[j:k]
+        route[:i] + route[i:j][::-1] + route[j:k] + route[k:],  # Reversing tour[i:j]
+        route[:i] + route[i:j][::-1] + route[j:k][::-1] + route[k:],  # Reversing both
+        route[:i] + route[j:k] + route[i:j] + route[k:],  # Swapping tour[i:j] with tour[j:k]
+        route[:i] + route[j:k] + route[i:j][::-1] + route[k:],  # Swapping and reversing tour[i:j]
+        route[:i] + route[j:k][::-1] + route[i:j] + route[k:],  # Swapping and reversing tour[j:k]
+        route[:i] + route[j:k][::-1] + route[i:j][::-1] + route[k:]  # Swapping and reversing both
+    ]
+    return new_tours
