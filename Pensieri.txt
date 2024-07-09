@@ -11,23 +11,10 @@ Cose da fare:
     Quante istanze sopra i 1000 nodi ci sono? Very Large
 #################################################################################
 
-2. Cosa si fa quando c'è più di un deposito?
-   ############# MDVRP - Multi-Depot Vehicle Routing Problem ##################
-   2.1 Nel MDVRP, ci sono diversi depositi da cui i veicoli possono partire e tornare.
-   Ogni deposito ha un certo numero di veicoli disponibili, ciascuno con una capacità massima di carico.
-   L'obiettivo è ancora di minimizzare il costo totale del percorso
-   (ad esempio, la distanza totale percorsa),
-   ma ora si deve tenere conto che i veicoli possono partire e tornare a depositi diversi.
+2. Su alcune istanze, CW ci viene minore del costo ottimo.
+    2.1 Abbiamo sbagliato qualcosa?
+    2.2 Il costo ottimo è sbagliato?
 
-   2.2 Problemi e Considerazioni Aggiuntive:
-
-   2.2.1 Assegnazione dei clienti ai depositi: Bisogna decidere a quale deposito assegnare ciascun cliente.
-   Questa assegnazione deve essere fatta in modo tale da minimizzare il costo totale del servizio.
-   Bilanciamento del carico tra depositi: Può essere necessario bilanciare il carico di lavoro tra i vari depositi,
-   assicurando che nessun deposito sia sovraccaricato.
-   2.2.2 Gestione della flotta: Ogni deposito ha un numero limitato di veicoli,
-   quindi bisogna ottimizzare l'utilizzo di ciascun veicolo tenendo conto delle sue capacità.
-   Rotte multiple: Le rotte devono essere pianificate considerando che possono partire da e terminare in depositi differenti,
-   rendendo il problema più complesso da risolvere rispetto al VRP classico.
-
-####################################################################################
+    Lista delle istanze con CW(Andrea e Alessia) minore del costo ottimo:
+    - P-n22-k8.vrp
+    - P-n55-k15.vrp
