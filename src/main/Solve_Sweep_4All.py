@@ -1,6 +1,7 @@
 import time
 
 import Sweep_Ale as sweepAle
+import Sweep_Andrea as sweepAndrea
 import ParseInstances as Parser
 import os
 from src.main import Utils
@@ -14,7 +15,7 @@ SWEEP_SELECTOR = 1
 
 OUTPUT_DIRECTORY = "resources/Heuristic_Solutions/"  # Directory di output per i risultati
 FILE_NAME = "Sweep_APX_and_Time.csv"  # Aggiungere come prefisso il numero del run
-INSTANCES_DIRECTORY = "resources/vrplib/Instances"  # Directory delle istanze
+INSTANCES_DIRECTORY = "resources/vrplib/Instances/"  # Directory delle istanze
 
 
 # Esegui l'euristica di Clarke e Wright per le istanze elencate nel file_path (tramite nome), le istanze verranno
@@ -41,23 +42,26 @@ def solve_sweep_for_instance_name_in_file(size, file_path):
     # -----------------------------------------------------------------------------------------
     # Per ogni riga (riga = file_name) in n (file_path),
     # esegui l'euristica di Sweep sull'istanza corrispondente
+    i = 0
     execution_time = 0
     for line in n:
+        i += 1
         file_name = line.strip()
         if file_name.endswith(".vrp"):
             print(f"Solving {file_name}...")
-            instance = Parser.make_instance_from_path_name(f"resources/vrplib/Instances/{file_name}")
-            print("Fine parsing")
-
-            if Parser.get_explicit(instance):
+            # Se istanza non euclidea, saltare l'istanza
+            if Parser.get_edge_weight_type_from_path(INSTANCES_DIRECTORY+file_name) == "EXPLICIT":
+                print(f"Istanza {file_name} non euclidea, saltata")
                 continue
-
-            if SWEEP_SELECTOR == 0:  # SWEEP Andrea
-                pass
+            instance = Parser.make_instance_from_path_name(INSTANCES_DIRECTORY+file_name)
+            print("Fine parsing")
+            if SWEEP_SELECTOR == 0:  # CW Andrea
                 # Registra il tempo di inizio
                 start_time = time.perf_counter()
                 # Chiamata alla funzione che vuoi misurare
-                # TODO
+                sw_cost, _ = sweepAndrea.solve_sweep_on_instance(instance)
+                sw_cost_2 = 0
+                sw_cost_3 = 0
                 # Registra il tempo di fine
                 end_time = time.perf_counter()
                 # Calcola la durata dell'esecuzione
@@ -98,7 +102,4 @@ def solve_sweep_for_instance_name_in_file(size, file_path):
 
 # Esegui l'euristica per tutte le size delle istanze
 #solve_sweep_for_instance_name_in_file("small", "resources/vrplib/Name_of_instances_by_dimension/small_instances_name.txt")
-#solve_sweeep_for_instance_name_in_file("mid_small", "resources/vrplib/Name_of_instances_by_dimension/mid_small_instances_name.txt")
-#solve_sweep_for_instance_name_in_file("mid", "resources/vrplib/Name_of_instances_by_dimension/mid_instances_name.txt")
-solve_sweep_for_instance_name_in_file("mid_large", "resources/vrplib/Name_of_instances_by_dimension/mid_large_instances_name.txt")
-#solve_sweep_for_instance_name_in_file("large", "resources/vrplib/Name_of_instances_by_dimension/large_instances_name.txt")
+solve_sweep_for_instance_name_in_file("mid", "resources/vrplib/Name_of_instances_by_dimension/mid_instances_name.txt")
