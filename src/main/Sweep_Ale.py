@@ -142,6 +142,14 @@ def calculate_total_distance(route):
     return distance
 
 
+def calculate_saving(i, j, tour):
+    # Calcolo del costo attuale
+    current_cost = distance_matrix[tour[i]][tour[i+1]] + distance_matrix[tour[j]][tour[j+1]]
+    # Calcolo del costo dopo lo swap
+    new_cost = distance_matrix[tour[i]][tour[j]] + distance_matrix[tour[i+1]][tour[j+1]]
+    return new_cost - current_cost  # Se è negativo, allora conviene fare lo swap
+
+
 def three_opt(route):
     """
     Algoritmo 3-opt per migliorare una soluzione di un problema di instradamento dei veicoli (VRP).
@@ -166,7 +174,7 @@ def three_opt(route):
                 best_distance = new_distance
                 improved = True
                 # print(f"local best root {best_route}")
-                break
+                break   # Esco dal ciclo for
         if improved:    # Se ho trovato un miglioramento, continuo, se non ne ho trovato, esco
             continue
 
@@ -175,15 +183,16 @@ def three_opt(route):
 
 def apply_3opt(route, i, j, k):
     new_tours = [
-        route[:i] + route[i:j] + route[j:k] + route[k:],  # No change
-        route[:i] + route[i:j] + route[j:k][::-1] + route[k:],  # Reversing tour[j:k]
-        route[:i] + route[i:j][::-1] + route[j:k] + route[k:],  # Reversing tour[i:j]
-        route[:i] + route[i:j][::-1] + route[j:k][::-1] + route[k:],  # Reversing both
-        route[:i] + route[j:k] + route[i:j] + route[k:],  # Swapping tour[i:j] with tour[j:k]
-        route[:i] + route[j:k] + route[i:j][::-1] + route[k:],  # Swapping and reversing tour[i:j]
-        route[:i] + route[j:k][::-1] + route[i:j] + route[k:],  # Swapping and reversing tour[j:k]
-        route[:i] + route[j:k][::-1] + route[i:j][::-1] + route[k:]  # Swapping and reversing both
+        route[:i] + route[i:j] + route[j:k] + route[k:],  # No change (a)
+        route[:i] + route[i:j] + route[j:k][::-1] + route[k:],  # Reversing tour[j:k] (c)
+        route[:i] + route[i:j][::-1] + route[j:k] + route[k:],  # Reversing tour[i:j] (d)
+        route[:i] + route[i:j][::-1] + route[j:k][::-1] + route[k:],  # Reversing both (e)
+        route[:i] + route[j:k] + route[i:j] + route[k:],  # Swapping tour[i:j] with tour[j:k] (h)
+        route[:i] + route[j:k] + route[i:j][::-1] + route[k:],  # Swapping and reversing tour[i:j] (g)
+        route[:i] + route[j:k][::-1] + route[i:j] + route[k:],  # Swapping and reversing tour[j:k] (f)
+        route[:i] + route[j:k][::-1] + route[i:j][::-1] + route[k:]  # Swapping and reversing both (b)
     ]
+
     opt_cost = float("inf")
     opt_route = []
     for r in new_tours:
