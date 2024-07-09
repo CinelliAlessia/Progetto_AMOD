@@ -16,49 +16,49 @@ def calculate_polar_angle(client, depot):
     return np.arctan2(client[1] - depot[1], client[0] - depot[0]) % (2 * np.pi)
 
 
-def calculate_2opt_swap_cost(tour, i, j):
-    if i == 0:
-        prev_i = tour[-1]
-    else:
-        prev_i = tour[i - 1]
+# Funzione per calcolare il costo di un 2-opt swap
+def calculate_2opt_swap_cost(tour, i, j):  # i e j esprimono la posizione degli archi da scambiare
+    # Arco i, vuol dire ch l'elemento in posizione i rimarrà "fermo"
+    # Arco j, vuol dire che l'elemento in posizione j verrà scambiato con l'elemento in posizione j+1
+    # Mentre arco j vuol dire che l'elemento in posizione j-1, andrà subito dopo i
+    prev_i = tour[i - 1]  # nodo in posizione i-1
     if j == len(tour) - 1:
         next_j = tour[0]
     else:
-        next_j = tour[j + 1]
+        next_j = tour[j + 1]  # nodo in posizione j+1
 
-    old_edges_cost = weights[prev_i][tour[i]] + weights[tour[j]][next_j]
-    new_edges_cost = weights[prev_i][tour[j]] + weights[tour[i]][next_j]
-    return new_edges_cost - old_edges_cost
+    # Calcolo del costo attuale
+    current_cost = weights[tour[i]][tour[i+1]] + weights[tour[j]][next_j]  # esempio arco 4-5 + 9-0
+    # Calcolo del costo dopo lo swap
+    new_cost = weights[tour[i]][tour[j]] + weights[tour[i+1]][next_j]  # esempio arco 4-9 + 5-0
+    return new_cost - current_cost
 
 
-# Implementazione dell'algoritmo di ottimizzazione locale 2-opt per migliorare il costo di un tour (se possibile)
-# Attualmente, l'euristica è implementata con la variante First Improvement
+# Implementazione dell'algoritmo di ottimizzazione locale 2-opt
+# Esempio: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0] -> [0, 1, 2, 3, 4, 9, 8, 7, 6, 5, 0] scambio tra archi #5 e #9
 def two_opt(tour, initial_cost):
-    # Se il tour ha meno di 4 nodi, non è possibile eseguire 2-opt
-    if len(tour) < 4:
+    length = len(tour)
+    if length < 4:
         return tour, 0
-    best = tour
     best_cost = initial_cost
     improved = True
 
     while improved:
         improved = False
-        for i in range(1, len(best) - 2):
-            for j in range(i + 1, len(best) - 1):
-                cost_diff = calculate_2opt_swap_cost(best, i, j)
-                if cost_diff < 0:
+        for i in range(1, length - 2):
+            for j in range(i + 1, length - 1):
+                cost_diff = calculate_2opt_swap_cost(tour, i, j)  # Valuta il costo dello swap tra arco numero i e j
+                if cost_diff < 0 and j-i > 1:
                     if VERBOSE:
-                        print(f"2-Opt ---> Swap between {best[i]} and {best[j]} with saves {abs(cost_diff)}")
-                    new_tour = best[:]
-                    new_tour[i:j + 1] = reversed(new_tour[i:j + 1])
-                    best = new_tour
+                        print(f"2-Opt ---> Swap between {tour[i]} and {tour[j]} with saves {abs(cost_diff)}")
+                    # subito dopo i ci sarà j,
+                    # e ne seguirà il cammino (al contrario) da i fino a j della route originale
+                    new_tour = tour[:i+1] + tour[i+1:j+1][::-1] + tour[j+1:]
                     best_cost += cost_diff
+                    tour = new_tour
                     improved = True
-                    break
-            if improved:  # Variante First Improvement
-                break
     saves = initial_cost - best_cost
-    return best, saves
+    return tour, saves
 
 
 def three_opt(tour, initial_cost):
@@ -155,4 +155,4 @@ def solve_sweep_from_file(file_path, run_two_opt=False, run_three_opt=False):
     return solve_sweep_on_instance(instance, run_two_opt, run_three_opt)
 
 
-# solve_sweep_on_instance("resources/vrplib/Instances/A-n32-k5.vrp", True, False)
+solve_sweep_from_file("resources/vrplib/Instances/A-n32-k5.vrp", True, False)
