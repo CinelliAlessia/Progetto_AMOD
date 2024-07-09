@@ -102,4 +102,7 @@ def solve_sweep_for_instance_name_in_file(size, file_path):
 
 # Esegui l'euristica per tutte le size delle istanze
 #solve_sweep_for_instance_name_in_file("small", "resources/vrplib/Name_of_instances_by_dimension/small_instances_name.txt")
-solve_sweep_for_instance_name_in_file("mid", "resources/vrplib/Name_of_instances_by_dimension/mid_instances_name.txt")
+#solve_sweeep_for_instance_name_in_file("mid_small", "resources/vrplib/Name_of_instances_by_dimension/mid_small_instances_name.txt")
+#solve_sweep_for_instance_name_in_file("mid", "resources/vrplib/Name_of_instances_by_dimension/mid_instances_name.txt")
+solve_sweep_for_instance_name_in_file("mid_large", "resources/vrplib/Name_of_instances_by_dimension/mid_large_instances_name.txt")
+#solve_sweep_for_instance_name_in_file("large", "resources/vrplib/Name_of_instances_by_dimension/large_instances_name.txt")
