@@ -87,6 +87,20 @@ def get_node_coords(instance):
         return None
 
 
+def get_explicit(instance):
+    if instance.get('edge_weight_type') == 'EXPLICIT':
+        return True
+    return False
+
+
+def get_edge_weight_type_from_path(path):
+    # apro il file e leggo la riga
+    with open(path, "r") as f:
+        for line in f:
+            if "EDGE_WEIGHT_TYPE" in line:
+                return line.split(":")[1].strip()
+
+
 def get_truck_capacity(instance):
     return instance.get('capacity')
 
@@ -171,7 +185,9 @@ def work_on_instance(instance):
             is_depots = True
         else:
             is_depots = False
-        nodes.append(Node(i, coordinates[i][0], coordinates[i][1], edge_weight[i], is_depots, demands[i]))
+
+        if not get_explicit(instance):
+            nodes.append(Node(i, coordinates[i][0], coordinates[i][1], edge_weight[i], is_depots, demands[i]))
 
     print(f"numero di nodi: {num_of_nodes}")
     print(f"numero di client: {num_of_clients}")
