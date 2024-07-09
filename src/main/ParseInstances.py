@@ -1,3 +1,4 @@
+import os
 import re
 
 import vrplib
@@ -11,21 +12,46 @@ def make_instance_from_path_name(path):
     return instance
 
 
+# Restituisce il costo ottimo dell'istanza andando a leggere il campo 'comment' dell'istanza
+# Caso 1: COMMENT: altri campi "Optimal value: 845.26" altri campi
+# Caso 2: COMMENT: altri campi "best value: 524.61" altri campi
+# Caso 3: COMMENT: 524.61
+# Caso 4: Non è definito nel commento -> Guardare il file .sol alla riga cost
+def get_optimal_cost_from_instance(instance):
+    comment = instance.get('comment')
+    # Convert comment to string to ensure compatibility with re.match
+    str_comment = str(comment)
+    if comment is not None:
+        # Caso 1 e Caso 2
+        if "Optimal value:" in str_comment:
+            optimal_value = str_comment.split("Optimal value:")[1].strip()
+            # Rimuovi eventuali caratteri non numerici alla fine del valore
+            optimal_value = re.sub(r"[^\d.]+", "", optimal_value)
+            return float(optimal_value)
+        elif "Best value:" in str_comment:
+            optimal_value = str_comment.split("Best value:")[1].strip()
+            # Rimuovi eventuali caratteri non numerici alla fine del valore
+            optimal_value = re.sub(r"[^\d.]+", "", optimal_value)
+            return float(optimal_value)
+        # Caso 3
+        elif re.match(r"^\d+(\.\d+)?$", str_comment):
+            return float(str_comment)
+    # Caso 4, leggo il file .sol (se esiste) nella directory resources/vrplib/Solutions
+    if os.path.exists(f"resources/vrplib/Solutions/{get_name(instance)}.sol"):
+        with open(f"resources/vrplib/Solutions/{get_name(instance)}.sol", "r") as f:
+            # Cerco la linea che inizia con "Cost VALUE"
+            for line in f:
+                if line.startswith("Cost"):
+                    optimal_value = line.split(" ")[1].strip()
+                    return float(optimal_value)
+
+    print(f"Optimal Cost not found for: {get_name(instance)}")
+    return None
+
+
 def get_optimal_cost_from_path(path):
-    pattern = re.compile(r"Optimal value: (\d+(\.\d+)?)")
-    with open(path, 'r') as file:
-        content = file.read()
-        match = pattern.search(content)
-        if match:
-            try:
-                optimal_value = float(match.group(1))
-                return optimal_value
-            except ValueError:
-                print("Could not convert optimal value to float.")
-                return None
-        else:
-            print("Optimal value not found in the file.")
-            return None
+    instance = make_instance_from_path_name(path)
+    return get_optimal_cost_from_instance(instance)
 
 
 # Restituisce il numero dei nodi (compreso deposito) andando a leggere il campo 'dimension' dell'istanza
@@ -121,11 +147,13 @@ def get_name(instance):
     return instance.get('name')
 
 
-def work_on_instance(path):
+def work_on_path(path):
     # Creo l'oggetto istanza
     instance = make_instance_from_path_name(path)
-    # print(instance)
+    return work_on_instance(instance)
 
+
+def work_on_instance(instance):
     truck = get_truck(instance)  # Ottengo il numero dei veicoli
     list_of_depots = get_depots_index(instance)  # Ottengo gli indici dei depositi
     num_of_nodes = get_nodes_dimension(instance)  # Ottengo il numero dei nodi
