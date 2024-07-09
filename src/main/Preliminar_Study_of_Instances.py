@@ -68,13 +68,14 @@ def found_instance_size(directory_path="resources/vrplib/Instances"):
     large = 0
     x_large = 0
     # Dizionario per tenere traccia dei file aperti
+    # Se file già esistenti vengono troncati riscritti dall'inizio
     files = {
-        "small": open(f"{OUTPUT_DIRECTORY}/small_instances_name.txt", "a"),
-        "mid_small": open(f"{OUTPUT_DIRECTORY}/mid_small_instances_name.txt", "a"),
-        "mid": open(f"{OUTPUT_DIRECTORY}/mid_instances_name.txt", "a"),
-        "mid_large": open(f"{OUTPUT_DIRECTORY}/mid_large_instances_name.txt", "a"),
-        "large": open(f"{OUTPUT_DIRECTORY}/large_instances_name.txt", "a"),
-        "x_large": open(f"{OUTPUT_DIRECTORY}/x_large_instances_name.txt", "a")
+        "small": open(f"{OUTPUT_DIRECTORY}/small_instances_name.txt", "w"),
+        "mid_small": open(f"{OUTPUT_DIRECTORY}/mid_small_instances_name.txt", "w"),
+        "mid": open(f"{OUTPUT_DIRECTORY}/mid_instances_name.txt", "w"),
+        "mid_large": open(f"{OUTPUT_DIRECTORY}/mid_large_instances_name.txt", "w"),
+        "large": open(f"{OUTPUT_DIRECTORY}/large_instances_name.txt", "w"),
+        "x_large": open(f"{OUTPUT_DIRECTORY}/x_large_instances_name.txt", "w")
     }
     for file in os.listdir(directory_path):
         if file.endswith(".vrp"):
@@ -84,6 +85,7 @@ def found_instance_size(directory_path="resources/vrplib/Instances"):
                     dimension = int(content.split('DIMENSION : ')[1].split('\n')[0])
                     if dimension <= SMALL_THRESHOLD:
                         small += 1
+                        files["small"].write(file + "\n")
                     # Continuation of the conditionals to categorize and write instance names
                     elif dimension <= MID_SMALL_THRESHOLD:
                         mid_small += 1
