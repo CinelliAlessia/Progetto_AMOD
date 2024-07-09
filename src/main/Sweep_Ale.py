@@ -1,11 +1,12 @@
 import itertools
 from src.main.Utils import calculate_cost
+import Plotter as plotter
 
 TWO_OPT = True
 THREE_OPT = True
-PRINT = False
+PRINT = True
 
-matrix_distance = []
+distance_matrix = []
 
 
 # Calcolo l'angolo tra tutti i nodi e il deposito
@@ -21,8 +22,10 @@ def initialize(nodes):
             break
 
     for client in nodes:
-        matrix_distance.append(client.get_all_distance())
+        distance_matrix.append(client.get_all_distance())
         client.angle = client.calculate_angle_to_depots(x_dep, y_dep)
+
+    print(distance_matrix)
 
     # Ordino tutti i nodi in base all'angolo minore
     nodes.sort(key=lambda c: c.angle)
@@ -58,6 +61,7 @@ def sweep_algorithm(nodes, vehicle_capacity):
         for c in clusters:
             print(c)
         print(calculate_cost(clusters, nodes))
+        plotter.plot_roots_graph(nodes, clusters)
 
     clusters_2 = None
     clusters_3 = None
@@ -91,26 +95,38 @@ def optimize_clusters(clusters):
     return optimized_clusters_2, optimized_clusters_3
 
 
-def two_opt(route):
-    best_route = route
-    best_distance = calculate_total_distance(route)
+def two_opt_swap(tour, i, j):
+    new_tour = tour[:i+1] + tour[i+1:j+1][::-1] + tour[j+1:]
+    return new_tour
+
+
+def two_opt(tour):
+    num_nodes = len(tour)
+    best_tour = tour[:]
+    best_distance = calculate_total_distance(tour)
     improved = True
 
     while improved:
         improved = False
-        for i in range(1, len(route) - 2):
-            for j in range(i + 1, len(route)):
+        for i in range(1, num_nodes - 2):
+            for j in range(i + 1, num_nodes - 1):
                 if j - i == 1:
-                    continue  # no point in reversing two adjacent edges
-                new_route = route[:]
-                new_route[i:j] = route[j - 1:i - 1:-1]  # reverse the subsection
-                new_distance = calculate_total_distance(new_route)
-                if new_distance < best_distance:
-                    best_distance = new_distance
-                    best_route = new_route
-                    route = best_route
+                    continue  # No need to reverse two adjacent edges
+                # Calculate the change in distance
+                new_tour = two_opt_swap(tour, i, j)
+                new_distance = calculate_total_distance(new_tour)
+                delta_distance = new_distance - best_distance
+                if delta_distance < 0:
+                    # Perform 2-opt swap
+                    print(f"2-opt swap: {i} {j}")
+                    print(f"Before: {tour}")
+                    best_tour = new_tour
+                    tour = new_tour
+                    print(f"After: {tour}")
                     improved = True
-    return best_route, best_distance
+                    best_distance = new_distance
+
+    return best_tour, best_distance
 
 
 def calculate_total_distance(route):
@@ -123,29 +139,37 @@ def calculate_total_distance(route):
     for i in range(len(route) - 1):
         start_node = route[i]
         next_node = route[i + 1]
-        distance += matrix_distance[start_node][next_node]
+        distance += distance_matrix[start_node][next_node]
     return distance
 
 
 def three_opt(route):
     """
     Algoritmo 3-opt per migliorare una soluzione di un problema di instradamento dei veicoli (VRP).
-
     :param route: Lista degli indici dei nodi che rappresentano il percorso.
     :return: Un percorso ottimizzato e la sua distanza totale.
     """
+    num_nodes = len(route)
+    best_route = route[:]
+    best_distance = calculate_total_distance(route,)
+    improved = True
 
-    best_distance = calculate_total_distance(route)
-    best_route = route
+    while improved:
+        improved = False
+        for i in range(1, num_nodes - 3):
+            for j in range(i + 1, num_nodes - 2):
+                for k in range(j + 1, num_nodes - 1):
+                    new_routes = apply_3opt(route, i, j, k)
 
-    for (i, j, k) in itertools.combinations(range(1, len(route) - 1), 3):
-        new_routes = apply_3opt(route, i, j, k)
-
-        for new_route in new_routes:
-            new_distance = calculate_total_distance(new_route)
-            if new_distance < best_distance:
-                best_route = new_route
-                best_distance = new_distance
+                    for new_route in new_routes:
+                        new_distance = calculate_total_distance(new_route)
+                        if new_distance < best_distance:
+                            best_route = new_route
+                            best_distance = new_distance
+                            improved = True
+        
+                    if improved:
+                        break  # Exit the middle loop since we found an improvement
 
     return best_route, best_distance
 
