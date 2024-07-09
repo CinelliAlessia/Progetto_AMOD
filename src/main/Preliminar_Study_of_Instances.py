@@ -67,6 +67,10 @@ def found_instance_size(directory_path="resources/vrplib/Instances"):
     mid_large = 0
     large = 0
     x_large = 0
+
+    if not os.path.exists(OUTPUT_DIRECTORY):
+        os.makedirs(OUTPUT_DIRECTORY)
+
     # Dizionario per tenere traccia dei file aperti
     # Se file già esistenti vengono troncati riscritti dall'inizio
     files = {
