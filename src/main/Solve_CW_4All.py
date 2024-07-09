@@ -1,41 +1,77 @@
 import time
 
-import Clarke_Wright_Andrea as Cw
+import Clarke_Wright_Andrea as CwAndre
+import Clarke_Wright_Alessia as CwAle
 import ParseInstances as Parser
 import os
+from src.main import Utils
+# ------------------------------------------------------------------------------------------------------------
+CW_SELECTOR = 0
+# Selezionando come primo parametro selector = 1, verrà eseguito l'algoritmo di Clarke e Wright di Alessia
+# Selezionando come primo parametro selector = 0, verrà eseguito l'algoritmo di Clarke e Wright di Andrea
+# Selezionando come primo parametro selector = 2, verrà eseguiti entrambi, con risultati nello stesso file  # todo da fare
+# ------------------------------------------------------------------------------------------------------------
+
+OUTPUT_DIRECTORY = "resources/Heuristic_Solutions/"  # Directory di output per i risultati
+FILE_NAME = "CW_APX_and_Time.csv"  # Aggiungere come prefisso il numero del run
+INSTANCES_DIRECTORY = "resources/vrplib/Instances"  # Directory delle istanze
 
 
-# ----------- Assicurarsi che il parametro SAVE_SOLUTION_ON_FILE sia True sul file Clarke_Wright_Andrea ------------
-# In questo file vengono recuperate tutte le istanze di vrp ed eseguire l'euristica di Clarke e Wright.
-# È utilizzata la classe Clarke_Wright_Andrea.py per eseguire l'euristica.
-def solve_cw_4all():
-    # Apri file di output
-    f = open("resources/Heuristic_Solutions/CW_APX_and_Time.csv", "w")
-    x_large = open("resources/vrplib/Name_of_instances_by_dimension/x_large_instances_name.txt", "r")
-    x_large_names = x_large.read().split("\n")
-    # Per ogni file nella directory "resources/vrplib/Instances"
+# Esegui l'euristica di Clarke e Wright per le istanze elencate nel file_path (tramite nome), le istanze verranno
+# recuperate nella directory "resources/vrplib/Instances"
+def solve_cw_for_instance_name_in_file(size, file_path):
+    global FILE_NAME
+    # Verifico che il file contenente i nomi delle istanze esista
+    if not os.path.exists(file_path):
+        print("Il file non esiste")
+        return
+    # Apro il file in lettura
+    n = open(file_path, "r")
+    # Apri un nuovo file di output per salvare i risultati
+    # Prima devo vedere l'ultimo file creato e incrementare il numero
     i = 0
-    for file in os.listdir("resources/vrplib/Instances"):
+    while os.path.exists(f"{OUTPUT_DIRECTORY}{FILE_NAME}"):
         i += 1
-        if file.endswith(".vrp"):
-            # Escludi dal calcolo le istanze di size x-large
-            if file in x_large_names:
-                continue
-            print(f"Solving {file}...")
-            instance = Parser.make_instance_from_path_name(f"resources/vrplib/Instances/{file}")
+        FILE_NAME = f"{size}_CW_APX_and_Time({i}).csv"
+    f = open(f"{OUTPUT_DIRECTORY}{FILE_NAME}", "w")
+    # Scrivi nel file l'intestazione
+    f.write("Size,Instance_Name,Optimal_Cost,CW_cost,APX,Execution_time\n")
+    # -----------------------------------------------------------------------------------------
+    # Per ogni riga (riga = file_name) in n (file_path),
+    # esegui l'euristica di Clarke e Wright sull'istanza corrispondente
+    i = 0
+    cw_cost = 0
+    execution_time = 0
+    for line in n:
+        i += 1
+        file_name = line.strip()
+        if file_name.endswith(".vrp"):
+            print(f"Solving {file_name}...")
+            instance = Parser.make_instance_from_path_name(f"resources/vrplib/Instances/{file_name}")
             print("Fine parsing")
+            if CW_SELECTOR == 0:  # CW Andrea
+                # Registra il tempo di inizio
+                start_time = time.perf_counter()
+                # Chiamata alla funzione che vuoi misurare
+                cw_cost, _ = CwAndre.solve_clarke_and_wright_on_instance(instance)
+                # Registra il tempo di fine
+                end_time = time.perf_counter()
+                # Calcola la durata dell'esecuzione
+                execution_time = end_time - start_time
+            elif CW_SELECTOR == 1:  # CW Alessia
+                nodes, truck = Parser.work_on_instance(instance)
+                # Registra il tempo di inizio
+                start_time = time.perf_counter()
+                # Chiamata alla funzione che vuoi misurare
+                routes = CwAle.start(nodes, truck)
+                # Registra il tempo di fine
+                end_time = time.perf_counter()
+                cw_cost = Utils.calculate_cost(routes, nodes)
 
-            # Esegui l'euristica di Clarke e Wright
-            # Registra il tempo di inizio
-            start_time = time.time()
-            # Chiamata alla funzione che vuoi misurare
-            cw_cost, _ = Cw.solve_clarke_and_wright_on_instance(instance)
-            # Registra il tempo di fine
-            end_time = time.time()
-            # Calcola la durata dell'esecuzione
-            execution_time = end_time - start_time
+                # Calcola la durata dell'esecuzione
+                execution_time = end_time - start_time
 
-            path = f"resources/vrplib/Instances/{file}"
+            path = f"resources/vrplib/Instances/{file_name}"
             opt = Parser.get_optimal_cost_from_path(path)
             if opt is not None:
                 apx = cw_cost / opt
@@ -46,8 +82,12 @@ def solve_cw_4all():
             print("Costo ottimo: ", opt, "| CW_cost:", cw_cost, "|APX: ", apx, "|Tempo di esecuzione: ",
                   execution_time)
             # Salva tali valori, con lo stesso formato su una nuova riga del file APX_and_Time.txt
-            f.write(f"{file},{opt},{cw_cost},{apx},{execution_time}\n")
+            f.write(f"{size},{file_name},{opt},{cw_cost},{apx},{execution_time}\n")
 
 
-# Esegui l'euristica per tutte le istanze
-solve_cw_4all()
+# Esegui l'euristica per tutte le size delle istanze
+#solve_cw_for_instance_name_in_file("small", "resources/vrplib/Name_of_instances_by_dimension/small_instances_name.txt")
+#solve_cw_for_instance_name_in_file("mid_small", "resources/vrplib/Name_of_instances_by_dimension/mid_small_instances_name.txt")
+#solve_cw_for_instance_name_in_file("mid", "resources/vrplib/Name_of_instances_by_dimension/mid_instances_name.txt")
+#solve_cw_for_instance_name_in_file("mid_large", "resources/vrplib/Name_of_instances_by_dimension/mid_large_instances_name.txt")
+#solve_cw_for_instance_name_in_file("large", "resources/vrplib/Name_of_instances_by_dimension/large_instances_name.txt")
