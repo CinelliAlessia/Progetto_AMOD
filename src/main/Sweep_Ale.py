@@ -4,7 +4,7 @@ import Plotter as plotter
 
 TWO_OPT = True
 THREE_OPT = True
-PRINT = True
+PRINT = False
 
 distance_matrix = []
 
@@ -24,8 +24,6 @@ def initialize(nodes):
     for client in nodes:
         distance_matrix.append(client.get_all_distance())
         client.angle = client.calculate_angle_to_depots(x_dep, y_dep)
-
-    print(distance_matrix)
 
     # Ordino tutti i nodi in base all'angolo minore
     nodes.sort(key=lambda c: c.angle)
@@ -69,7 +67,7 @@ def sweep_algorithm(nodes, vehicle_capacity):
     if TWO_OPT or THREE_OPT:
         clusters_2, clusters_3 = optimize_clusters(clusters)
 
-    return clusters_2, clusters_3
+    return clusters, clusters_2, clusters_3
 
 
 def optimize_clusters(clusters):
@@ -102,7 +100,7 @@ def two_opt_swap(tour, i, j):
 
 def two_opt(tour):
     num_nodes = len(tour)
-    best_tour = tour[:]
+    best_tour = tour
     best_distance = calculate_total_distance(tour)
     improved = True
 
@@ -113,16 +111,15 @@ def two_opt(tour):
                 if j - i == 1:
                     continue  # No need to reverse two adjacent edges
                 # Calculate the change in distance
-                new_tour = two_opt_swap(tour, i, j)
+                new_tour = two_opt_swap(best_tour, i, j)
                 new_distance = calculate_total_distance(new_tour)
                 delta_distance = new_distance - best_distance
                 if delta_distance < 0:
                     # Perform 2-opt swap
-                    print(f"2-opt swap: {i} {j}")
-                    print(f"Before: {tour}")
+                    # print(f"2-opt swap: {i} {j}")
+                    # print(f"Before: {best_tour}")
                     best_tour = new_tour
-                    tour = new_tour
-                    print(f"After: {tour}")
+                    # print(f"After: {best_tour}")
                     improved = True
                     best_distance = new_distance
 
@@ -150,26 +147,26 @@ def three_opt(route):
     :return: Un percorso ottimizzato e la sua distanza totale.
     """
     num_nodes = len(route)
-    best_route = route[:]
-    best_distance = calculate_total_distance(route,)
+    best_route = route
+    best_distance = calculate_total_distance(route)
     improved = True
 
     while improved:
         improved = False
-        for i in range(1, num_nodes - 3):
-            for j in range(i + 1, num_nodes - 2):
-                for k in range(j + 1, num_nodes - 1):
-                    new_routes = apply_3opt(route, i, j, k)
+        for (i, j, k) in itertools.combinations(range(1, num_nodes - 1), 3):
+            if not j - i > 1 and not k - j > 1:
+                continue
 
-                    for new_route in new_routes:
-                        new_distance = calculate_total_distance(new_route)
-                        if new_distance < best_distance:
-                            best_route = new_route
-                            best_distance = new_distance
-                            improved = True
-        
-                    if improved:
-                        break  # Exit the middle loop since we found an improvement
+            # print(f"3-opt swap: {i} {j} {k}")
+            new_route, new_distance = apply_3opt(best_route, i, j, k)
+            if new_distance < best_distance:
+                best_route = new_route
+                best_distance = new_distance
+                improved = True
+                # print(f"local best root {best_route}")
+                break
+        if improved:    # Se ho trovato un miglioramento, continuo, se non ne ho trovato, esco
+            continue
 
     return best_route, best_distance
 
@@ -185,4 +182,11 @@ def apply_3opt(route, i, j, k):
         route[:i] + route[j:k][::-1] + route[i:j] + route[k:],  # Swapping and reversing tour[j:k]
         route[:i] + route[j:k][::-1] + route[i:j][::-1] + route[k:]  # Swapping and reversing both
     ]
-    return new_tours
+    opt_cost = float("inf")
+    opt_route = []
+    for r in new_tours:
+        distance = calculate_total_distance(r)
+        if distance < opt_cost:
+            opt_cost = distance
+            opt_route = r
+    return opt_route, opt_cost
