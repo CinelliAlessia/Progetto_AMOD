@@ -1,3 +1,4 @@
+import os
 import time
 import Clarke_Wright_Alessia as cwAle
 import Clarke_Wright_Andrea as Cw
@@ -13,17 +14,17 @@ def print_roots(roots):
     for r in roots:
         print(r)
 
-
-path_instance = "resources/vrplib/Instances/P-n101-k4.vrp"
-instance = Parse.make_instance_from_path_name(path_instance)
-nodes, truck = Parse.work_on_instance(path_instance)
-print("FINE PARSING")
-
 CW_ALE = False
 CW_ANDRE = False
-SWEEP_ALE = True
+SWEEP_ALE = False
 SWEEP_ANDRE = False
 RANDOM = False
+
+if CW_ALE or CW_ANDRE or SWEEP_ALE or SWEEP_ANDRE or RANDOM:
+    path_instance = "resources/vrplib/Instances/A-n33-k5.vrp"
+    instance = Parse.make_instance_from_path_name(path_instance)
+    nodes, truck = Parse.work_on_instance(instance)
+    print("FINE PARSING")
 
 # ALESSIA CW
 if CW_ALE:
@@ -47,7 +48,7 @@ if CW_ANDRE:
     # Registra il tempo di inizio
     start_time = time.time()
     # Chiamata alla funzione che vuoi misurare
-    _ , roots = Cw.solve_clarke_and_wright_on_instance(instance)
+    _, roots = Cw.solve_clarke_and_wright_on_instance(instance)
     # Registra il tempo di fine
     end_time = time.time()
     # Calcola la durata dell'esecuzione
@@ -64,7 +65,7 @@ if SWEEP_ALE:
     # Registra il tempo di inizio
     start_time = time.perf_counter()
     # Chiamata alla funzione che vuoi misurare
-    roots_2, roots_3 = sweepAle.sweep_algorithm(nodes, truck.get_capacity())
+    roots_1, roots_2, roots_3 = sweepAle.sweep_algorithm(nodes, truck.get_capacity())
 
     # Registra il tempo di fine
     end_time = time.perf_counter()
@@ -81,7 +82,6 @@ if SWEEP_ALE:
     cost_3 = Utils.calculate_cost(roots_3, nodes)
     print_roots(roots_3)
     print(f"Costi SWEEP ALESSIA opt3: {cost_3}")
-
 
 # SWEEP ANDREA
 if SWEEP_ANDRE:
@@ -100,7 +100,6 @@ if SWEEP_ANDRE:
     print_roots(roots)
     print(f"Costi SWEEP ANDREA {cost}")
 
-
 if RANDOM:
 
     best_cost = float("inf")
@@ -113,7 +112,7 @@ if RANDOM:
         cost = Utils.calculate_cost(roots, nodes)
         if cost < best_cost:
             best_cost = cost
-            best_root = roots    # Registra il tempo di fine
+            best_root = roots  # Registra il tempo di fine
     end_time = time.perf_counter()
 
     # Calcola la durata dell'esecuzione
@@ -134,7 +133,7 @@ if RANDOM:
         cost = Utils.calculate_cost(roots, nodes)
         if cost < best_cost:
             best_cost = cost
-            best_root = roots    # Registra il tempo di fine
+            best_root = roots  # Registra il tempo di fine
     end_time = time.perf_counter()
     # Calcola la durata dell'esecuzione
     execution_time = end_time - start_time
