@@ -1,9 +1,8 @@
 import ParseInstances as Parser
 import Utils
 
-
-VERBOSE = False  # Se True, stampa valori delle istanze e i passaggi dell'euristica di Clarke e Wright
-SAVE_SOLUTION_ON_FILE = True  # Se True, salva i risultati in un file .sol
+VERBOSE = True  # Se True, stampa valori delle istanze e i passaggi dell'euristica di Clarke e Wright
+SAVE_SOLUTION_ON_FILE = False  # Se True, salva i risultati in un file .sol
 RESULT_DIRECTORY = "resources/Heuristic_Solutions/CW_Solutions"  # Directory di output per i risultati
 # ------------ Definisco le variabili globali che descrivono l'istanza specifica ------------------------
 global weights, demands, depots, depot_index, truck_capacity, name  # Imposto variabili globali
@@ -29,14 +28,14 @@ def merge_routes_if_possible(routes, i, j):
     route_j = None
     # Trova i due percorsi che hanno i come ultimo e j come primo, o viceversa
     for route in routes:
-        if route[-2] == i or route[1] == i:  # Il penultimo nodo, perché l'ultimo è il deposito
+        if route[-2] == i or route[1] == i:
             route_i = route
-        elif route[-2] == j or route[1] == j:  # Il penultimo nodo, perché l'ultimo è il deposito
+        elif route[-2] == j or route[1] == j:
             route_j = route
 
     if route_i and route_j and route_i != route_j:
-        # Calcola la domanda totale per il percorso unito
-        total_demand = sum(demands[node] for node in route_i[1:-1] + route_j[1:-1])
+        # Calcola la domanda totale per il percorso unito (route_i + route_j)
+        total_demand = sum(demands[node] for node in route_i[:-1] + route_j[1:])
         if total_demand <= truck_capacity:
             # Unisci i percorsi, Devo differenziare i due casi:
             # 1. Se i è l'ultimo nodo di una route e j è il primo nodo di una route
@@ -44,9 +43,11 @@ def merge_routes_if_possible(routes, i, j):
                 # prima route_i(tranne dep finale) e poi route_j(tranne dep iniziale)
                 new_route = route_i[:-1] + route_j[1:]
             # 2. Se j è l'ultimo nodo di una route e i è il primo nodo di una route
-            else:
+            elif route_j[-2] == j and route_i[1] == i:
                 # prima route_j(tranne dep finale) e poi route_i(tranne dep iniziale)
                 new_route = route_j[:-1] + route_i[1:]
+            else:
+                return False
             # Aggiorno la lista delle route
             routes.remove(route_i)
             routes.remove(route_j)
@@ -92,9 +93,6 @@ def solve_clarke_and_wright_on_instance(instance):
         if save_value >= 0:
             if merge_routes_if_possible(routes, i, j):
                 cw_cost -= save_value
-                if VERBOSE:
-                    print(f"Merged {i} and {j} in the same route with save {save_value}")
-                    print(f"Updated Cost: {cw_cost}")
         # Se il save è negativo, non ha senso unire i percorsi
     # -----------------------------------------------------------------------------------
     # Passo 3: salva il risultato in un file .sol e stampa i risultati
@@ -118,5 +116,4 @@ def solve_clarke_and_wright_from_file(file_path):
 
 
 # -------------------------- Test -----------------------------
-solve_clarke_and_wright_from_file("resources/vrplib/Instances/A-n32-k5.vrp")
-# solve_clarke_and_wright("resources/vrplib/Instances/CopilotInstance.vrp")
+solve_clarke_and_wright_from_file("resources/vrplib/Instances/CMT13.vrp")
