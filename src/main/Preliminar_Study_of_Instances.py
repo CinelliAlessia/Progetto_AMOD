@@ -6,12 +6,12 @@ MID_SMALL_THRESHOLD = 100
 MID_THRESHOLD = 250
 MID_LARGE_THRESHOLD = 500
 LARGE_THRESHOLD = 1000
-OUTPUT_DIRECTORY = "../resources/vrplib/Name_of_instances_by_dimension"
+OUTPUT_DIRECTORY = "../Results/vrplib/Name_of_instances_by_dimension"
 
 
 # Scorre tutti i file nella directory delle istanze e cerca le istanze di tipo MDVRP (Multi Depot VRP)
 # Restituisce una lista con i nomi dei file delle istanze MDVRP e il numero di istanze trovate
-def found_mdvrp_instances(directory_path="../resources/vrplib/Instances"):
+def found_mdvrp_instances(directory_path="../Results/vrplib/Instances"):
     mdvrp_file = []
     file_count = 0
     mdvrp_count = 0
@@ -40,7 +40,7 @@ def found_mdvrp_instances(directory_path="../resources/vrplib/Instances"):
 # specificati dal campo 'edge_weight_format':
 # LOWER_ROW: matrice triangolare inferiore senza diagonale (Per definizione Simmetrica)
 # FULL_MATRIX: matrice completa (Non è detto che descriva un grafo Simmetrico)
-def found_avrp_instances(directory_path="../resources/vrplib/Instances"):
+def found_avrp_instances(directory_path="../Results/vrplib/Instances"):
     avrp_file = []
     file_count = 0
     avrp_count = 0
@@ -59,7 +59,7 @@ def found_avrp_instances(directory_path="../resources/vrplib/Instances"):
 
 
 # Algoritmo per contare il numero di istanze di tipo small, mid-small, mid, mid-large, large e x-large
-def found_instance_size(directory_path="../resources/vrplib/Instances"):
+def found_instance_size(directory_path="../Results/vrplib/Instances"):
     # Definizioni delle soglie come già presente
     small = 0
     mid_small = 0

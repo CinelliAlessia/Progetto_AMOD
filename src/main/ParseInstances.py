@@ -36,7 +36,7 @@ def get_optimal_cost_from_instance(instance):
         # Caso 3
         elif re.match(r"^\d+(\.\d+)?$", str_comment):
             return float(str_comment)
-    # Caso 4, leggo il file .sol (se esiste) nella directory resources/vrplib/Solutions
+    # Caso 4, leggo il file .sol (se esiste) nella directory Results/vrplib/Solutions
     if os.path.exists(f"../resources/vrplib/Solutions/{get_name(instance)}.sol"):
         with open(f"../resources/vrplib/Solutions/{get_name(instance)}.sol", "r") as f:
             # Cerco la linea che inizia con "Cost VALUE"
@@ -61,6 +61,15 @@ def get_nodes_dimension(instance):
 
 def get_edge_weight_type(instance):
     return instance.get('edge_weight_type')
+
+
+def get_edge_weight_type_from_path(path):
+    # apro il file e leggo la riga
+    with open(path, "r") as f:
+        for line in f:
+            if "EDGE_WEIGHT_TYPE" in line:
+                return line.split(":")[1].strip()
+    return None
 
 
 def get_edge_weight_format(instance):

@@ -13,13 +13,13 @@ SWEEP_SELECTOR = 1
 # Selezionando come primo parametro selector = 2, verrà eseguiti entrambi, con risultati nello stesso file  # todo da fare
 # ------------------------------------------------------------------------------------------------------------
 
-OUTPUT_DIRECTORY = "../resources/Heuristic_Solutions/"  # Directory di output per i risultati
+OUTPUT_DIRECTORY = "../Results/Heuristic_Solutions/"  # Directory di output per i risultati
 FILE_NAME = "Sweep_APX_and_Time.csv"  # Aggiungere come prefisso il numero del run
-INSTANCES_DIRECTORY = "../resources/vrplib/Instances/"  # Directory delle istanze
+INSTANCES_DIRECTORY = "../Results/vrplib/Instances/"  # Directory delle istanze
 
 
 # Esegui l'euristica di Clarke e Wright per le istanze elencate nel file_path (tramite nome), le istanze verranno
-# recuperate nella directory "resources/vrplib/Instances"
+# recuperate nella directory "Results/vrplib/Instances"
 def solve_sweep_for_instance_name_in_file(size, file_path):
     # Verifico che il file contenente i nomi delle istanze esista
     if not os.path.exists(file_path):

@@ -5,7 +5,7 @@ import Utils
 
 VERBOSE = False  # Se True, stampa valori delle istanze e i passaggi dell'euristica di Clarke e Wright
 SAVE_SOLUTION_ON_FILE = False  # Se True, salva i risultati in un file .sol
-RESULT_DIRECTORY = "../resources/Heuristic_Solution/Sweep_Solutions"  # Directory di output per i risultati
+RESULT_DIRECTORY = "../Results/Heuristic_Solution/Sweep_Solutions"  # Directory di output per i risultati
 
 # ------------ Definisco le variabili globali che descrivono l'istanza specifica ------------------------
 global node_coords, weights, demands, depot_index, depot_coord, vehicle_capacity, name  # Imposto variabili globali
@@ -155,4 +155,4 @@ def solve_sweep_from_file(file_path, run_two_opt=False, run_three_opt=False):
     return solve_sweep_on_instance(instance, run_two_opt, run_three_opt)
 
 
-#solve_sweep_from_file("../resources/vrplib/Instances/A-n32-k5.vrp", True, False)
+#solve_sweep_from_file("../Results/vrplib/Instances/A-n32-k5.vrp", True, False)
