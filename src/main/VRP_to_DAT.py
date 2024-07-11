@@ -49,7 +49,7 @@ def generate_ampl_data_from_vrp(vrp_data, output_file):
         file.write(";\n")
 
         # Distanze (costi di percorrenza)
-        file.write("param c :\n")
+        file.write("param c :=\n")
         file.write(" ")
         file.write(" ".join(str(i + 1) for i in range(num_nodes)) + " :=\n")
 
@@ -90,5 +90,5 @@ def Generate_Dat_from_vrp(input_file, output_dir):
     print(f"Generated {output_file}")
 
 
-Generate_Dat_from_vrp('../resources/vrplib/Instances/A-n32-k5.vrp', OUTPUT_DIRECTORY)
+Generate_Dat_from_vrp('../resources/vrplib/Instances/E-n22-k4.vrp', OUTPUT_DIRECTORY)
 #Generate_All_Dats_from_vrp(FILES_DIRECTORY, OUTPUT_DIRECTORY)

@@ -1,6 +1,3 @@
-# Modello dell'CVRP, con variabili decisionali a 3 indici
-# Senza bisogno di preprocessamento dei Gamma(minimo num veicoli per servire i clienti) per ogni Subtour
-
 model;
 
 # Sets
@@ -16,6 +13,7 @@ param c{V, V};         # Costo di percorrenza tra i vertici
 # Decision Variables
 var x{V, V, K} binary;  # x[i,j,h] = 1 se il veicolo h percorre l'arco (i,j)
 var y{V, K} binary;     # y[i,h] = 1 se il veicolo h serve il cliente i
+var u{V, K} >= 0;       # Variabile ausiliaria per eliminare i sottotour
 
 # Objective Function
 minimize Total_Cost:
@@ -42,10 +40,12 @@ sum {i in V} x[i,j,h] = y[j,h];
 subject to Capacity {h in K}:
 sum {i in V_CUST} d[i] * y[i,h] <= C;
 
-# 5. Vincoli di eliminazione dei sottotour corretto
-subject to Subtour_Elimination {h in K}:
-forall {S in 2..card(V_CUST)} {
-    forall {subset in {S in V_CUST : subset(S, 2)}: card(S) == S} {
-        sum {i in S, j in S: i != j} x[i,j,h] >= card(S) * y[S,h] - card(S) + 1;
-    }
-}
+# 5. Vincoli di eliminazione dei sottotour (MTZ)
+subject to Subtour_Elimination_1 {i in V_CUST, h in K}:
+u[i,h] >= 2;
+
+subject to Subtour_Elimination_2 {i in V_CUST, h in K}:
+u[i,h] <= card(V_CUST) + 1;
+
+subject to Subtour_Elimination_3 {i in V_CUST, j in V_CUST, h in K}:
+(i != j) ==> (u[i,h] - u[j,h] + card(V_CUST) * x[i,j,h] <= card(V_CUST) - 1);
