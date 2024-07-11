@@ -102,14 +102,6 @@ def get_explicit(instance):
     return False
 
 
-def get_edge_weight_type_from_path(path):
-    # apro il file e leggo la riga
-    with open(path, "r") as f:
-        for line in f:
-            if "EDGE_WEIGHT_TYPE" in line:
-                return line.split(":")[1].strip()
-
-
 def get_truck_capacity(instance):
     return instance.get('capacity')
 
