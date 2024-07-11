@@ -44,8 +44,8 @@ def generate_ampl_data_from_vrp(vrp_data, output_file):
 
         # Domanda dei clienti
         file.write("param d :\n")
-        for i, d in enumerate(vrp_data['demands']):
-            file.write(f" {i + 1} {d}\n")
+        for i, demand in enumerate(vrp_data['demands']):
+            file.write(f" {i + 1} {demand}\n")
         file.write(";\n")
 
         # Distanze (costi di percorrenza)
@@ -53,13 +53,17 @@ def generate_ampl_data_from_vrp(vrp_data, output_file):
         file.write(" ")
         file.write(" ".join(str(i + 1) for i in range(num_nodes)) + " :=\n")
 
+        # Scrittura della matrice di costi di percorrenza
         for i in range(num_nodes):
             file.write(f"{i + 1} ")
             for j in range(num_nodes):
-                file.write(f" {vrp_data['edge_weight'][i][j]}")
+                if i == j:
+                    file.write(" 999999")  # Imposto una distanza elevata per la città stessa
+                else:
+                    file.write(f" {vrp_data['edge_weight'][i][j]}")
             file.write("\n")
-        file.write(";\n")
 
+        file.write(";\n")
         file.write("end;\n")
 
 
