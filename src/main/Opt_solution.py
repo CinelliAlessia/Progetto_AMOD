@@ -1,11 +1,10 @@
+from ampltools import ampl_notebook
 from gurobipy import Model, GRB, quicksum
 from src.main import ParseInstances as ip
-from amplpy import ampl, add_to_path
-from amplpy import AMPL, Environment
+from amplpy import AMPL, Environment, ampl_notebook
 from src.main.ParseInstances import get_truck, get_nodes_dimension, get_node_demands, get_edge_weight, get_depots_index
 
 
-# Risolve il problema del Vehicle Routing Problem (VRP) utilizzando il modello matematico
 def solve_vrp(instance):
     # Parametri del problema
     n_customers = ip.get_nodes_dimension(instance)  # Numero di nodi nel sistema, incluso il deposito
@@ -50,19 +49,30 @@ def solve_vrp(instance):
     # 4. Domanda del deposito è zero
     m.addConstr(u[0] == 0)
 
+    # Imposta limite di tempo (ad esempio 300 secondi) e MIP gap (ad esempio 1%)
+    m.setParam(GRB.Param.TimeLimit, 300)
+    m.setParam(GRB.Param.MIPGap, 0.01)
+
     # Risoluzione del modello
     m.optimize()
 
     # Verifica lo stato del modello
-    if m.status == GRB.OPTIMAL:
+    if m.status == GRB.OPTIMAL or m.status == GRB.TIME_LIMIT:
+        if m.status == GRB.OPTIMAL:
+            print("Soluzione ottimale trovata.")
+        elif m.status == GRB.TIME_LIMIT:
+            print("Tempo limite raggiunto. Soluzione migliore trovata entro il tempo limite:")
         print("Costo totale del percorso: ", m.objVal)
-        solution = m.getAttr('x', x)
-        route = []
-        for i in range(n_customers):
-            for j in range(n_customers):
-                if solution[i, j] > 0.5:
-                    route.append((i, j))
-        print("Route ottimale: ", route)
+        try:
+            solution = m.getAttr('x', x)
+            route = []
+            for i in range(n_customers):
+                for j in range(n_customers):
+                    if solution[i, j] > 0.5:
+                        route.append((i, j))
+            print("Route ottimale: ", route)
+        except:
+            print("Non è stato possibile recuperare la soluzione.")
     else:
         print("Nessuna soluzione ottimale trovata.")
 
@@ -75,37 +85,50 @@ def solve_vrp_with_ampl(instance):
     demands = get_node_demands(instance)
     list_of_depots = get_depots_index(instance)
 
-
     # Aggiungi il percorso di installazione di AMPL
-    add_to_path(r"C:\Users\cinel\AMPL")
+    ampl_env = Environment(r"C:\Users\cinel\AMPL")
+    ampl = AMPL(ampl_env)
 
+    #ampl = ampl_notebook(
+    #    modules=["highs", "cbc", "gurobi", "cplex"], # pick from over 20 modules including most commercial and open-source solvers
+    #   license_uuid="d1c59fff-d628-4de0-803e-83d8d816bf13") # your course UUID
 
     # 2. Creare il modello AMPL
-    ampl = AMPL(Environment())
-
-    # Lettura del modello AMPL e definizione dei dati
-    with open('vrp_model.mod', 'r') as f:
+    with open('VRP_quaderno.mod', 'r') as f:
         ampl.eval(f.read())
 
     # Definizione dei dati letti dall'istanza VRP
-    ampl.set('N', num_of_nodes)
-    ampl.set('capacity', truck.capacity)
-    ampl.set('demand', range(1, num_of_nodes + 1), demands)
+    ampl.set['V'] = range(num_of_nodes)
+    print("V:", ampl.getData('V'))
 
-    # Definizione della matrice delle distanze
-    dist = {(i, j): edge_weight[i-1][j-1] for i in range(1, num_of_nodes + 1) for j in range(1, num_of_nodes + 1)}
-    ampl.set('dist', dist)
+    #ampl.set['V_CUST'] = range(1, num_of_nodes)
+    print("V_CUST:", ampl.getData('V_CUST'))
+    ampl.param['num_truck'] = truck.get_min_num()
 
-    # Definizione dei depositi
-    ampl.set('depots', list_of_depots)
+    print(truck.get_min_num())
+    ampl.set['K'] = {i: i for i in range(truck.get_min_num())}   # Numero minimo di veicoli necessari
+    print("K:", ampl.getData('K'))
 
-    # 3. Risoluzione del modello AMPL
+    ampl.param['C'] = truck.get_capacity()
+    print("C:", ampl.getData('C'))
+
+    ampl.param['d'] = {i: demands[i] for i in range(num_of_nodes)}
+    print("d:", ampl.getData('d'))
+
+    ampl.param['c'] = {(i, j): edge_weight[i][j] for i in range(num_of_nodes) for j in range(num_of_nodes)}
+    print("c:", ampl.getData('c'))
+
+    # 3. Specifica del solver (ad esempio, CPLEX)
+    ampl.setOption('solver', 'cplex')  # Sostituisci 'cplex' con il solver che desideri utilizzare
+
+    # 4. Risoluzione del modello AMPL
     ampl.solve()
 
-    # 4. Recupero dei risultati
-    total_cost = ampl.getObjective('TotalCost').value()
+    # 5. Recupero dei risultati
+    total_cost = ampl.getObjective('Total_Cost').value()
+    print("Costo totale del percorso: ", total_cost)
 
-    # 5. Chiusura dell'istanza AMPL
+    # 6. Chiusura dell'istanza AMPL
     ampl.close()
 
     return total_cost
