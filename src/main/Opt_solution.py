@@ -1,5 +1,4 @@
 import time
-
 from gurobipy import Model, GRB, quicksum
 from src.main import ParseInstances as ip
 from amplpy import AMPL, Environment, ampl_notebook
