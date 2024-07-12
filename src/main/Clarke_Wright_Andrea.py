@@ -1,7 +1,7 @@
 import ParseInstances as Parser
 import Utils
 
-VERBOSE = True  # Se True, stampa valori delle istanze e i passaggi dell'euristica di Clarke e Wright
+VERBOSE = False  # Se True, stampa valori delle istanze e i passaggi dell'euristica di Clarke e Wright
 SAVE_SOLUTION_ON_FILE = False  # Se True, salva i risultati in un file .sol
 RESULT_DIRECTORY = "Results/Heuristic_Solutions/CW_Solutions"  # Directory di output per i risultati
 # ------------ Definisco le variabili globali che descrivono l'istanza specifica ------------------------
@@ -116,4 +116,4 @@ def solve_clarke_and_wright_from_file(file_path):
 
 
 # -------------------------- Test -----------------------------
-solve_clarke_and_wright_from_file("../resources/vrplib/Instances/E-n22-k4.vrp")
+solve_clarke_and_wright_from_file("../resources/vrplib/Instances/P-n22-k8.vrp")

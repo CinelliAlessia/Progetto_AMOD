@@ -1,14 +1,20 @@
 import os
+import time
+
 from amplpy import AMPL, Environment
 import ParseInstances as Parser
+import Utils
 
+VERBOSE = True
 MODEL_PATH = 'VRP_Andrea.mod'
-data_dir = '../resources/vrplib/DATs'
-File_to_solve = os.path.join(data_dir, 'E-n22-k4.dat')
+DATS_DIR = '../resources/vrplib/DATs'
+
+File_to_solve = os.path.join(DATS_DIR, 'P-n22-k8.dat')
 
 # SOLO PER TESTARE SE IL VALORE DELLA SOLUZIONE OTTIMA CORRISPONDE AL COSTO DLLE ROUTES UTILIZZATE
-instance = Parser.make_instance_from_path_name('../resources/vrplib/Instances/E-n13-k4.vrp')
+instance = Parser.make_instance_from_path_name('../resources/vrplib/Instances/P-n22-k8.vrp')
 weights = Parser.get_edge_weight(instance)
+demands = Parser.get_node_demands(instance)
 
 
 def solve_ampl_model(model_file, data_file):
@@ -35,23 +41,21 @@ def solve_ampl_model(model_file, data_file):
 
     # Impostare il solver CPLEX con timeout di 180 secondi
     ampl.setOption('solver', 'cplex')
-    ampl.setOption('cplex_options', 'timelimit=300')
+    #ampl.setOption('cplex_options', 'timelimit=300')
 
     # Stampare le informazioni sui set
-    print(ampl.getData('V'))
+    if VERBOSE:
+        print(ampl.getData('V'))
+        print(ampl.getData('V_CUST'))
+        print(ampl.getData('K'))
+        print(ampl.getParameter('C'))
+        print(ampl.getParameter('d').getValues().toDict())
+        print(ampl.getParameter('c').getValues().toPandas())
 
-    print(ampl.getData('V_CUST'))
-
-    print(ampl.getData('K'))
-
-    # Stampare le informazioni sui parametri
-    print(ampl.getParameter('C'))
-
-    print(ampl.getParameter('d').getValues().toDict())
-
-    print(ampl.getParameter('c').getValues().toPandas())
-
+    start_time = time.perf_counter()
     ampl.solve()
+    end_time = time.perf_counter()
+    print(f"Tempo di esecuzione: {end_time - start_time} secondi")
 
     # Estrarre i risultati
     x = ampl.getVariable('x').getValues().toPandas()
@@ -63,13 +67,11 @@ def solve_ampl_model(model_file, data_file):
         'y': y,
         'Total_Cost': total_cost
     }
-
     return results
 
 
 def calculate_routes_from_matrix(x_val, y_val):
     routes = []
-    print(weights)
     # Trova il numero di veicoli
     num_vehicles = len(y_val.index.levels[1])
 
@@ -115,21 +117,15 @@ def solve_single_instance(model_file, data_file):
     """
     print(f"Solving for {data_file}")
     results = solve_ampl_model(model_file, data_file)
-    print("Routes:")
     routes = calculate_routes_from_matrix(results['x'], results['y'])
-    for r in routes:
-        print(r)
-    print(results['Total_Cost'])
+    if VERBOSE:
+        for r in routes:
+            print(r)
+        print(results['Total_Cost'])
 
-    total_cost, route_cost = 0, 0
-    for index, route in enumerate(routes):
-        route_str = " ".join(str(node) for node in route[1:-1])  # Escludi l'ID del deposito
-        total_demand = sum(weights[node] for node in route[1:-1])  # Escludi il deposito
-        route_cost += sum(weights[route[i]][route[i + 1]] for i in range(len(route) - 1))
-        print(f"Route #{index + 1}: {route_str} |total demand: {total_demand} |route cost: "
-              f"{route_cost}")
-        total_cost += route_cost
-    print(f"CALCULATED COST:  {total_cost}")
+    Utils.calculate_routes_cost(routes, weights, demands)
+
+    return routes, results['Total_Cost']
 
 
 def solve_multiple_instances(model_file, data_dir):
@@ -142,12 +138,11 @@ def solve_multiple_instances(model_file, data_dir):
     """
     for filename in os.listdir(data_dir):
         if filename.endswith('.dat'):
-            data_file = os.path.join(data_dir, filename)
-            print(f"Solving for {data_file}")
-            results = solve_ampl_model(model_file, data_file)
-            print("Results for", data_file)
-            print(results)
+            # Utilizza la funzione sopra
+            solve_single_instance(model_file, os.path.join(data_dir, filename))
 
 
+#Utils.calculate_routes_cost([[ 0,  2,  0 ],[ 0,  6,  0 ],[ 0,  8,  0 ],[ 0, 15, 12, 10,  0 ],[ 0, 14,  5,  0 ],[ 0, 13,  9,  7,  0 ],[ 0, 11,  4,  0 ],[ 0,  3,  1,  0 ]], weights, demands)
+#print(weights)
 solve_single_instance(MODEL_PATH, File_to_solve)
-# solve_multiple_instances(MODEL_PATH, data_dir)
+#solve_multiple_instances(MODEL_PATH, data_dir)
