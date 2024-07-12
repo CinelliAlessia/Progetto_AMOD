@@ -168,7 +168,7 @@ def work_on_path(path):
     return work_on_instance(instance)
 
 
-def work_on_instance(instance):
+def work_on_instance(instance, work_explicit):
     truck = get_truck(instance)  # Ottengo il numero dei veicoli
     list_of_depots = get_depots_index(instance)  # Ottengo gli indici dei depositi
     num_of_nodes = get_nodes_dimension(instance)  # Ottengo il numero dei nodi
@@ -180,6 +180,10 @@ def work_on_instance(instance):
     if coordinates is None:
         print("L'istanza ha formato 'EXPLICIT', non è possibile ricavare le coordinate dei nodi.")
 
+    # Se l'istanza è esplicita e non voglio lavorarci, restituisce none
+    if get_explicit(instance) and not work_explicit:
+        return None, None
+
     nodes = []
     for i in range(num_of_nodes):
         if i in list_of_depots:
@@ -187,8 +191,7 @@ def work_on_instance(instance):
         else:
             is_depots = False
 
-        if not get_explicit(instance):
-            nodes.append(Node(i, coordinates[i][0], coordinates[i][1], edge_weight[i], is_depots, demands[i]))
+        nodes.append(Node(i, coordinates[i][0], coordinates[i][1], edge_weight[i], is_depots, demands[i]))
 
     print(f"numero di nodi: {num_of_nodes}")
     print(f"numero di client: {num_of_clients}")
