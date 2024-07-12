@@ -2,42 +2,7 @@ from src.main import ParseInstances as ip
 from amplpy import AMPL, Environment
 from src.main.ParseInstances import get_truck, get_nodes_dimension, get_node_demands, get_edge_weight, get_depots_index
 import pandas as pd
-
-
-def generate_tours(matrix_x, matrix_y):
-    num_vehicles = len(matrix_x)
-    num_customers = len(matrix_x[0])  # Suppongo che tutte le righe abbiano la stessa lunghezza
-
-    # Lista per tenere traccia dei tour validi per ogni veicolo
-    tours = [[] for _ in range(num_vehicles)]
-
-    # Funzione di supporto per eseguire il backtracking
-    def backtrack(vehicle_idx):
-        # Se abbiamo completato il tour per tutti i veicoli, abbiamo trovato un tour completo
-        if vehicle_idx == num_vehicles:
-            return True
-
-        # Itera su ogni possibile cliente per il veicolo corrente
-        for customer_idx in range(num_customers):
-            # Verifica se il cliente può essere visitato secondo le matrici x e y
-            if matrix_x[vehicle_idx][customer_idx] == 1 and matrix_y[vehicle_idx][customer_idx] == 1:
-                # Aggiungi il cliente al tour del veicolo corrente
-                tours[vehicle_idx].append(customer_idx)
-
-                # Prosegui con il backtracking per il prossimo veicolo
-                if backtrack(vehicle_idx + 1):
-                    return True
-
-                # Se non è possibile completare il tour, rimuovi l'ultimo cliente aggiunto
-                tours[vehicle_idx].pop()
-
-        # Se non è stato trovato nessun tour valido per questo veicolo, ritorna False
-        return False
-
-    # Avvia il backtracking dal primo veicolo
-    backtrack(0)
-
-    return tours
+from AMPL_runner_from_dat import calculate_routes_from_matrix
 
 
 def solve_vrp_with_ampl_andrea(instance):
@@ -93,17 +58,11 @@ def solve_vrp_with_ampl_andrea(instance):
     # Chiudi AMPL
     ampl.close()
 
-    # Converti i DataFrame in dizionari
-    x_dict = x_values.to_dict()
-    print(x_dict)
-    y_dict = y_values.to_dict()
-    print(y_dict)
+    routes = calculate_routes_from_matrix(x_values, y_values)
+    for i, tour in enumerate(routes, 1):
+        print(f"Tour {i}: {routes}")
 
-    tours = generate_tours(x_dict, y_dict)
-    for i, tour in enumerate(tours, 1):
-        print(f"Tour {i}: {tour}")
-
-    return total_cost
+    return routes, total_cost
 
 
 instance_path = "../resources/vrplib/Instances/E-n13-k4.vrp"

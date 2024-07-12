@@ -19,3 +19,28 @@ Cose da fare:
     - P-n22-k8.vrp
     - P-n55-k15.vrp
 
+[484 rows x 1 columns]
+CPLEX 22.1.1.0: optimal integer solution within mipgap or absmipgap; objective 600.8255367
+3509604 MIP simplex iterations
+103641 branch-and-bound nodes
+absmipgap = 0.057922, relmipgap = 9.6404e-05
+Tempo di esecuzione: 329.8713859999989 secondi
+[0, 19, 0]
+[0, 6, 1, 2, 7, 0]
+[0, 9, 5, 0]
+[0, 13, 11, 0]
+[0, 4, 3, 8, 10, 0]
+[0, 18, 20, 14, 0]
+[0, 12, 17, 21, 0]
+[0, 16, 15, 0]
+600.8255367310458
+Route #1: 19 |total demand: 2500 |route cost: 61.05735008989499
+Route #2: 6 1 2 7 |total demand: 3000 |route cost: 108.73135310362181
+Route #3: 9 5 |total demand: 2600 |route cost: 75.37375287325031
+Route #4: 13 11 |total demand: 2500 |route cost: 56.4058409676653
+Route #5: 4 3 8 10 |total demand: 2900 |route cost: 89.23856693897436
+Route #6: 18 20 14 |total demand: 3000 |route cost: 72.87972416861197
+Route #7: 12 17 21 |total demand: 3000 |route cost: 83.95484129468383
+Route #8: 16 15 |total demand: 3000 |route cost: 53.184107294343086
+CALCULATED COST:  600.8255367310456
+

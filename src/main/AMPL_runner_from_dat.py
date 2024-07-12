@@ -9,12 +9,12 @@ VERBOSE = True
 MODEL_PATH = 'VRP_Andrea.mod'
 DATS_DIR = '../resources/vrplib/DATs'
 
-File_to_solve = os.path.join(DATS_DIR, 'P-n22-k8.dat')
+File_to_solve = os.path.join(DATS_DIR, 'E-n13-k4.dat')
 
 # SOLO PER TESTARE SE IL VALORE DELLA SOLUZIONE OTTIMA CORRISPONDE AL COSTO DLLE ROUTES UTILIZZATE
-instance = Parser.make_instance_from_path_name('../resources/vrplib/Instances/P-n22-k8.vrp')
-weights = Parser.get_edge_weight(instance)
-demands = Parser.get_node_demands(instance)
+#instance = Parser.make_instance_from_path_name('../resources/vrplib/Instances/P-n22-k8.vrp')
+#weights = Parser.get_edge_weight(instance)
+#demands = Parser.get_node_demands(instance)
 
 
 def solve_ampl_model(model_file, data_file):
@@ -123,8 +123,6 @@ def solve_single_instance(model_file, data_file):
             print(r)
         print(results['Total_Cost'])
 
-    Utils.calculate_routes_cost(routes, weights, demands)
-
     return routes, results['Total_Cost']
 
 
@@ -144,5 +142,5 @@ def solve_multiple_instances(model_file, data_dir):
 
 #Utils.calculate_routes_cost([[ 0,  2,  0 ],[ 0,  6,  0 ],[ 0,  8,  0 ],[ 0, 15, 12, 10,  0 ],[ 0, 14,  5,  0 ],[ 0, 13,  9,  7,  0 ],[ 0, 11,  4,  0 ],[ 0,  3,  1,  0 ]], weights, demands)
 #print(weights)
-solve_single_instance(MODEL_PATH, File_to_solve)
+#solve_single_instance(MODEL_PATH, File_to_solve)
 #solve_multiple_instances(MODEL_PATH, data_dir)
