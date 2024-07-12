@@ -1,8 +1,8 @@
 import os
 import vrplib
 
-pathInstance = "../Results/vrplib/Instances"
-pathSolutions = "../Results/vrplib/Solutions"
+pathInstance = "../resources/vrplib/Instances"
+pathSolutions = "../resources/vrplib/Solutions"
 
 
 def createFolder():

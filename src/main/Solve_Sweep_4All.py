@@ -14,7 +14,7 @@ SWEEP_SELECTOR = 1
 # ------------------------------------------------------------------------------------------------------------
 
 OUTPUT_DIRECTORY = "../Results/Heuristic_Solutions/"  # Directory di output per i risultati
-FILE_NAME = "Sweep_APX_and_Time.csv"  # Aggiungere come prefisso il numero del run
+BASE_FILE_NAME = "Sweep_APX_and_Time.csv"  # Aggiungere come prefisso il numero del run
 INSTANCES_DIRECTORY = "../Results/vrplib/Instances/"  # Directory delle istanze
 
 
@@ -34,7 +34,7 @@ def solve_sweep_for_instance_name_in_file(size, file_path):
         os.makedirs(OUTPUT_DIRECTORY)
 
     # Apri il file di output per salvare i risultati
-    f = open(f"{OUTPUT_DIRECTORY}{FILE_NAME}", "w")
+    f = open(f"{OUTPUT_DIRECTORY}{BASE_FILE_NAME}", "w")
 
     # Scrivi nel file l'intestazione
     f.write("Size,Instance_Name,Optimal_Cost,Sw_cost,opt2,opt3,APX,Execution_time\n")
