@@ -1,3 +1,4 @@
+import os
 import time
 import Clarke_Wright_Alessia as cwAle
 import Clarke_Wright_Andrea as Cw
@@ -25,7 +26,8 @@ CW_ALE = False
 CW_ANDRE = False
 SWEEP_ALE = False
 SWEEP_ANDRE = False
-RANDOM = True
+RANDOM = False
+RANDOM_ITERATION_NUMBER = 750
 
 if CW_ALE or CW_ANDRE:
     work_on_explicit = True
