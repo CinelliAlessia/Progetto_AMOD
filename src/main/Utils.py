@@ -41,6 +41,19 @@ def calculate_cost(roots, nodes):
     return sum(total_cost)
 
 
+def calculate_cost_whit_matrix(roots, matrix):
+    total_cost = []
+
+    for r in roots:
+        cost = 0
+        for i in range(len(r)-1):
+            cost += matrix[r[i]][r[i + 1]]
+
+        total_cost.append(cost)
+
+    return sum(total_cost)
+
+
 # Calcola la matrice delle distanze tra tutti i nodi, sarà sempre simmetrica poiché abbiamo istanze CVRP
 def get_distance(nodes):
     # Determine the maximum ID value among all nodes
@@ -57,3 +70,12 @@ def get_distance(nodes):
             costo[v.get_id()][u.get_id()] = costo[u.get_id()][v.get_id()]
 
     return costo
+
+
+def get_license():
+    path = "../config.properties"
+    with open(path, "r") as file:
+        for line in file:
+            if "license" in line:
+                licence = line.split("=")[1].strip()
+                return licence

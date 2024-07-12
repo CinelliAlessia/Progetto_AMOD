@@ -1,49 +1,50 @@
-# Sets
-set V;  # Set of nodes
-set V_CUST := V diff {0};  # Set of customer nodes, excluding the depot
-set K;  # Set of vehicles
+# Insiemi
+set V;  # Insieme dei nodi
+set V_CUST := V diff {0};  # Insieme dei nodi dei clienti, escludendo il deposito
+set K;  # Insieme dei veicoli
 
-# Parameters
-param C >= 0;  # Capacity of each vehicle
-param d{i in V_CUST} >= 0;  # Demand of each customer node
-param c{i in V, j in V} >= 0;  # Distance (or cost) between nodes i and j
+# Parametri
+param C >= 0;  # Capacità di ciascun veicolo
+param d{V} >= 0;  # Domanda di ciascun nodo cliente
+param c{V, V} >= 0;  # Distanza (o costo) tra i nodi i e j
 
-# Decision Variables
-var x{i in V, j in V, k in K} binary;  # 1 if vehicle k travels from i to j, 0 otherwise
-var y{i in V_CUST, k in K} binary;  # 1 if customer i is served by vehicle k, 0 otherwise
-var u{i in V_CUST, k in K} >= 0;  # Auxiliary variables for subtour elimination
+# Variabili decisionali
+var x{V, V, K} binary;  # 1 se il veicolo k viaggia da i a j, 0 altrimenti
+var y{V, K} binary;  # 1 se il cliente i è servito dal veicolo k, 0 altrimenti
+var u{V_CUST, K} >= 0;  # Variabili ausiliarie per eliminazione dei sottogiri
 
-# Objective Function
-minimize TotalCost:
+# Funzione obiettivo
+minimize Total_Cost:
 sum{k in K, i in V, j in V} c[i, j] * x[i, j, k];
 
-# Constraints
+# Vincoli
 
-# Each customer must be visited exactly once
+# Ogni cliente deve essere visitato esattamente una volta
 subject to VisitOnce {i in V_CUST}:
 sum{k in K} y[i, k] = 1;
 
-# Each vehicle must leave from and return to the depot (node 0)
+# Ogni veicolo deve partire dal deposito (nodo 0) e tornare al deposito
 subject to DepotService {k in K}:
-sum{i in V_CUST} y[i, k] = 1;
+sum{i in V_CUST} x[0, i, k] = 1;
 
-# Flow conservation constraints
-subject to FlowConservation1 {i in V_CUST, k in K}:
+subject to ReturnToDepot {k in K}:
+sum{i in V_CUST} x[i, 0, k] = 1;
+
+# Vincoli di conservazione del flusso
+subject to FlowConservation1 {i in V, k in K}:
 sum{j in V} x[i, j, k] = y[i, k];
 
-subject to FlowConservation2 {j in V_CUST, k in K}:
+subject to FlowConservation2 {j in V, k in K}:
 sum{i in V} x[i, j, k] = y[j, k];
 
-# Capacity constraint for each vehicle
+# Vincolo di capacità per ciascun veicolo
 subject to CapacityConstraint {k in K}:
 sum{i in V_CUST} d[i] * y[i, k] <= C;
 
-# Subtour elimination constraints
+# Vincoli di eliminazione dei sottogiri
 subject to SubtourElimination {i in V_CUST, j in V_CUST, k in K: i != j}:
-u[i, k] - u[j, k] + card(V_CUST) * x[i, j, k] <= card(V_CUST) - 1;
+u[i,k] - u[j,k] + C * x[i,j,k] <= C - d[j];
 
-subject to SubtourStart {i in V_CUST, k in K}:
-u[i, k] >= d[i] * y[i, k];
-
-subject to SubtourBound {i in V_CUST, k in K}:
-u[i, k] <= C * y[i, k];
+# Vincoli per definire i valori iniziali delle variabili u
+subject to UBound {i in V_CUST, k in K}:
+d[i] <= u[i,k] <= C;

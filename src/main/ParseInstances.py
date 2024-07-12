@@ -190,8 +190,10 @@ def work_on_instance(instance, work_explicit):
             is_depots = True
         else:
             is_depots = False
-
-        nodes.append(Node(i, coordinates[i][0], coordinates[i][1], edge_weight[i], is_depots, demands[i]))
+        if not get_explicit(instance):
+            nodes.append(Node(i, coordinates[i][0], coordinates[i][1], edge_weight[i], is_depots, demands[i]))
+        else:
+            nodes.append(Node(i, None, None, edge_weight[i], is_depots, demands[i]))
 
     print(f"numero di nodi: {num_of_nodes}")
     print(f"numero di client: {num_of_clients}")

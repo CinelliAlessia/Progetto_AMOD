@@ -15,21 +15,32 @@ def print_roots(roots):
         print(r)
 
 
-CW_ALE = False
+def plot_if_not_explicit(nodes, roots):
+    if nodes[0].get_x() is not None:
+        plotter.plot_roots_graph(nodes, roots)
+    else:
+        print("L'istanza ha formato 'EXPLICIT', non è possibile visualizzare i nodi su un grafico.")
+
+
+CW_ALE = True
 CW_ANDRE = False
 SWEEP_ALE = False
 SWEEP_ANDRE = False
 RANDOM = False
 
-path_instance = "../resources/vrplib/Instances/E-n13-k4.vrp"
+if CW_ALE or CW_ANDRE:
+    work_on_explicit = True
+else:
+    work_on_explicit = False
+
+
+path_instance = "../resources/vrplib/Instances/P-n16-k8.vrp"
 instance = Parse.make_instance_from_path_name(path_instance)
-nodes, truck = Parse.work_on_instance(instance, False)
+nodes, truck = Parse.work_on_instance(instance, work_on_explicit)
 
 if nodes is None:
     # Non continuare l'esecuzione
     exit(1)
-
-print("FINE PARSING")
 
 # ALESSIA CW
 if CW_ALE:
@@ -43,7 +54,7 @@ if CW_ALE:
     execution_time = end_time - start_time
     print(f"Tempo di esecuzione cwAle: {execution_time} secondi")
 
-    plotter.plot_roots_graph(nodes, roots)
+    plot_if_not_explicit(nodes, roots)
     cost = Utils.calculate_cost(roots, nodes)
     print_roots(roots)
     print(f"Costi CW ALESSIA {cost}")
@@ -60,7 +71,8 @@ if CW_ANDRE:
     execution_time = end_time - start_time
     print(f"Tempo di esecuzione cwAndre: {execution_time} secondi")
 
-    plotter.plot_roots_graph(nodes, roots)
+    plot_if_not_explicit(nodes, roots)
+
     cost = Utils.calculate_cost(roots, nodes)
     print_roots(roots)
     print(f"Costi CW ANDREA {cost}")
@@ -78,12 +90,14 @@ if SWEEP_ALE:
     execution_time = end_time - start_time
     print(f"Tempo di esecuzione sweep Ale: {execution_time} secondi")
 
-    plotter.plot_roots_graph(nodes, roots_2)
+    plot_if_not_explicit(nodes, roots_2)
+
     cost_2 = Utils.calculate_cost(roots_2, nodes)
     print_roots(roots_2)
     print(f"Costi SWEEP ALESSIA opt2: {cost_2}")
 
-    plotter.plot_roots_graph(nodes, roots_3)
+    plot_if_not_explicit(nodes, roots_3)
+
     cost_3 = Utils.calculate_cost(roots_3, nodes)
     print_roots(roots_3)
     print(f"Costi SWEEP ALESSIA opt3: {cost_3}")
@@ -100,7 +114,8 @@ if SWEEP_ANDRE:
     execution_time = end_time - start_time
     print(f"Tempo di esecuzione sweep Andrea: {execution_time} secondi")
 
-    plotter.plot_roots_graph(nodes, roots)
+    plot_if_not_explicit(nodes, roots)
+
     cost = Utils.calculate_cost(roots, nodes)
     print_roots(roots)
     print(f"Costi SWEEP ANDREA {cost}")
@@ -124,7 +139,8 @@ if RANDOM:
     execution_time = end_time - start_time
     print(f"Tempo di esecuzione random 1: {execution_time} secondi")
 
-    plotter.plot_roots_graph(nodes, best_root)
+    plot_if_not_explicit(nodes, best_root)
+
     print_roots(best_root)
     print(f"Costi random_1 {best_cost}")
 
@@ -144,6 +160,6 @@ if RANDOM:
     execution_time = end_time - start_time
     print(f"Tempo di esecuzione random 2: {execution_time} secondi")
 
-    plotter.plot_roots_graph(nodes, best_root)
+    plot_if_not_explicit(nodes, best_root)
     print_roots(best_root)
     print(f"Costi random_2 {best_cost}")
