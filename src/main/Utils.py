@@ -93,3 +93,7 @@ def get_license():
             if "license" in line:
                 licence = line.split("=")[1].strip()
                 return licence
+
+
+def total_demand(nodes):
+    return sum([node.get_demand() for node in nodes])

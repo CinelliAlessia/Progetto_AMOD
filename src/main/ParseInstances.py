@@ -152,6 +152,7 @@ def get_truck(instance):
         else:
             min_truck = 0
             max_truck = float('inf')
+
     capacity = instance.get('capacity')
     truck = Truck(min_truck, max_truck, capacity)
 
