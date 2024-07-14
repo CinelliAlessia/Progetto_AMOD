@@ -18,6 +18,7 @@ def plot_roots_graph(nodes, roots):
     # Aggiunta degli archi con colori specifici per ogni root
     colori = ['blue', 'green', 'magenta', 'black', 'orange', 'purple', 'brown', 'pink', 'gray', 'olive', 'maroon',
               'cyan', 'teal', 'navy', 'lime', 'gold', 'indigo', 'coral', 'khaki', 'yellow']
+
     for index, r in enumerate(roots):
         colore_arco = colori[index % len(colori)]  # Seleziona un colore dalla lista, usa modulo per evitare errori di indice
         for i in range(len(r)-1):
@@ -43,7 +44,9 @@ def plot_roots_graph(nodes, roots):
     # Mostra il grafo
     plt.show()
 
-# Esempio di utilizzo (devi fornire implementazioni per Node e Root)
-# nodes = ...
-# roots = ...
-# plot_roots_graph(nodes, roots)
+
+def plot_if_not_explicit(roots, nodes):
+    if nodes[0].get_x() is not None:
+        plot_roots_graph(nodes, roots)
+    else:
+        print("L'istanza ha formato 'EXPLICIT', non è possibile visualizzare i nodi su un grafico.")

@@ -7,14 +7,15 @@ import os
 from src.main import Utils
 # ------------------------------------------------------------------------------------------------------------
 CW_SELECTOR = 0
-# Selezionando come primo parametro selector = 1, verrà eseguito l'algoritmo di Clarke e Wright di Alessia
 # Selezionando come primo parametro selector = 0, verrà eseguito l'algoritmo di Clarke e Wright di Andrea
+# Selezionando come primo parametro selector = 1, verrà eseguito l'algoritmo di Clarke e Wright di Alessia
 # Selezionando come primo parametro selector = 2, verrà eseguiti entrambi, con risultati nello stesso file  # todo da fare
 # ------------------------------------------------------------------------------------------------------------
 
 OUTPUT_DIRECTORY = "Results/Heuristic_Solutions/"  # Directory di output per i risultati
 BASE_FILE_NAME = "CW_APX_and_Time.csv"  # Aggiungere come prefisso il numero del run
 INSTANCES_DIRECTORY = "../resources/vrplib/Instances/"  # Directory delle istanze
+
 # Directory dei file contenenti i nomi delle istanze
 SIZE_BY_BAME_DIR = "../resources/vrplib/Name_of_instances_by_dimension/"
 

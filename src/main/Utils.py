@@ -2,6 +2,15 @@ import os
 
 
 def save_results_to_file(routes, cw_cost, directory, instance_name):
+    """
+    Salva i risultati dell'euristica in un file di testo .sol
+    :param routes: routes calcolate
+    :param cw_cost: costo totale
+    :param directory:
+    :param instance_name: nome del file
+    :return:
+    """
+
     # Estrai il nome dell'istanza dal percorso
     output_path = os.path.join(directory, f"{instance_name}.sol")
 
@@ -22,14 +31,9 @@ def save_results_to_file(routes, cw_cost, directory, instance_name):
     print(f"Results saved to {output_path}")
 
 
-""" Calcola il costo totale di una lista di percorsi, sommando le distanze tra i nodi 
-    roots: lista di percorsi, ognuno rappresentato come una lista di nodi
-    dist: matrice delle distanze tra i nodi """
-
-
 def calculate_cost(roots, nodes):
-    dist = get_distance(nodes)
     total_cost = []
+    dist = get_distance(nodes)
 
     for r in roots:
         cost = 0
@@ -95,5 +99,5 @@ def get_license():
                 return licence
 
 
-def total_demand(nodes):
+def total_demands(nodes):
     return sum([node.get_demand() for node in nodes])

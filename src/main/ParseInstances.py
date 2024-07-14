@@ -1,6 +1,5 @@
 import os
 import re
-
 import vrplib
 from src.main.Model.Node import Node
 from src.main.Model.Truck import Truck
@@ -161,12 +160,6 @@ def get_truck(instance):
 
 def get_name(instance):
     return instance.get('name')
-
-
-def work_on_path(path):
-    # Creo l'oggetto istanza
-    instance = make_instance_from_path_name(path)
-    return work_on_instance(instance)
 
 
 def work_on_instance(instance, work_explicit):

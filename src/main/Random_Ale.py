@@ -16,6 +16,7 @@ def vrp_random(nodes, capacity, demands, id_depots):
 
     truck_max = int(demands/capacity) + 1
     rem_capacities = [0 for _ in range(truck_max)]
+    costs = [0 for _ in range(truck_max)]
 
     shuffle(nodes)  # Randomizza la lista dei clienti
     routes = []
@@ -23,19 +24,20 @@ def vrp_random(nodes, capacity, demands, id_depots):
     for client in nodes:
         for i, route in enumerate(routes):
             if rem_capacities[i] + client.get_demand() <= capacity:
+                costs[i] += client.get_distance(route[-1])  # Aggiunge il costo del cliente al costo totale
+                rem_capacities[i] += client.get_demand()
                 route.append(client)
                 break
         else:
             routes.append([client])     # Crea una nuova rotta se non può essere aggiunto a nessun cluster
 
     processed_roots = []
-    for route in routes:
+    for i, route in enumerate(routes):
         if route:  # Controlla se la rotta non è vuota e aggiunge il deposito all'inizio e alla fine
             processed_root = [id_depots] + [c.get_id() for c in route] + [id_depots]
             processed_roots.append(processed_root)
 
-    # TODO calcola e restituisci il costo
-    return processed_roots
+    return processed_roots, sum(costs)
 
 
 def vrp_random_alternative(nodes, capacity, demands, id_depots):

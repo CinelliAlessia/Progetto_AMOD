@@ -12,7 +12,7 @@ def createFolder():
         os.makedirs(pathSolutions)
 
 
-def downloadInstances():
+def download_instances():
     createFolder()
 
     # Elencare tutte le istanze disponibili
@@ -33,4 +33,4 @@ def downloadInstances():
     print("Download completato")
 
 
-#downloadInstances()
+# download_instances()
