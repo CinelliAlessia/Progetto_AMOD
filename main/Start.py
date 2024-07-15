@@ -17,7 +17,7 @@ def print_roots(roots):
 
 CW_ALE = False
 CW_ANDRE = False
-SWEEP_ALE = False
+SWEEP_ALE = True
 SWEEP_ANDRE = False
 RANDOM = False
 RANDOM_ITERATION_NUMBER = 750
@@ -28,7 +28,7 @@ else:
     work_on_explicit = False
 
 
-path_instance = "../resources/vrplib/Instances/Golden_5.vrp"
+path_instance = "../resources/vrplib/Instances/X-n459-k26.vrp"
 instance = Parse.make_instance_from_path_name(path_instance)
 nodes, truck = Parse.work_on_instance(instance, work_on_explicit)
 
@@ -91,7 +91,7 @@ def start():
         print_roots(routes)
         print(f"Costo: {Utils.calculate_cost(routes, nodes)}")
 
-        print(f"Costi SWEEP ALESSIA opt2: {costs}")
+        print(f"Costi SWEEP ALESSIA: {costs}")
 
     # SWEEP ANDREA
     if SWEEP_ANDRE:

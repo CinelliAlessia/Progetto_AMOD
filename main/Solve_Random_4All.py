@@ -11,23 +11,22 @@ INSTANCES_DIRECTORY = "../resources/vrplib/Instances/"  # Directory delle istanz
 NAME_BY_SIZE_DIR = "../resources/vrplib/Name_of_instances_by_dimension/"
 
 OUTPUT_DIRECTORY = "Results/Random_Solutions/"  # Directory di output per i risultati
-RANDOM_BASE_FILE_NAME = "RANDOM_APX_and_Time.csv"  # Aggiungere come prefisso il numero del run
+RANDOM_BASE_FILE_NAME = "RANDOM_APX_and_Time"  # Aggiungere come prefisso il numero del run
 
 RANDOM_ITERATION_NUMBER = 750
 
 # Se impostati a True, eseguirà l'euristica di Clarke e Wright per le istanze di quel tipo
-SMALL = False
-MID_SMALL = False
-MID = False
+SMALL = True
+MID_SMALL = True
+MID = True
 MID_LARGE = False
 LARGE = False
-X_LARGE = True
+X_LARGE = False
 
 
 # Esegui l'euristica di Clarke e Wright per le istanze elencate nel file_path (tramite nome), le istanze verranno
 # recuperate nella directory "Results/vrplib/Instances"
 def solve_random_for_instance_name_in_file(size, file_path):
-    global RANDOM_BASE_FILE_NAME
     # Verifico che il file contenente i nomi delle istanze esista
     if not os.path.exists(file_path):
         print("Il file non esiste")
@@ -36,11 +35,13 @@ def solve_random_for_instance_name_in_file(size, file_path):
     n = open(file_path, "r")
     # Apri un nuovo file di output per salvare i risultati
     # Prima devo vedere l'ultimo file creato e incrementare il numero
+    filename = size + "_" + RANDOM_BASE_FILE_NAME
+
     i = 0
-    while os.path.exists(f"{OUTPUT_DIRECTORY}{RANDOM_BASE_FILE_NAME}"):
+    while os.path.exists(f"{OUTPUT_DIRECTORY}{filename + ".csv"}"):
         i += 1
-        RANDOM_BASE_FILE_NAME = f"{size}_RANDOM_APX_and_Time({i}).csv"
-    f = open(f"{OUTPUT_DIRECTORY}{RANDOM_BASE_FILE_NAME}", "w")
+        filename = f"{filename}({i})"
+    f = open(f"{OUTPUT_DIRECTORY}{filename + ".csv"}", "w")
 
     # Scrivi nel file l'intestazione
     f.write("Size,Instance_Name,#Node,#Truck,Capacity,Optimal_Cost,BEST_Random,APX,Execution_time,#Iteration\n")

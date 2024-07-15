@@ -14,7 +14,7 @@ CW_SELECTOR = 0
 INSTANCES_DIRECTORY = "../resources/vrplib/Instances/"  # Directory delle istanze
 
 OUTPUT_DIRECTORY = "Results/Heuristic_Solutions/Clarke_&_Wright_run/"  # Directory di output per i risultati
-CW_BASE_FILE_NAME = "CW_APX_and_Time.csv"  # Aggiungere come prefisso il numero del run
+CW_BASE_FILE_NAME = "CW_APX_and_Time"  # Aggiungere come prefisso il numero del run
 
 # Directory dei file contenenti i nomi delle istanze
 NAME_BY_SIZE_DIR = "../resources/vrplib/Name_of_instances_by_dimension/"
@@ -31,20 +31,24 @@ X_LARGE = False
 # Esegui l'euristica di Clarke e Wright per le istanze elencate nel file_path (tramite nome), le istanze verranno
 # recuperate nella directory "Results/vrplib/Instances"
 def solve_cw_for_instance_name_in_file(size, file_path):
-    global CW_BASE_FILE_NAME
     # Verifico che il file contenente i nomi delle istanze esista
     if not os.path.exists(file_path):
         print("Il file non esiste")
         return
+
     # Apro il file in lettura
     n = open(file_path, "r")
+
     # Apri un nuovo file di output per salvare i risultati
     # Prima devo vedere l'ultimo file creato e incrementare il numero
+    filename = size + "_" + CW_BASE_FILE_NAME
+
     i = 0
-    while os.path.exists(f"{OUTPUT_DIRECTORY}{CW_BASE_FILE_NAME}"):
+    while os.path.exists(f"{OUTPUT_DIRECTORY}{filename + ".csv"}"):
         i += 1
-        CW_BASE_FILE_NAME = f"{size}_CW_APX_and_Time({i}).csv"
-    f = open(f"{OUTPUT_DIRECTORY}{CW_BASE_FILE_NAME}", "w")
+        filename = f"{filename}({i})"
+    f = open(f"{OUTPUT_DIRECTORY}{filename + ".csv"}", "w")
+
     # Scrivi nel file l'intestazione
     f.write("Size,Instance_Name,#Node,#Truck,Capacity,Optimal_Cost,CW_cost,APX,Execution_time\n")
     # -----------------------------------------------------------------------------------------
@@ -58,7 +62,7 @@ def solve_cw_for_instance_name_in_file(size, file_path):
         file_name = line.strip()
         if file_name.endswith(".vrp"):
             print(f"Solving {file_name}...")
-            instance = Parser.make_instance_from_path_name(f"../resources/vrplib/Instances/{file_name}")
+            instance = Parser.make_instance_from_path_name(f"{INSTANCES_DIRECTORY}{file_name}")
             print("Fine parsing")
             if CW_SELECTOR == 0:  # CW Andrea
                 # Registra il tempo di inizio
@@ -94,7 +98,7 @@ def solve_cw_for_instance_name_in_file(size, file_path):
                 n_truck = None
             capacity = Parser.get_truck(instance).get_capacity()
             # Stampa il valore ottimo affiancato al risultato dell'euristica
-            print("Costo ottimo: ", opt, "| CW_cost:", cw_cost, "|APX: ", apx, "|Tempo di esecuzione: ",
+            print("Costo ottimo: ", opt, "| CW_cost:", cw_cost, "| APX: ", apx, "| Tempo di esecuzione: ",
                   execution_time)
             # Salva tali valori, con lo stesso formato su una nuova riga del file APX_and_Time.txt
             f.write(f"{size},{file_name},{n_nodes},{n_truck},{capacity},{opt},{cw_cost},{apx},{execution_time}\n")

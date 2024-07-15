@@ -9,20 +9,23 @@ SWEEP_SELECTOR = 1
 # Selezionando come primo parametro selector = 1, verrà eseguito l'algoritmo di Sweep di Alessia
 # ------------------------------------------------------------------------------------------------------------
 
-# Esegui l'euristica per tutte le size delle istanze
-path_dim = "./resources/vrplib/Name_of_instances_by_dimension/"
-
-SMALL = True
-MID_SMALL = True
-MID = True
-MID_LARGE = True
-LARGE = False
+SMALL = False
+MID_SMALL = False
+MID = False
+MID_LARGE = False
+LARGE = True
 X_LARGE = False
 
-
+# Esegui l'euristica per tutte le size delle istanze GITHUB ACTION
+path_dim = "./resources/vrplib/Name_of_instances_by_dimension/"
 OUTPUT_DIRECTORY = "./main/Results/Heuristic_Solutions/Sweep/"  # Directory di output per i risultati
 BASE_FILE_NAME = "Sweep_APX_and_Time.csv"  # Aggiungere come prefisso il numero del run
 INSTANCES_DIRECTORY = "./resources/vrplib/Instances/"  # Directory delle istanze
+
+#path_dim = "../resources/vrplib/Name_of_instances_by_dimension/"
+#OUTPUT_DIRECTORY = "Results/Heuristic_Solutions/Sweep/"  # Directory di output per i risultati
+#BASE_FILE_NAME = "Sweep_APX_and_Time"  # Aggiungere come prefisso il numero del run
+#INSTANCES_DIRECTORY = "../resources/vrplib/Instances/"  # Directory delle istanze
 
 
 # Esegui l'euristica di Sweep per le istanze elencate nel file_path (tramite nome), le istanze verranno
@@ -38,7 +41,6 @@ def solve_sweep_for_instance_name_in_file(size, file_path):
     # Verifico che il file contenente i nomi delle istanze esista
     if not os.path.exists(file_path):
         print(f"Il file {file_path} non esiste")
-        print("MO???")
         # todo CHIAMA il programma che genera i file con i nomi delle istanze
         return
 
@@ -51,8 +53,11 @@ def solve_sweep_for_instance_name_in_file(size, file_path):
 
     filename = size + "_" + BASE_FILE_NAME
 
-    # Apri il file di output per salvare i risultati
-    f = open(f"{OUTPUT_DIRECTORY}{filename}", "w")
+    i = 0
+    while os.path.exists(f"{OUTPUT_DIRECTORY}{filename + ".csv"}"):
+        i += 1
+        filename = f"{filename}({i})"
+    f = open(f"{OUTPUT_DIRECTORY}{filename + ".csv"}", "w")
 
     # Scrivi nel file l'intestazione
     f.write("Size,Instance_Name,#Node,#Truck,Capacity,Optimal_Cost,Cost_NoOpt,Apx_NoOpt,Execution_time_NoOpt,Cost_2Opt,Apx_2Opt,Execution_time_2Opt,Cost_3Opt,Apx_3Opt,Execution_time_3Opt\n")
