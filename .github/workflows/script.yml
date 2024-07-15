@@ -32,4 +32,4 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: csv-output
-          path: main/Results/Heuristic_Solutions/x_large_CW_APX_and_Time.csv
+          path: main/Results/Heuristic_Solutions/*.csv
