@@ -15,11 +15,6 @@ jobs:
         with:
           python-version: '3.12'
 
-      # Aggiungi questo passaggio per verificare la struttura del repository clonato
-      - name: List repository contents
-        run: |
-          ls -R
-
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
@@ -30,15 +25,8 @@ jobs:
           mkdir -p main/Results/Heuristic_Solutions
           chmod -R 777 main/Results/Heuristic_Solutions
 
-      - name: List files before script execution
-        run: ls -l main/Results/Heuristic_Solutions
-
       - name: Run script
         run: python main/Solve_Sweep_4All.py
-
-      - name: List files after script execution
-        run: ls -l main/Results/Heuristic_Solutions
-
 
       - name: Upload CSV as artifact if exists
         uses: actions/upload-artifact@v4

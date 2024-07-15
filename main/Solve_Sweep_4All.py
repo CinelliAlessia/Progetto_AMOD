@@ -16,8 +16,8 @@ SMALL = True
 MID_SMALL = True
 MID = True
 MID_LARGE = True
-LARGE = True
-X_LARGE = True
+LARGE = False
+X_LARGE = False
 
 
 OUTPUT_DIRECTORY = "./main/Results/Heuristic_Solutions/Sweep/"  # Directory di output per i risultati
