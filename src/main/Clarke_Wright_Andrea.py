@@ -107,7 +107,7 @@ def solve_clarke_and_wright_on_instance(instance):
             print(f"Route #{index + 1}: {route_str} |total demand: {total_demand} |route cost: "
                   f"{sum(weights[route[i]][route[i + 1]] for i in range(len(route) - 1))}")
         print(f"Cost {cw_cost}")
-    return cw_cost, routes
+    return cw_cost, routes # todo invertire
 
 
 def solve_clarke_and_wright_from_file(file_path):
@@ -116,4 +116,4 @@ def solve_clarke_and_wright_from_file(file_path):
 
 
 # -------------------------- Test -----------------------------
-solve_clarke_and_wright_from_file("../resources/vrplib/Instances/P-n22-k8.vrp")
+#solve_clarke_and_wright_from_file("../resources/vrplib/Instances/P-n22-k8.vrp")
