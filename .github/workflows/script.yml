@@ -15,6 +15,11 @@ jobs:
         with:
           python-version: '3.12'
 
+      # Aggiungi questo passaggio per verificare la struttura del repository clonato
+      - name: List repository contents
+        run: |
+          ls -R
+
       - name: Install dependencies
         run: |
           python -m pip install --upgrade pip
