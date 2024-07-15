@@ -1,5 +1,5 @@
 from gurobipy import Model, GRB, quicksum
-from src.main import ParseInstances as ip
+import ParseInstances as ip
 
 VERBOSE = False
 

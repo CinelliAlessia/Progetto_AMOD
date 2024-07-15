@@ -4,9 +4,9 @@ import Clarke_Wright_Andrea as Cw
 import ParseInstances as Parse
 import Plotter
 import Sweep_Ale as sweepAle
-from src.main import Utils
-from src.main.Random_Ale import vrp_random
-from src.main.Sweep_Andrea import solve_sweep_on_instance
+import Utils
+from Random_Ale import vrp_random
+from Sweep_Andrea import solve_sweep_on_instance
 
 
 def print_roots(roots):

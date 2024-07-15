@@ -16,4 +16,4 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r .github/workflows/requirements.txt
       - name: Run script
-        run: python src/main/Solve_CW_4All.py
+        run: python main/Solve_CW_4All.py

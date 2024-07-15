@@ -98,7 +98,7 @@ def solve_clarke_and_wright_on_instance(instance):
     # Passo 3: salva il risultato in un file .sol e stampa i risultati
     if SAVE_SOLUTION_ON_FILE:
         name = Parser.get_name(instance)
-        Utils.save_results_to_file(routes, cw_cost, RESULT_DIRECTORY, "CW_"+name)
+        Utils.save_results_to_file(routes, cw_cost, RESULT_DIRECTORY, "CW_" + name)
     # Stampa i risultati a schermo
     if VERBOSE:
         for index, route in enumerate(routes):

@@ -1,7 +1,6 @@
-from src.main import ParseInstances as ip
+import ParseInstances as ip
 from amplpy import AMPL, Environment
-from src.main.ParseInstances import get_truck, get_nodes_dimension, get_node_demands, get_edge_weight, get_depots_index
-import pandas as pd
+from ParseInstances import get_truck, get_nodes_dimension, get_node_demands, get_edge_weight, get_depots_index
 from AMPL_runner_from_dat import calculate_routes_from_matrix
 
 

@@ -1,5 +1,5 @@
 import itertools
-from src.main.Utils import calculate_cost
+from Utils import calculate_cost
 
 PRINT = False
 distance_matrix = []
