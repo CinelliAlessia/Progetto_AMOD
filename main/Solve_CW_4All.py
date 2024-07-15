@@ -34,7 +34,7 @@ def solve_cw_for_instance_name_in_file(size, file_path):
     global CW_BASE_FILE_NAME
     # Verifico che il file contenente i nomi delle istanze esista
     if not os.path.exists(file_path):
-        print("Il file non esiste")
+        print(f"Il file {file_path} non esiste")
         return
     # Apro il file in lettura
     n = open(file_path, "r")

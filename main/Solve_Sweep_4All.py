@@ -38,6 +38,7 @@ def solve_sweep_for_instance_name_in_file(size, file_path):
     # Verifico che il file contenente i nomi delle istanze esista
     if not os.path.exists(file_path):
         print(f"Il file {file_path} non esiste")
+        print("MO???")
         # todo CHIAMA il programma che genera i file con i nomi delle istanze
         return
 
