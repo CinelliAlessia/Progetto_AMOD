@@ -25,8 +25,15 @@ jobs:
           mkdir -p main/Results/Heuristic_Solutions
           chmod -R 777 main/Results/Heuristic_Solutions
 
+      - name: List files before script execution
+        run: ls -l main/Results/Heuristic_Solutions
+
       - name: Run script
         run: python main/Solve_CW_4All.py
+
+      - name: List files after script execution
+        run: ls -l main/Results/Heuristic_Solutions
+
 
       - name: Upload CSV as artifact if exists
         uses: actions/upload-artifact@v4

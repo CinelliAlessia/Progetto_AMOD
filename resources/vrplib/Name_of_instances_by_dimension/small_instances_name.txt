@@ -44,4 +44,3 @@ P-n45-k5.vrp
 P-n50-k10.vrp
 P-n50-k7.vrp
 P-n50-k8.vrp
-VRPExemple.vrp
