@@ -1,8 +1,8 @@
 import os
 import re
 import vrplib
-from src.main.Model.Node import Node
-from src.main.Model.Truck import Truck
+from Model.Node import Node
+from Model.Truck import Truck
 
 VERBOSE = False
 

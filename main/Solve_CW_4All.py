@@ -4,7 +4,7 @@ import Clarke_Wright_Andrea as CwAndre
 import Clarke_Wright_Alessia as CwAle
 import ParseInstances as Parser
 import os
-from src.main import Utils
+import Utils
 
 # ------------------------------------------------------------------------------------------------------------
 CW_SELECTOR = 0

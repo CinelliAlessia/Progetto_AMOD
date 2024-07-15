@@ -1,4 +1,4 @@
-from src.main.Utils import get_distance
+from Utils import get_distance
 
 
 def check_merge(r_i, r_j, capacity, nodes):

@@ -98,4 +98,4 @@ Miglioramento Necessario: Spesso richiede ulteriori passaggi di ottimizzazione p
     Simile al VNS, ma focalizzato su grandi cambiamenti nella soluzione corrente per esplorare nuovi spazi di soluzione.
 
 8. 3-opt:
-   ![roots_3opt.jpg](src/photos/roots_3opt.jpg)
+   ![roots_3opt.jpg](photos/roots_3opt.jpg)
