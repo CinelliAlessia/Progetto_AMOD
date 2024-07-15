@@ -24,7 +24,7 @@ def vrp_random(nodes, capacity, demands, id_depots):
     for client in nodes:
         for i, route in enumerate(routes):
             if rem_capacities[i] + client.get_demand() <= capacity:
-                costs[i] += client.get_distance(route[-1])  # Aggiunge il costo del cliente al costo totale
+                costs[i] += client.get_distance(route[-1].get_id())  # Aggiunge il costo del cliente al costo totale
                 rem_capacities[i] += client.get_demand()
                 route.append(client)
                 break

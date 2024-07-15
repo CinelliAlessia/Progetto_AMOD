@@ -19,7 +19,7 @@ CW_ALE = False
 CW_ANDRE = False
 SWEEP_ALE = False
 SWEEP_ANDRE = False
-RANDOM = False
+RANDOM = True
 RANDOM_ITERATION_NUMBER = 750
 
 if CW_ALE or CW_ANDRE or RANDOM:
@@ -28,7 +28,7 @@ else:
     work_on_explicit = False
 
 
-path_instance = "../resources/vrplib/Instances/Antwerp1.vrp"
+path_instance = "../resources/vrplib/Instances/Golden_5.vrp"
 instance = Parse.make_instance_from_path_name(path_instance)
 nodes, truck = Parse.work_on_instance(instance, work_on_explicit)
 
@@ -79,7 +79,7 @@ def start():
         # Registra il tempo di inizio
         start_time = time.perf_counter()
         # Chiamata alla funzione che vuoi misurare
-        routes, costs = sweepAle.sweep_algorithm(nodes, truck_capacity)
+        routes, costs = sweepAle.sweep_algorithm(nodes, truck_capacity, True, True)
 
         # Registra il tempo di fine
         end_time = time.perf_counter()
@@ -121,10 +121,9 @@ def start():
         # Registra il tempo di inizio
         start_time = time.perf_counter()
         for i in range(RANDOM_ITERATION_NUMBER):
-            routes = vrp_random(nodes, truck.get_capacity(), total_demand, id_depots)
-            cost = Utils.calculate_cost(routes, nodes)
-            if cost < best_cost:
-                best_cost = cost
+            routes, costs = vrp_random(nodes, truck.get_capacity(), total_demand, id_depots)
+            if costs < best_cost:
+                best_cost = costs
                 best_root = routes  # Registra il tempo di fine
         end_time = time.perf_counter()
 
