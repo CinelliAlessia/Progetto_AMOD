@@ -46,7 +46,7 @@ def solve_cw_for_instance_name_in_file(size, file_path):
         CW_BASE_FILE_NAME = f"{size}_CW_APX_and_Time({i}).csv"
     f = open(f"{OUTPUT_DIRECTORY}{CW_BASE_FILE_NAME}", "w")
     # Scrivi nel file l'intestazione
-    f.write("Size,Instance_Name,Optimal_Cost,CW_cost,APX,Execution_time\n")
+    f.write("Size,Instance_Name,#Node,#Truck,Capacity,Optimal_Cost,CW_cost,APX,Execution_time\n")
     # -----------------------------------------------------------------------------------------
     # Per ogni riga (riga = file_name) in n (file_path),
     # esegui l'euristica di Clarke e Wright sull'istanza corrispondente
@@ -87,12 +87,17 @@ def solve_cw_for_instance_name_in_file(size, file_path):
                 apx = cw_cost / opt
             else:
                 apx = None
-            # Stampa informazioni sull'istanza: nome, numero di nodi, numero di veicoli
+            # Recupera informazioni sull'istanza: numero di nodi, numero di veicoli, capacità dei veicoli
+            n_nodes = Parser.get_nodes_dimension(instance)
+            n_truck = Parser.get_truck(instance).get_min_num()
+            if n_truck == 0:
+                n_truck = None
+            capacity = Parser.get_truck(instance).get_capacity()
             # Stampa il valore ottimo affiancato al risultato dell'euristica
             print("Costo ottimo: ", opt, "| CW_cost:", cw_cost, "|APX: ", apx, "|Tempo di esecuzione: ",
                   execution_time)
             # Salva tali valori, con lo stesso formato su una nuova riga del file APX_and_Time.txt
-            f.write(f"{size},{file_name},{opt},{cw_cost},{apx},{execution_time}\n")
+            f.write(f"{size},{file_name},{n_nodes},{n_truck},{capacity},{opt},{cw_cost},{apx},{execution_time}\n")
 
 
 if SMALL:
