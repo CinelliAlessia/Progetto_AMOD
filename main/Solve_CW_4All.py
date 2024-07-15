@@ -17,7 +17,7 @@ OUTPUT_DIRECTORY = "Results/Heuristic_Solutions/"  # Directory di output per i r
 CW_BASE_FILE_NAME = "CW_APX_and_Time.csv"  # Aggiungere come prefisso il numero del run
 
 # Directory dei file contenenti i nomi delle istanze
-NAME_BY_SIZE_DIR = "../resources/vrplib/Name_of_instances_by_dimension/"
+NAME_BY_SIZE_DIR = "./resources/vrplib/Name_of_instances_by_dimension/"
 
 # Se impostati a True, eseguirà l'euristica di Clarke e Wright per le istanze di quel tipo
 SMALL = False
