@@ -98,6 +98,7 @@ def solve_cw_for_instance_name_in_file(size, file_path):
                   execution_time)
             # Salva tali valori, con lo stesso formato su una nuova riga del file APX_and_Time.txt
             f.write(f"{size},{file_name},{n_nodes},{n_truck},{capacity},{opt},{cw_cost},{apx},{execution_time}\n")
+    f.close()
 
 
 if SMALL:

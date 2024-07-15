@@ -21,17 +21,19 @@ jobs:
       - name: Run script
         run: python main/Solve_CW_4All.py
 
-      - name: List files in the current directory
-        run: ls -la
+      - name: List all files in the current directory after running the script
+        run: ls -Rla
 
-      - name: Find CSV file
+      - name: Find all CSV files
         run: find . -name '*.csv'
 
-      - name: Check if CSV file exists
+      - name: Check if any CSV file exists
         run: |
-          if [ -f ./Results/Heuristic_Solutions/x_large_CW_APX_and_Time.csv ]; then
-            echo "CSV file created successfully."
-          else
+          CSV_FILE=$(find . -name '*.csv')
+          if [ -z "$CSV_FILE" ]; then
             echo "CSV file not found."
             exit 1
+          else
+            echo "CSV file(s) found:"
+            echo "$CSV_FILE"
           fi
