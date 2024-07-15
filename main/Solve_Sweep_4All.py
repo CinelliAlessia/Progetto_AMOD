@@ -10,7 +10,7 @@ SWEEP_SELECTOR = 1
 # ------------------------------------------------------------------------------------------------------------
 
 # Esegui l'euristica per tutte le size delle istanze
-path_dim = "../resources/vrplib/Name_of_instances_by_dimension/"
+path_dim = "./resources/vrplib/Name_of_instances_by_dimension/"
 
 SMALL = False
 MID_SMALL = False
@@ -20,9 +20,9 @@ LARGE = False
 X_LARGE = True
 
 
-OUTPUT_DIRECTORY = "Results/Heuristic_Solutions/Sweep/"  # Directory di output per i risultati
+OUTPUT_DIRECTORY = "./main/Results/Heuristic_Solutions/Sweep/"  # Directory di output per i risultati
 BASE_FILE_NAME = "Sweep_APX_and_Time.csv"  # Aggiungere come prefisso il numero del run
-INSTANCES_DIRECTORY = "../resources/vrplib/Instances/"  # Directory delle istanze
+INSTANCES_DIRECTORY = "./resources/vrplib/Instances/"  # Directory delle istanze
 
 
 # Esegui l'euristica di Sweep per le istanze elencate nel file_path (tramite nome), le istanze verranno

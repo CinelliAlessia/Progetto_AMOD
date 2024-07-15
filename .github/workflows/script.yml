@@ -34,7 +34,7 @@ jobs:
         run: ls -l main/Results/Heuristic_Solutions
 
       - name: Run script
-        run: python main/Solve_CW_4All.py
+        run: python main/Solve_Sweep_4All.py
 
       - name: List files after script execution
         run: ls -l main/Results/Heuristic_Solutions
