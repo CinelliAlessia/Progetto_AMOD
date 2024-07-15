@@ -1,11 +1,7 @@
 import itertools
 from src.main.Utils import calculate_cost
-import Plotter as Plotter
 
-TWO_OPT = True
-THREE_OPT = True
 PRINT = False
-
 distance_matrix = []
 
 
@@ -40,7 +36,7 @@ def initialize(nodes):
     return nodes, id_depots
 
 
-def sweep_algorithm(nodes, vehicle_capacity):
+def sweep_algorithm(nodes, vehicle_capacity, opt_2, opt_3):
     nodes, id_depots = initialize(nodes)  # Ottengo i nodi ordinati per angolo minore
 
     clusters = []
@@ -84,13 +80,10 @@ def sweep_algorithm(nodes, vehicle_capacity):
     if PRINT:
         print_result("Clusters non ottimizzati", clusters, nodes)
 
-    clusters_2 = None
-    clusters_3 = None
-
-    # if TWO_OPT or THREE_OPT:
-    #    clusters_2, clusters_3 = optimize_clusters(clusters, costs)
-
-    return opt3_on_opt2(clusters, costs)
+    if not opt_2 and not opt_3:
+        return clusters, sum(costs)
+    else:
+        return optimize_clusters(clusters, costs, opt_2, opt_3)
 
 
 def print_result(string, clusters, nodes):
@@ -103,33 +96,30 @@ def print_result(string, clusters, nodes):
     # Plotter.plot_if_not_explicit(clusters, nodes)
 
 
-def optimize_clusters(clusters, costs):
+def optimize_clusters(clusters, costs, opt_2, opt_3):
     # Return immediately if no optimization is enabled
-    if not (TWO_OPT or THREE_OPT):
-        return clusters
+    if not (opt_2 or opt_3):
+        return clusters, costs
 
-    optimized_clusters_2 = []
-    optimized_clusters_3 = []
+    if opt_2 and not opt_3:
+        optimized_clusters_2 = []
+        costs_2opt = []
 
-    # Determine which optimization function to use
-    if TWO_OPT:
-        optimization_function = two_opt
         for cluster in clusters:
-            optimized_cluster_2, _ = optimization_function(cluster)
-            optimized_clusters_2.append(optimized_cluster_2)
+            cluster_2opt, cost = two_opt(cluster)
 
-    if THREE_OPT:
-        for cluster in clusters:
-            optimized_cluster_3, _ = three_opt(cluster)
-            optimized_clusters_3.append(optimized_cluster_3)
+            costs_2opt.append(cost)
+            optimized_clusters_2.append(cluster_2opt)
 
-    return optimized_clusters_2, optimized_clusters_3
+        return optimized_clusters_2, sum(costs_2opt)
+
+    if opt_3:
+        return opt3_on_opt2(clusters)
 
 
-def opt3_on_opt2(clusters, costs):
+def opt3_on_opt2(clusters):
     """
     Applica l'algoritmo 2-opt e successivamente 3-opt su ogni cluster ottimizzato con 2-opt.
-    :param costs: TODO
     :param clusters: Clusters calcolati con Sweep
     :return: Le routes ottimizzate con 2-opt e 3-opt.
     """

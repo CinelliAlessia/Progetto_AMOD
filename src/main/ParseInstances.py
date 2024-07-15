@@ -4,6 +4,7 @@ import vrplib
 from src.main.Model.Node import Node
 from src.main.Model.Truck import Truck
 
+VERBOSE = False
 
 # Crea l'oggetto dell'istanza
 def make_instance_from_path_name(path):
@@ -44,7 +45,7 @@ def get_optimal_cost_from_instance(instance):
                     optimal_value = line.split(" ")[1].strip()
                     return float(optimal_value)
 
-    print(f"Optimal Cost not found for: {get_name(instance)}")
+    if VERBOSE: print(f"Optimal Cost not found for: {get_name(instance)}")
     return None
 
 
@@ -139,7 +140,7 @@ def get_truck(instance):
                 min_truck = int(trucks_info.split(",")[0])
                 max_truck = float('inf')
             except ValueError:
-                print(f"Error converting '{trucks_info.split(",")[0]}' to int")
+                if VERBOSE: print(f"Error converting '{trucks_info.split(",")[0]}' to int")
 
         elif "No of trucks:" in comment:
             trucks_info = comment.split("No of trucks:")[1].strip()
@@ -147,7 +148,7 @@ def get_truck(instance):
                 min_truck = int(trucks_info.split(",")[0])
                 max_truck = min_truck
             except ValueError:
-                print(f"Error converting '{trucks_info.split(",")[0]}' to int")
+                if VERBOSE: print(f"Error converting '{trucks_info.split(",")[0]}' to int")
         else:
             min_truck = 0
             max_truck = float('inf')
@@ -172,7 +173,7 @@ def work_on_instance(instance, work_explicit):
 
     coordinates = get_node_coords(instance)  # Ottengo le coordinate dei nodi
     if coordinates is None:
-        print("L'istanza ha formato 'EXPLICIT', non è possibile ricavare le coordinate dei nodi.")
+        if VERBOSE: print("L'istanza ha formato 'EXPLICIT', non è possibile ricavare le coordinate dei nodi.")
 
     # Se l'istanza è esplicita e non voglio lavorarci, restituisce none
     if get_explicit(instance) and not work_explicit:
@@ -189,11 +190,12 @@ def work_on_instance(instance, work_explicit):
         else:
             nodes.append(Node(i, None, None, edge_weight[i], is_depots, demands[i]))
 
-    print(f"numero di nodi: {num_of_nodes}")
-    print(f"numero di client: {num_of_clients}")
-    print(f"depositi: {list_of_depots}")
-    print(f"coordinates: {coordinates}")
-    print(f"demands: {demands}")
-    print(f"veicoli: {truck}")
+    if VERBOSE:
+        print(f"numero di nodi: {num_of_nodes}")
+        print(f"numero di client: {num_of_clients}")
+        print(f"depositi: {list_of_depots}")
+        print(f"coordinates: {coordinates}")
+        print(f"demands: {demands}")
+        print(f"veicoli: {truck}")
 
     return nodes, truck
