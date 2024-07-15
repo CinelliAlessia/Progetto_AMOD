@@ -13,11 +13,11 @@ CW_SELECTOR = 0
 # ------------------------------------------------------------------------------------------------------------
 INSTANCES_DIRECTORY = "../resources/vrplib/Instances/"  # Directory delle istanze
 
-OUTPUT_DIRECTORY = "Results/Heuristic_Solutions/"  # Directory di output per i risultati
+OUTPUT_DIRECTORY = "Results/Heuristic_Solutions/Clarke_&_Wright_run/"  # Directory di output per i risultati
 CW_BASE_FILE_NAME = "CW_APX_and_Time.csv"  # Aggiungere come prefisso il numero del run
 
 # Directory dei file contenenti i nomi delle istanze
-NAME_BY_SIZE_DIR = "./resources/vrplib/Name_of_instances_by_dimension/"
+NAME_BY_SIZE_DIR = "../resources/vrplib/Name_of_instances_by_dimension/"
 
 # Se impostati a True, eseguirà l'euristica di Clarke e Wright per le istanze di quel tipo
 SMALL = True
@@ -34,7 +34,7 @@ def solve_cw_for_instance_name_in_file(size, file_path):
     global CW_BASE_FILE_NAME
     # Verifico che il file contenente i nomi delle istanze esista
     if not os.path.exists(file_path):
-        print(f"Il file {file_path} non esiste")
+        print("Il file non esiste")
         return
     # Apro il file in lettura
     n = open(file_path, "r")

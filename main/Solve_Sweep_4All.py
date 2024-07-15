@@ -12,12 +12,12 @@ SWEEP_SELECTOR = 1
 # Esegui l'euristica per tutte le size delle istanze
 path_dim = "./resources/vrplib/Name_of_instances_by_dimension/"
 
-SMALL = False
+SMALL = True
 MID_SMALL = False
 MID = False
 MID_LARGE = False
 LARGE = False
-X_LARGE = True
+X_LARGE = False
 
 
 OUTPUT_DIRECTORY = "./main/Results/Heuristic_Solutions/Sweep/"  # Directory di output per i risultati
