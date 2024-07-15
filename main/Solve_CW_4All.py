@@ -11,21 +11,27 @@ CW_SELECTOR = 0
 # Selezionando come primo parametro selector = 0, verrà eseguito l'algoritmo di Clarke e Wright di Andrea
 # Selezionando come primo parametro selector = 1, verrà eseguito l'algoritmo di Clarke e Wright di Alessia
 # ------------------------------------------------------------------------------------------------------------
-INSTANCES_DIRECTORY = "../resources/vrplib/Instances/"  # Directory delle istanze
-
-OUTPUT_DIRECTORY = "Results/Heuristic_Solutions/Clarke_&_Wright_run/"  # Directory di output per i risultati
-CW_BASE_FILE_NAME = "CW_APX_and_Time"  # Aggiungere come prefisso il numero del run
 
 # Directory dei file contenenti i nomi delle istanze
-NAME_BY_SIZE_DIR = "../resources/vrplib/Name_of_instances_by_dimension/"
+NAME_BY_SIZE_DIR = "./resources/vrplib/Name_of_instances_by_dimension/"
+OUTPUT_DIRECTORY = "./main/Results/Heuristic_Solutions/Clarke_&_Wright_run/"  # Directory di output per i risultati
+CW_BASE_FILE_NAME = "CW_APX_and_Time"  # Aggiungere come prefisso il numero del run
+INSTANCES_DIRECTORY = "./resources/vrplib/Instances/"  # Directory delle istanze
+
+# Directory dei file contenenti i nomi delle istanze
+#NAME_BY_SIZE_DIR = "../resources/vrplib/Name_of_instances_by_dimension/"
+#OUTPUT_DIRECTORY = "Results/Heuristic_Solutions/Clarke_&_Wright_run/"  # Directory di output per i risultati
+#CW_BASE_FILE_NAME = "CW_APX_and_Time"  # Aggiungere come prefisso il numero del run
+#INSTANCES_DIRECTORY = "../resources/vrplib/Instances/"  # Directory delle istanze
+
 
 # Se impostati a True, eseguirà l'euristica di Clarke e Wright per le istanze di quel tipo
-SMALL = True
+SMALL = False
 MID_SMALL = False
 MID = False
 MID_LARGE = False
 LARGE = False
-X_LARGE = False
+X_LARGE = True
 
 
 # Esegui l'euristica di Clarke e Wright per le istanze elencate nel file_path (tramite nome), le istanze verranno

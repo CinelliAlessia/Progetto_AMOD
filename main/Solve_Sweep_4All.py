@@ -13,7 +13,7 @@ SMALL = False
 MID_SMALL = False
 MID = False
 MID_LARGE = False
-LARGE = True
+LARGE = False
 X_LARGE = False
 
 # Esegui l'euristica per tutte le size delle istanze GITHUB ACTION
