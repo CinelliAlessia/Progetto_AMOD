@@ -19,7 +19,7 @@ X_LARGE = False
 # Esegui l'euristica per tutte le size delle istanze GITHUB ACTION
 path_dim = "./resources/vrplib/Name_of_instances_by_dimension/"
 OUTPUT_DIRECTORY = "./main/Results/Heuristic_Solutions/Sweep/"  # Directory di output per i risultati
-BASE_FILE_NAME = "Sweep_APX_and_Time.csv"  # Aggiungere come prefisso il numero del run
+BASE_FILE_NAME = "Sweep_APX_and_Time"  # Aggiungere come prefisso il numero del run
 INSTANCES_DIRECTORY = "./resources/vrplib/Instances/"  # Directory delle istanze
 
 #path_dim = "../resources/vrplib/Name_of_instances_by_dimension/"
