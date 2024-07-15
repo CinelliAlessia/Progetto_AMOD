@@ -24,9 +24,12 @@ jobs:
       - name: List files in the current directory
         run: ls -la
 
+      - name: Find CSV file
+        run: find . -name '*.csv'
+
       - name: Check if CSV file exists
         run: |
-          if [ -f ./path/to/your_output.csv ]; then
+          if [ -f ./Results/Heuristic_Solutions/x_large_CW_APX_and_Time.csv ]; then
             echo "CSV file created successfully."
           else
             echo "CSV file not found."
