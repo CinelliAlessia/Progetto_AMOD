@@ -12,11 +12,11 @@ SWEEP_SELECTOR = 1
 # Esegui l'euristica per tutte le size delle istanze
 path_dim = "./resources/vrplib/Name_of_instances_by_dimension/"
 
-SMALL = False
-MID_SMALL = False
-MID = False
-MID_LARGE = False
-LARGE = False
+SMALL = True
+MID_SMALL = True
+MID = True
+MID_LARGE = True
+LARGE = True
 X_LARGE = True
 
 
