@@ -1,6 +1,5 @@
 import time
 import Sweep_Ale as sweepAle
-import Sweep_Andrea as sweepAndrea
 import ParseInstances as Parser
 import os
 
@@ -10,21 +9,18 @@ SWEEP_SELECTOR = 1
 # Selezionando come primo parametro selector = 1, verrà eseguito l'algoritmo di Sweep di Alessia
 # ------------------------------------------------------------------------------------------------------------
 
-OPT_2 = True
-OPT_3 = False
-
 # Esegui l'euristica per tutte le size delle istanze
 path_dim = "../resources/vrplib/Name_of_instances_by_dimension/"
 
-SMALL = True
+SMALL = False
 MID_SMALL = False
 MID = False
 MID_LARGE = False
 LARGE = False
-X_LARGE = False
+X_LARGE = True
 
 
-OUTPUT_DIRECTORY = "Results/Heuristic_Solutions/"  # Directory di output per i risultati
+OUTPUT_DIRECTORY = "Results/Heuristic_Solutions/Sweep/"  # Directory di output per i risultati
 BASE_FILE_NAME = "Sweep_APX_and_Time.csv"  # Aggiungere come prefisso il numero del run
 INSTANCES_DIRECTORY = "../resources/vrplib/Instances/"  # Directory delle istanze
 
@@ -48,19 +44,17 @@ def solve_sweep_for_instance_name_in_file(size, file_path):
     # Apro il file in lettura per leggere i nomi delle istanze separate per dimensione
     n = open(file_path, "r")
 
-    output_directory = OUTPUT_DIRECTORY + calculate_directory() + "/"
-
     # Verifico che la directory di output esista, altrimenti la creo
-    if not os.path.exists(f"{output_directory}"):
-        os.makedirs(output_directory)
+    if not os.path.exists(f"{OUTPUT_DIRECTORY}"):
+        os.makedirs(OUTPUT_DIRECTORY)
 
-    name_file = calculate_FileName(size)
+    filename = size + "_" + BASE_FILE_NAME
 
     # Apri il file di output per salvare i risultati
-    f = open(f"{output_directory}{name_file}", "w")
+    f = open(f"{OUTPUT_DIRECTORY}{filename}", "w")
 
     # Scrivi nel file l'intestazione
-    f.write("Size,Instance_Name,#Node,#Truck,Capacity,Optimal_Cost,Cost,Apx,Execution_time_NoOpt\n")
+    f.write("Size,Instance_Name,#Node,#Truck,Capacity,Optimal_Cost,Cost_NoOpt,Apx_NoOpt,Execution_time_NoOpt,Cost_2Opt,Apx_2Opt,Execution_time_2Opt,Cost_3Opt,Apx_3Opt,Execution_time_3Opt\n")
 
     # -----------------------------------------------------------------------------------------
     # Per ogni riga (riga = file_name) in n (file_path),
@@ -80,31 +74,58 @@ def write_in_csv(line, f, size):
         instance = Parser.make_instance_from_path_name(INSTANCES_DIRECTORY+file_name)
         print("Fine parsing")
 
-        # Registra il tempo di inizio
-        start_time = time.perf_counter()
-
-        if SWEEP_SELECTOR == 0:  # CW Andrea
-            # Chiamata alla funzione che vuoi misurare
-            costs, routes = sweepAndrea.solve_sweep_on_instance(instance)
-
-        elif SWEEP_SELECTOR == 1:  # SWEEP Alessia
-
-            nodes, truck = Parser.work_on_instance(instance, False)
-            routes, costs = sweepAle.sweep_algorithm(nodes, truck.get_capacity(), OPT_2, OPT_3)
-
-        print("Costo Sweep: ", costs)
-
-        # Registra il tempo di fine
-        end_time = time.perf_counter()
-        # Calcola la durata dell'esecuzione
-        execution_time = end_time - start_time
-
+        nodes, truck = Parser.work_on_instance(instance, False)
         opt = Parser.get_optimal_cost_from_path(INSTANCES_DIRECTORY + file_name)
 
+        # ----- Calcolo Sweep NoOpt -----
+
+        # Registra il tempo di inizio
+        start_time_NoOpt = time.perf_counter()
+
+        routes_NoOpt, costs_NoOpt = sweepAle.sweep_algorithm(nodes, truck.get_capacity(), False, False)
+
+        # Registra il tempo di fine
+        end_time_NoOpt = time.perf_counter()
+
+        # Calcola la durata dell'esecuzione
+        execution_time_NoOpt = end_time_NoOpt - start_time_NoOpt
+
+        # ----- Calcolo Sweep 2Opt -----
+
+        # Registra il tempo di inizio
+        start_time_2Opt = time.perf_counter()
+
+        routes_2Opt, costs_2Opt = sweepAle.sweep_algorithm(nodes, truck.get_capacity(), True, False)
+
+        # Registra il tempo di fine
+        end_time_2Opt = time.perf_counter()
+
+        # Calcola la durata dell'esecuzione
+        execution_time_2Opt = end_time_2Opt - start_time_2Opt
+
+        # ----- Calcolo Sweep 3Opt -----
+
+        # Registra il tempo di inizio
+        start_time_3Opt = time.perf_counter()
+
+        routes_3Opt, costs_3Opt = sweepAle.sweep_algorithm(nodes, truck.get_capacity(), False, True)
+
+        # Registra il tempo di fine
+        end_time_3Opt = time.perf_counter()
+
+        # Calcola la durata dell'esecuzione
+        execution_time_3Opt = end_time_3Opt - start_time_3Opt
+
         if opt is not None:
-            apx = costs / opt
+            apx_NoOpt = costs_NoOpt / opt
+            apx_2Opt = costs_2Opt / opt
+            apx_3Opt = costs_3Opt / opt
         else:
-            apx = None
+            apx_NoOpt = None
+            apx_2Opt = None
+            apx_3Opt = None
+
+        # Stampa informazioni sull'istanza: nome, numero di nodi, numero di veicoli
 
         n_nodes = Parser.get_nodes_dimension(instance)
         n_truck = Parser.get_truck(instance).get_min_num()
@@ -112,61 +133,8 @@ def write_in_csv(line, f, size):
             n_truck = None
         capacity = Parser.get_truck(instance).get_capacity()
 
-        # Stampa informazioni sull'istanza: nome, numero di nodi, numero di veicoli
-        print("Costo ottimo: ", opt, "| CW_cost:", costs, "|APX: ", apx)
         # Salva tali valori, con lo stesso formato su una nuova riga del file APX_and_Time.txt
-        f.write(f"{size},{file_name},{n_nodes},{n_truck},{capacity},{opt},{costs},{apx},{execution_time}\n")
-
-
-def calculate_FileName(size):
-    if OPT_2:
-        name = "2_opt_"
-    elif OPT_3:
-        name = "3_opt_"
-    else:
-        name = "no_opt_"
-
-    filename = size + "_" + name + BASE_FILE_NAME
-    return filename
-
-
-def calculate_directory():
-    if OPT_2:
-        name = "2_OPT"
-    elif OPT_3:
-        name = "3_OPT"
-    else:
-        name = "NO_OPT"
-    return name
-
-
-def add_column():
-    # Aggiungere una colonna al file di output
-    pass
-
-    # import csv
-    #
-    # # Percorso del file CSV originale
-    # file_path = 'percorso/del/tuo/file.csv'
-    # # Percorso del file CSV modificato (può essere lo stesso del file originale per sovrascriverlo)
-    # new_file_path = 'percorso/del/tuo/file_modificato.csv'
-    #
-    # # Leggi il contenuto del file CSV originale
-    # with open(file_path, mode='r', newline='') as file:
-    #     reader = csv.reader(file)
-    #     # Converti il lettore CSV in una lista di righe
-    #     rows = list(reader)
-    #     # Aggiungi l'intestazione della nuova colonna alla prima riga
-    #     rows[0].append('NuovaColonna')
-    #
-    #     # Aggiungi i valori della nuova colonna alle altre righe
-    #     for row in rows[1:]:
-    #         row.append('ValoreNuovaColonna')  # Sostituisci 'ValoreNuovaColonna' con il valore effettivo
-    #
-    # # Scrivi i dati modificati nel nuovo file CSV
-    # with open(new_file_path, mode='w', newline='') as new_file:
-    #     writer = csv.writer(new_file)
-    #     writer.writerows(rows)
+        f.write(f"{size},{file_name},{n_nodes},{n_truck},{capacity},{opt},{costs_NoOpt},{apx_NoOpt},{execution_time_NoOpt},{costs_2Opt},{apx_2Opt},{execution_time_2Opt},{costs_3Opt},{apx_3Opt},{execution_time_3Opt}\n")
 
 
 if SMALL:
