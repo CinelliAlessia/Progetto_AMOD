@@ -31,6 +31,12 @@ jobs:
       - name: List all files in the current directory after running the script
         run: ls -Rla
 
+      - name: Upload CSV as artifact if exists
+        uses: actions/upload-artifact@v3
+        with:
+          name: csv-output
+          path: main/Results/Heuristic_Solutions/*.csv
+
       - name: Find all CSV files
         run: find . -name '*.csv'
 
