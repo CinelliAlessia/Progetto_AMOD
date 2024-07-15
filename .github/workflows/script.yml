@@ -25,7 +25,16 @@ jobs:
           mkdir -p main/Results/Heuristic_Solutions
           chmod -R 777 main/Results/Heuristic_Solutions
 
-      - name: Run script
+      - name: Run script CW
+        run: python main/Solve_CW_4All.py
+
+      - name: Upload CSV as artifact if exists
+        uses: actions/upload-artifact@v4
+        with:
+          name: csv-output
+          path: main/Results/Heuristic_Solutions/Clarke_&_Wright_run/*.csv
+
+      - name: Run script SWEEP
         run: python main/Solve_Sweep_4All.py
 
       - name: Upload CSV as artifact if exists
