@@ -9,7 +9,6 @@ from src.main import Utils
 SWEEP_SELECTOR = 1
 # Selezionando come primo parametro selector = 0, verrà eseguito l'algoritmo di Sweep di Andrea
 # Selezionando come primo parametro selector = 1, verrà eseguito l'algoritmo di Sweep di Alessia
-# Selezionando come primo parametro selector = 2, verrà eseguiti entrambi, con risultati nello stesso file  # todo da fare
 # ------------------------------------------------------------------------------------------------------------
 
 # Esegui l'euristica per tutte le size delle istanze
@@ -23,7 +22,7 @@ LARGE = False
 
 
 OUTPUT_DIRECTORY = "Results/Heuristic_Solutions/"  # Directory di output per i risultati
-BASE_FILE_NAME = "Sweep_APX_and_Time.csv"  # Aggiungere come prefisso il numero del run
+CW_BASE_FILE_NAME = "Sweep_APX_and_Time.csv"  # Aggiungere come prefisso il numero del run
 INSTANCES_DIRECTORY = "../resources/vrplib/Instances/"  # Directory delle istanze
 
 
@@ -51,7 +50,7 @@ def solve_sweep_for_instance_name_in_file(size, file_path):
         os.makedirs(OUTPUT_DIRECTORY)
 
     # Apri il file di output per salvare i risultati
-    f = open(f"{OUTPUT_DIRECTORY}{BASE_FILE_NAME}", "w")
+    f = open(f"{OUTPUT_DIRECTORY}{CW_BASE_FILE_NAME}", "w")
 
     # Scrivi nel file l'intestazione
     f.write("Size,Instance_Name,Optimal_Cost,Sw_cost,Apx,Execution_time\n")

@@ -15,8 +15,8 @@ def print_roots(roots):
             print(c)
 
 
-CW_ALE = True
-CW_ANDRE = True
+CW_ALE = False
+CW_ANDRE = False
 SWEEP_ALE = False
 SWEEP_ANDRE = False
 RANDOM = False
@@ -28,7 +28,7 @@ else:
     work_on_explicit = False
 
 
-path_instance = "../resources/vrplib/Instances/Golden_5.vrp"
+path_instance = "../resources/vrplib/Instances/Antwerp1.vrp"
 instance = Parse.make_instance_from_path_name(path_instance)
 nodes, truck = Parse.work_on_instance(instance, work_on_explicit)
 
