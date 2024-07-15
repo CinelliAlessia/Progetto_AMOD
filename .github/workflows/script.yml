@@ -29,7 +29,7 @@ jobs:
         run: python main/Solve_CW_4All.py
 
       - name: Upload CSV as artifact if exists
-        uses: actions/upload-artifact@v3
+        uses: actions/upload-artifact@v4
         with:
           name: csv-output
-          path: main/Results/Heuristic_Solutions/*.csv
+          path: main/Results/Heuristic_Solutions/prova.csv
