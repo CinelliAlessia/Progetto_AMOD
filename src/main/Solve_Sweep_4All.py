@@ -8,17 +8,16 @@ import os
 SWEEP_SELECTOR = 1
 # Selezionando come primo parametro selector = 0, verrà eseguito l'algoritmo di Sweep di Andrea
 # Selezionando come primo parametro selector = 1, verrà eseguito l'algoritmo di Sweep di Alessia
-# Selezionando come primo parametro selector = 2, verrà eseguiti entrambi, con risultati nello stesso file  # todo da fare
 # ------------------------------------------------------------------------------------------------------------
 
-OPT_2 = False
-OPT_3 = True
+OPT_2 = True
+OPT_3 = False
 
 # Esegui l'euristica per tutte le size delle istanze
 path_dim = "../resources/vrplib/Name_of_instances_by_dimension/"
 
 SMALL = True
-MID_SMALL = True
+MID_SMALL = False
 MID = False
 MID_LARGE = False
 LARGE = False
@@ -61,7 +60,7 @@ def solve_sweep_for_instance_name_in_file(size, file_path):
     f = open(f"{output_directory}{name_file}", "w")
 
     # Scrivi nel file l'intestazione
-    f.write("Size,Instance_Name,Optimal_Cost,Cost_NoOpt,Apx,Execution_time_NoOpt\n")
+    f.write("Size,Instance_Name,#Node,#Truck,Capacity,Optimal_Cost,Cost,Apx,Execution_time_NoOpt\n")
 
     # -----------------------------------------------------------------------------------------
     # Per ogni riga (riga = file_name) in n (file_path),
@@ -107,10 +106,16 @@ def write_in_csv(line, f, size):
         else:
             apx = None
 
+        n_nodes = Parser.get_nodes_dimension(instance)
+        n_truck = Parser.get_truck(instance).get_min_num()
+        if n_truck == 0:
+            n_truck = None
+        capacity = Parser.get_truck(instance).get_capacity()
+
         # Stampa informazioni sull'istanza: nome, numero di nodi, numero di veicoli
         print("Costo ottimo: ", opt, "| CW_cost:", costs, "|APX: ", apx)
         # Salva tali valori, con lo stesso formato su una nuova riga del file APX_and_Time.txt
-        f.write(f"{size},{file_name},{opt},{costs},{apx},{execution_time}\n")
+        f.write(f"{size},{file_name},{n_nodes},{n_truck},{capacity},{opt},{costs},{apx},{execution_time}\n")
 
 
 def calculate_FileName(size):
@@ -162,6 +167,7 @@ def add_column():
     # with open(new_file_path, mode='w', newline='') as new_file:
     #     writer = csv.writer(new_file)
     #     writer.writerows(rows)
+
 
 if SMALL:
     solve_sweep_for_instance_name_in_file("small", f"{path_dim}small_instances_name.txt")
