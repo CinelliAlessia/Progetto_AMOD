@@ -1,9 +1,7 @@
 import os
 import time
-import pandas as pd
 from amplpy import AMPL, Environment
 
-import ParseInstances
 
 VERBOSE = True
 MODEL_PATH = 'VRP_Andrea.mod' # Se si vuole cambiare modello basta cambiare qui
@@ -11,7 +9,7 @@ AMPL_ENVIROMENT_PATH = "C:\\Users\\andre\\AMPL"
 DATS_DIR = "../resources/vrplib/DATs/"
 OUTPUT_PATH = "Results/Modello_AMPL/"
 OUTPUT_BASE_FILE_NAME = 'AMPL_results'
-NAME_BY_SIZE_DIR = "../resources/vrplib/Name_of_instances_by_dimension/"
+NAME_BY_SIZE_PATH = "../resources/vrplib/Name_of_instances_by_dimension/"
 
 # Se impostati a True, eseguirà il modello MIP per VRP per le istanze di quel tipo
 SMALL = True
@@ -22,7 +20,7 @@ LARGE = False
 X_LARGE = False
 
 # Per eseguire su una singola istanza
-File_to_solve = os.path.join(DATS_DIR, 'P-n22-k8.dat')
+file_to_solve = os.path.join(DATS_DIR, 'P-n22-k8.dat')
 
 
 # SOLO PER TESTARE SE IL VALORE DELLA SOLUZIONE OTTIMA CORRISPONDE AL COSTO DLLE ROUTES UTILIZZATE
@@ -34,9 +32,9 @@ File_to_solve = os.path.join(DATS_DIR, 'P-n22-k8.dat')
 def solve_ampl_model(model_file, data_file):
     """
     Esegue un modello AMPL con un file di dati specifico.
-    @param model_file: Il percorso al file del modello AMPL (.mod).
-    @param data_file: Il percorso al file dei dati AMPL (.dat).
-    @return: Risultati del risolutore AMPL.
+    :param model_file: Il percorso al file del modello AMPL (.mod).
+    :param data_file: Il percorso al file dei dati AMPL (.dat).
+    :return: Risultati del risolutore AMPL.
     """
     if not os.path.exists(model_file):
         raise FileNotFoundError(f"Il file del modello {model_file} non esiste.")
@@ -49,7 +47,7 @@ def solve_ampl_model(model_file, data_file):
     ampl.read(model_file)
     ampl.readData(data_file)
 
-    # Impostare il solver CPLEX con timeout di 180 secondi
+    # Impostare il solver CPLEX con timeout di 300 secondi
     ampl.setOption('solver', 'cplex')
     ampl.setOption('cplex_options', 'timelimit=300')
 
@@ -73,6 +71,8 @@ def solve_ampl_model(model_file, data_file):
     total_cost = ampl.getObjective('Total_Cost').value()
 
     results = {
+        'num_nodes': ampl.getData('V').getValues(),
+        'num_trucks': ampl.getData('K').getValues(),
         'x': x,
         'y': y,
         'Total_Cost': total_cost,
@@ -121,9 +121,9 @@ def calculate_routes_from_matrix(x_val, y_val):
 def solve_single_instance(model_file, data_file):
     """
     Esegue un modello AMPL su un singolo file di dati specificato.
-    @param model_file: Il percorso al file del modello AMPL (.mod).
-    @param data_file: Il percorso al file dei dati AMPL (.dat).
-    @return: Le routes calcolate, il costo totale e il tempo di esecuzione.
+    :param model_file: Il percorso al file del modello AMPL (.mod).
+    :param data_file: Il percorso al file dei dati AMPL (.dat).
+    :return: Le routes calcolate, il costo totale e il tempo di esecuzione.
     """
     print(f"Solving for {data_file}")
     results = solve_ampl_model(model_file, data_file)
@@ -170,8 +170,8 @@ def solve_multiple_instances(size, model_file, names_file):
             cost = result['Total_Cost']
             exec_time = result['Execution_time']
             num_trucks = len(routes)
+            num_nodes = result['num_nodes']
 
-            num_nodes = 0
             capacity = None  # Sostituisci con il valore corretto
             optimal_cost = None # Sostituisci con il valore corretto
             apx = cost / optimal_cost
@@ -198,17 +198,17 @@ def solve_multiple_instances(size, model_file, names_file):
 
 #Utils.calculate_routes_cost([[ 0,  2,  0 ],[ 0,  6,  0 ],[ 0,  8,  0 ],[ 0, 15, 12, 10,  0 ],[ 0, 14,  5,  0 ],[ 0, 13,  9,  7,  0 ],[ 0, 11,  4,  0 ],[ 0,  3,  1,  0 ]], weights, demands)
 #print(weights)
-solve_single_instance(MODEL_PATH, File_to_solve)
+solve_single_instance(MODEL_PATH, file_to_solve)
 
 if SMALL:
-    solve_multiple_instances("small", MODEL_PATH, f"{NAME_BY_SIZE_DIR}small_instances_name.txt")
+    solve_multiple_instances("small", MODEL_PATH, f"{NAME_BY_SIZE_PATH}small_instances_name.txt")
 if MID_SMALL:
-    solve_multiple_instances("mid_small", MODEL_PATH, f"{NAME_BY_SIZE_DIR}mid_small_instances_name.txt")
+    solve_multiple_instances("mid_small", MODEL_PATH, f"{NAME_BY_SIZE_PATH}mid_small_instances_name.txt")
 if MID:
-    solve_multiple_instances("mid", MODEL_PATH, f"{NAME_BY_SIZE_DIR}mid_instances_name.txt")
+    solve_multiple_instances("mid", MODEL_PATH, f"{NAME_BY_SIZE_PATH}mid_instances_name.txt")
 if MID_LARGE:
-    solve_multiple_instances("mid_large", MODEL_PATH, f"{NAME_BY_SIZE_DIR}mid_large_instances_name.txt")
+    solve_multiple_instances("mid_large", MODEL_PATH, f"{NAME_BY_SIZE_PATH}mid_large_instances_name.txt")
 if LARGE:
-    solve_multiple_instances("large", MODEL_PATH, f"{NAME_BY_SIZE_DIR}large_instances_name.txt")
+    solve_multiple_instances("large", MODEL_PATH, f"{NAME_BY_SIZE_PATH}large_instances_name.txt")
 if X_LARGE:
-    solve_multiple_instances("x_large", MODEL_PATH, f"{NAME_BY_SIZE_DIR}x_large_instances_name.txt")
+    solve_multiple_instances("x_large", MODEL_PATH, f"{NAME_BY_SIZE_PATH}x_large_instances_name.txt")

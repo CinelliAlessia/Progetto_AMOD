@@ -10,17 +10,17 @@ ACTIONS = False
 
 if ACTIONS:
     # Directory dei file contenenti i nomi delle istanze
-    NAME_BY_SIZE_DIR = "./resources/vrplib/Name_of_instances_by_dimension/"
+    NAME_BY_SIZE_PATH = "./resources/vrplib/Name_of_instances_by_dimension/"
     INSTANCES_DIRECTORY = "./resources/vrplib/Instances/"  # Directory delle istanze
-    OUTPUT_DIRECTORY = "Results/Random_Solutions/"  # Directory di output per i risultati
+    OUTPUT_PATH = "Results/Random_Solutions/"  # Directory di output per i risultati
 
 else:
     # Directory dei file contenenti i nomi delle istanze
-    NAME_BY_SIZE_DIR = "../resources/vrplib/Name_of_instances_by_dimension/"
+    NAME_BY_SIZE_PATH = "../resources/vrplib/Name_of_instances_by_dimension/"
     INSTANCES_DIRECTORY = "../resources/vrplib/Instances/"  # Directory delle istanze
-    OUTPUT_DIRECTORY = "./main/Results/Random_Solutions/"  # Directory di output per i risultati
+    OUTPUT_PATH = "./main/Results/Random_Solutions/"  # Directory di output per i risultati
 
-RANDOM_BASE_FILE_NAME = "RANDOM_APX_and_Time"  # Aggiungere come prefisso il numero del run
+OUTPUT_BASE_FILE_NAME = "RANDOM_APX_and_Time"  # Aggiungere come prefisso il numero del run
 
 RANDOM_ITERATION_NUMBER = 750
 
@@ -44,14 +44,14 @@ def solve_random_for_instance_name_in_file(size, file_path):
     n = open(file_path, "r")
     # Apri un nuovo file di output per salvare i risultati
     # Prima devo vedere l'ultimo file creato e incrementare il numero
-    filename = size + "_" + RANDOM_BASE_FILE_NAME
+    filename = size + "_" + OUTPUT_BASE_FILE_NAME
 
     i = 0
-    while os.path.exists(f"{OUTPUT_DIRECTORY}{filename + ".csv"}"):
+    while os.path.exists(f"{OUTPUT_PATH}{filename + ".csv"}"):
         i += 1
-        filename = f"{size + "_" + RANDOM_BASE_FILE_NAME}({i})"
+        filename = f"{size + "_" + OUTPUT_BASE_FILE_NAME}({i})"
 
-    f = open(f"{OUTPUT_DIRECTORY}{filename + ".csv"}", "w")
+    f = open(f"{OUTPUT_PATH}{filename + ".csv"}", "w")
 
     # Scrivi nel file l'intestazione
     f.write("Size,Instance_Name,#Node,#Truck,Capacity,Optimal_Cost,BEST_Random,APX,Execution_time,#Iteration\n")
@@ -99,6 +99,7 @@ def solve_random_for_instance_name_in_file(size, file_path):
             if n_truck == 0:
                 n_truck = None
             capacity = Parser.get_truck(instance).get_capacity()
+
             # Stampa il valore ottimo affiancato al risultato dell'euristica
             print("Costo ottimo: ", opt, "| Random_best_cost:", best_cost, "|APX: ", apx, "|Tempo di esecuzione: ",
                   execution_time)
@@ -110,14 +111,14 @@ def solve_random_for_instance_name_in_file(size, file_path):
 
 
 if SMALL:
-    solve_random_for_instance_name_in_file("small", f"{NAME_BY_SIZE_DIR}small_instances_name.txt")
+    solve_random_for_instance_name_in_file("small", f"{NAME_BY_SIZE_PATH}small_instances_name.txt")
 if MID_SMALL:
-    solve_random_for_instance_name_in_file("mid_small", f"{NAME_BY_SIZE_DIR}mid_small_instances_name.txt")
+    solve_random_for_instance_name_in_file("mid_small", f"{NAME_BY_SIZE_PATH}mid_small_instances_name.txt")
 if MID:
-    solve_random_for_instance_name_in_file("mid", f"{NAME_BY_SIZE_DIR}mid_instances_name.txt")
+    solve_random_for_instance_name_in_file("mid", f"{NAME_BY_SIZE_PATH}mid_instances_name.txt")
 if MID_LARGE:
-    solve_random_for_instance_name_in_file("mid_large", f"{NAME_BY_SIZE_DIR}mid_large_instances_name.txt")
+    solve_random_for_instance_name_in_file("mid_large", f"{NAME_BY_SIZE_PATH}mid_large_instances_name.txt")
 if LARGE:
-    solve_random_for_instance_name_in_file("large", f"{NAME_BY_SIZE_DIR}large_instances_name.txt")
+    solve_random_for_instance_name_in_file("large", f"{NAME_BY_SIZE_PATH}large_instances_name.txt")
 if X_LARGE:
-    solve_random_for_instance_name_in_file("x_large", f"{NAME_BY_SIZE_DIR}x_large_instances_name.txt")
+    solve_random_for_instance_name_in_file("x_large", f"{NAME_BY_SIZE_PATH}x_large_instances_name.txt")

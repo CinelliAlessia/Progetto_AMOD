@@ -17,19 +17,19 @@ ACTIONS = False
 
 if ACTIONS:
     # Directory dei file contenenti i nomi delle istanze
-    NAME_BY_SIZE_DIR = "./resources/vrplib/Name_of_instances_by_dimension/"
-    OUTPUT_DIRECTORY = "./main/Results/Heuristic_Solutions/Clarke_&_Wright_run/"  # Directory di output per i risultati
+    NAME_BY_SIZE_PATH = "./resources/vrplib/Name_of_instances_by_dimension/"
+    OUTPUT_PATH = "./main/Results/Heuristic_Solutions/Clarke_&_Wright_run/"  # Directory di output per i risultati
     INSTANCES_DIRECTORY = "./resources/vrplib/Instances/"  # Directory delle istanze
 else:
     # Directory dei file contenenti i nomi delle istanze
-    NAME_BY_SIZE_DIR = "../resources/vrplib/Name_of_instances_by_dimension/"
-    OUTPUT_DIRECTORY = "Results/Heuristic_Solutions/Clarke_&_Wright_run/"  # Directory di output per i risultati
+    NAME_BY_SIZE_PATH = "../resources/vrplib/Name_of_instances_by_dimension/"
+    OUTPUT_PATH = "Results/Heuristic_Solutions/Clarke_&_Wright_run/"  # Directory di output per i risultati
     INSTANCES_DIRECTORY = "../resources/vrplib/Instances/"  # Directory delle istanze
 
-CW_BASE_FILE_NAME = "CW_APX_and_Time"  # Aggiungere come prefisso il numero del run
+OUTPUT_BASE_FILE_NAME = "CW_APX_and_Time"  # Aggiungere come prefisso il numero del run
 
 # Se impostati a True, eseguirà l'euristica di Clarke e Wright per le istanze di quel tipo
-SMALL = False
+SMALL = True
 MID_SMALL = False
 MID = False
 MID_LARGE = False
@@ -50,14 +50,14 @@ def solve_cw_for_instance_name_in_file(size, file_path):
 
     # Apri un nuovo file di output per salvare i risultati
     # Prima devo vedere l'ultimo file creato e incrementare il numero
-    filename = size + "_" + CW_BASE_FILE_NAME
+    filename = size + "_" + OUTPUT_BASE_FILE_NAME
 
     i = 0
-    while os.path.exists(f"{OUTPUT_DIRECTORY}{filename + ".csv"}"):
+    while os.path.exists(f"{OUTPUT_PATH}{filename + ".csv"}"):
         i += 1
-        filename = f"{size + "_" + CW_BASE_FILE_NAME}({i})"
+        filename = f"{size + "_" + OUTPUT_BASE_FILE_NAME}({i})"
 
-    f = open(f"{OUTPUT_DIRECTORY}{filename + ".csv"}", "w")
+    f = open(f"{OUTPUT_PATH}{filename + ".csv"}", "w")
 
     # Scrivi nel file l'intestazione
     f.write("Size,Instance_Name,#Node,#Truck,Capacity,Optimal_Cost,CW_cost,APX,Execution_time\n")
@@ -97,6 +97,7 @@ def solve_cw_for_instance_name_in_file(size, file_path):
 
             path = INSTANCES_DIRECTORY + file_name
             opt = Parser.get_optimal_cost_from_path(path)
+
             if opt is not None:
                 apx = cw_cost / opt
             else:
@@ -116,14 +117,14 @@ def solve_cw_for_instance_name_in_file(size, file_path):
 
 
 if SMALL:
-    solve_cw_for_instance_name_in_file("small", f"{NAME_BY_SIZE_DIR}small_instances_name.txt")
+    solve_cw_for_instance_name_in_file("small", f"{NAME_BY_SIZE_PATH}small_instances_name.txt")
 if MID_SMALL:
-    solve_cw_for_instance_name_in_file("mid_small", f"{NAME_BY_SIZE_DIR}mid_small_instances_name.txt")
+    solve_cw_for_instance_name_in_file("mid_small", f"{NAME_BY_SIZE_PATH}mid_small_instances_name.txt")
 if MID:
-    solve_cw_for_instance_name_in_file("mid", f"{NAME_BY_SIZE_DIR}mid_instances_name.txt")
+    solve_cw_for_instance_name_in_file("mid", f"{NAME_BY_SIZE_PATH}mid_instances_name.txt")
 if MID_LARGE:
-    solve_cw_for_instance_name_in_file("mid_large", f"{NAME_BY_SIZE_DIR}mid_large_instances_name.txt")
+    solve_cw_for_instance_name_in_file("mid_large", f"{NAME_BY_SIZE_PATH}mid_large_instances_name.txt")
 if LARGE:
-    solve_cw_for_instance_name_in_file("large", f"{NAME_BY_SIZE_DIR}large_instances_name.txt")
+    solve_cw_for_instance_name_in_file("large", f"{NAME_BY_SIZE_PATH}large_instances_name.txt")
 if X_LARGE:
-    solve_cw_for_instance_name_in_file("x_large", f"{NAME_BY_SIZE_DIR}x_large_instances_name.txt")
+    solve_cw_for_instance_name_in_file("x_large", f"{NAME_BY_SIZE_PATH}x_large_instances_name.txt")

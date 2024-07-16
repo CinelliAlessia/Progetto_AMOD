@@ -28,15 +28,15 @@ ACTIONS = False
 
 if ACTIONS:
     # Esegui l'euristica per tutte le size delle istanze GITHUB ACTION
-    path_dim = "./resources/vrplib/Name_of_instances_by_dimension/"
-    OUTPUT_DIRECTORY = "./main/Results/Heuristic_Solutions/Sweep/"  # Directory di output per i risultati
+    NAME_BY_SIZE_PATH = "./resources/vrplib/Name_of_instances_by_dimension/"
+    OUTPUT_PATH = "./main/Results/Heuristic_Solutions/Sweep/"  # Directory di output per i risultati
     INSTANCES_DIRECTORY = "./resources/vrplib/Instances/"  # Directory delle istanze
 else:
-    path_dim = "../resources/vrplib/Name_of_instances_by_dimension/"
-    OUTPUT_DIRECTORY = "Results/Heuristic_Solutions/Sweep/"  # Directory di output per i risultati
+    NAME_BY_SIZE_PATH = "../resources/vrplib/Name_of_instances_by_dimension/"
+    OUTPUT_PATH = "Results/Heuristic_Solutions/Sweep/"  # Directory di output per i risultati
     INSTANCES_DIRECTORY = "../resources/vrplib/Instances/"  # Directory delle istanze
 
-BASE_FILE_NAME = "Sweep_APX_and_Time"  # Aggiungere come prefisso il numero del run
+OUTPUT_BASE_FILE_NAME = "Sweep_APX_and_Time"  # Aggiungere come prefisso il numero del run
 
 # Struttura dati per salvare i risultati dell'algoritmo
 results = {
@@ -82,17 +82,17 @@ def solve_sweep_for_instance_name_in_file(size, file_path):
     n = open(file_path, "r")
 
     # Verifico che la directory di output esista, altrimenti la creo
-    if not os.path.exists(f"{OUTPUT_DIRECTORY}"):
-        os.makedirs(OUTPUT_DIRECTORY)
+    if not os.path.exists(f"{OUTPUT_PATH}"):
+        os.makedirs(OUTPUT_PATH)
 
-    filename = size + "_" + BASE_FILE_NAME
+    filename = size + "_" + OUTPUT_BASE_FILE_NAME
 
     i = 0
-    while os.path.exists(f"{OUTPUT_DIRECTORY}{filename + ".csv"}"):
+    while os.path.exists(f"{OUTPUT_PATH}{filename + ".csv"}"):
         i += 1
-        filename = f"{size + "_" + BASE_FILE_NAME}({i})"
+        filename = f"{size + "_" + OUTPUT_BASE_FILE_NAME}({i})"
 
-    f = open(f"{OUTPUT_DIRECTORY}{filename + ".csv"}", "w")
+    f = open(f"{OUTPUT_PATH}{filename + ".csv"}", "w")
 
     # Scrivi nel file l'intestazione
     f.write("Size,Instance_Name,#Node,#Truck,Capacity,Optimal_Cost,Cost_NoOpt,Apx_NoOpt,Execution_time_NoOpt,Cost_2Opt,Apx_2Opt,Execution_time_2Opt,Cost_3Opt,Apx_3Opt,Execution_time_3Opt\n")
@@ -173,14 +173,14 @@ def write_in_csv(line, f, size):
 
 
 if SMALL:
-    solve_sweep_for_instance_name_in_file("small", f"{path_dim}small_instances_name.txt")
+    solve_sweep_for_instance_name_in_file("small", f"{NAME_BY_SIZE_PATH}small_instances_name.txt")
 if MID_SMALL:
-    solve_sweep_for_instance_name_in_file("mid_small", f"{path_dim}mid_small_instances_name.txt")
+    solve_sweep_for_instance_name_in_file("mid_small", f"{NAME_BY_SIZE_PATH}mid_small_instances_name.txt")
 if MID:
-    solve_sweep_for_instance_name_in_file("mid", f"{path_dim}mid_instances_name.txt")
+    solve_sweep_for_instance_name_in_file("mid", f"{NAME_BY_SIZE_PATH}mid_instances_name.txt")
 if MID_LARGE:
-    solve_sweep_for_instance_name_in_file("mid_large", f"{path_dim}mid_large_instances_name.txt")
+    solve_sweep_for_instance_name_in_file("mid_large", f"{NAME_BY_SIZE_PATH}mid_large_instances_name.txt")
 if LARGE:
-    solve_sweep_for_instance_name_in_file("large", f"{path_dim}large_instances_name.txt")
+    solve_sweep_for_instance_name_in_file("large", f"{NAME_BY_SIZE_PATH}large_instances_name.txt")
 if X_LARGE:
-    solve_sweep_for_instance_name_in_file("x_large", f"{path_dim}x_large_instances_name.txt")
+    solve_sweep_for_instance_name_in_file("x_large", f"{NAME_BY_SIZE_PATH}x_large_instances_name.txt")
