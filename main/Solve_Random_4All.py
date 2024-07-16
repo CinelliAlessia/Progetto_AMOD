@@ -49,7 +49,8 @@ def solve_random_for_instance_name_in_file(size, file_path):
     i = 0
     while os.path.exists(f"{OUTPUT_DIRECTORY}{filename + ".csv"}"):
         i += 1
-        filename = f"{filename}({i})"
+        filename = f"{size + "_" + RANDOM_BASE_FILE_NAME}({i})"
+
     f = open(f"{OUTPUT_DIRECTORY}{filename + ".csv"}", "w")
 
     # Scrivi nel file l'intestazione

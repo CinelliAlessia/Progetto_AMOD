@@ -15,7 +15,7 @@ MID_SMALL = False   # FATTE
 MID = False  # FATTE
 MID_LARGE = False   # FATTE
 LARGE = False   # Solo 2Opt
-X_LARGE = True
+X_LARGE = False
 
 # ------------------------------------------------------------------------------------------------------------
 
@@ -90,7 +90,8 @@ def solve_sweep_for_instance_name_in_file(size, file_path):
     i = 0
     while os.path.exists(f"{OUTPUT_DIRECTORY}{filename + ".csv"}"):
         i += 1
-        filename = f"{filename}({i})"
+        filename = f"{size + "_" + BASE_FILE_NAME}({i})"
+
     f = open(f"{OUTPUT_DIRECTORY}{filename + ".csv"}", "w")
 
     # Scrivi nel file l'intestazione
