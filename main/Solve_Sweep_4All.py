@@ -2,6 +2,7 @@ import time
 import Sweep_Ale as sweepAle
 import ParseInstances as Parser
 import os
+import threading
 
 # ------------------------------------------------------------------------------------------------------------
 SWEEP_SELECTOR = 1
@@ -36,6 +37,29 @@ else:
     INSTANCES_DIRECTORY = "../resources/vrplib/Instances/"  # Directory delle istanze
 
 BASE_FILE_NAME = "Sweep_APX_and_Time"  # Aggiungere come prefisso il numero del run
+
+# Struttura dati per salvare i risultati dell'algoritmo
+results = {
+    'routes': None,
+    'costs': None,
+    'completed': False
+}
+
+
+def run_sweep_algorithm(nodes, truck):
+    global results
+    routes, costs = sweepAle.sweep_algorithm(nodes, truck, False, OPT_3)
+
+    results['costs'] = costs
+    results['completed'] = True
+    results['routes'] = routes
+
+
+# Funzione per eseguire l'algoritmo con timeout
+def execute_with_timeout(nodes, truck, timeout_seconds):
+    thread = threading.Thread(target=run_sweep_algorithm, args=(nodes, truck))
+    thread.start()
+    thread.join(timeout=timeout_seconds)
 
 
 # Esegui l'euristica di Sweep per le istanze elencate nel file_path (tramite nome), le istanze verranno
@@ -95,51 +119,45 @@ def write_in_csv(line, f, size):
 
         # ----- Calcolo Sweep NoOpt -----
 
-        # Registra il tempo di inizio
-        start_time_NoOpt = time.perf_counter()
-
-        routes_NoOpt, costs_NoOpt = sweepAle.sweep_algorithm(nodes, truck.get_capacity(), False, False)
-
-        # Registra il tempo di fine
-        end_time_NoOpt = time.perf_counter()
-
-        # Calcola la durata dell'esecuzione
-        execution_time_NoOpt = end_time_NoOpt - start_time_NoOpt
+        start_time_no_opt = time.perf_counter()     # Registra il tempo di inizio
+        routes_no_opt, costs_no_opt = sweepAle.sweep_algorithm(nodes, truck.get_capacity(), False, False)
+        end_time_no_opt = time.perf_counter()      # Registra il tempo di fine
+        execution_time_no_opt = end_time_no_opt - start_time_no_opt     # Calcola la durata dell'esecuzione
 
         # ----- Calcolo Sweep 2Opt -----
 
-        # Registra il tempo di inizio
-        start_time_2Opt = time.perf_counter()
-
-        routes_2Opt, costs_2Opt = sweepAle.sweep_algorithm(nodes, truck.get_capacity(), OPT_2, False)
-
-        # Registra il tempo di fine
-        end_time_2Opt = time.perf_counter()
-
-        # Calcola la durata dell'esecuzione
-        execution_time_2Opt = end_time_2Opt - start_time_2Opt
+        start_time_2_opt = time.perf_counter()    # Registra il tempo di inizio
+        routes_2_opt, costs_2_opt = sweepAle.sweep_algorithm(nodes, truck.get_capacity(), OPT_2, False)
+        end_time_2_opt = time.perf_counter()   # Registra il tempo di fine
+        execution_time_2_opt = end_time_2_opt - start_time_2_opt   # Calcola la durata dell'esecuzione
 
         # ----- Calcolo Sweep 3Opt -----
 
-        # Registra il tempo di inizio
-        start_time_3Opt = time.perf_counter()
+        start_time_3_opt = time.perf_counter()   # Registra il tempo di inizio
 
-        routes_3Opt, costs_3Opt = sweepAle.sweep_algorithm(nodes, truck.get_capacity(), False, OPT_3)
+        # Esegui l'algoritmo con un timeout di 5 minuti (300 secondi)
+        execute_with_timeout(nodes, truck.get_capacity(), 150)
 
-        # Registra il tempo di fine
-        end_time_3Opt = time.perf_counter()
-
-        # Calcola la durata dell'esecuzione
-        execution_time_3Opt = end_time_3Opt - start_time_3Opt
+        # Calcola il tempo di esecuzione, se l'algoritmo è terminato
+        if results['completed']:
+            end_time_3_opt = time.perf_counter()
+            execution_time_3_opt = end_time_3_opt - start_time_3_opt
+            costs_3_opt = results['costs']
+            print(f"Tempo di esecuzione: {execution_time_3_opt} secondi")
+        else:
+            print("L'algoritmo non è terminato in tempo")
+            costs_3_opt = 0
+            # Calcola la durata dell'esecuzione
+            execution_time_3_opt = 0
 
         if opt is not None:
-            apx_NoOpt = costs_NoOpt / opt
-            apx_2Opt = costs_2Opt / opt
-            apx_3Opt = costs_3Opt / opt
+            apx_no_opt = costs_no_opt / opt
+            apx_2_opt = costs_2_opt / opt
+            apx_3_opt = costs_3_opt / opt
         else:
-            apx_NoOpt = None
-            apx_2Opt = None
-            apx_3Opt = None
+            apx_no_opt = None
+            apx_2_opt = None
+            apx_3_opt = None
 
         # Stampa informazioni sull'istanza: nome, numero di nodi, numero di veicoli
 
@@ -150,7 +168,7 @@ def write_in_csv(line, f, size):
         capacity = Parser.get_truck(instance).get_capacity()
 
         # Salva tali valori, con lo stesso formato su una nuova riga del file APX_and_Time.txt
-        f.write(f"{size},{file_name},{n_nodes},{n_truck},{capacity},{opt},{costs_NoOpt},{apx_NoOpt},{execution_time_NoOpt},{costs_2Opt},{apx_2Opt},{execution_time_2Opt},{costs_3Opt},{apx_3Opt},{execution_time_3Opt}\n")
+        f.write(f"{size},{file_name},{n_nodes},{n_truck},{capacity},{opt},{costs_no_opt},{apx_no_opt},{execution_time_no_opt},{costs_2_opt},{apx_2_opt},{execution_time_2_opt},{costs_3_opt},{apx_3_opt},{execution_time_3_opt}\n")
 
 
 if SMALL:

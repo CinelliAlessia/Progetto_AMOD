@@ -25,9 +25,9 @@ RANDOM_BASE_FILE_NAME = "RANDOM_APX_and_Time"  # Aggiungere come prefisso il num
 RANDOM_ITERATION_NUMBER = 750
 
 # Se impostati a True, eseguirà l'euristica di Clarke e Wright per le istanze di quel tipo
-SMALL = True
-MID_SMALL = True
-MID = True
+SMALL = False
+MID_SMALL = False
+MID = False
 MID_LARGE = False
 LARGE = False
 X_LARGE = False
