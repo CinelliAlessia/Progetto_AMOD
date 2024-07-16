@@ -9,7 +9,16 @@ VERBOSE = True
 MODEL_PATH = 'VRP_Andrea.mod'
 DATS_DIR = '../resources/vrplib/DATs'
 
+# Se impostati a True, eseguirà il modello MIP per VRP per le istanze di quel tipo
+SMALL = False
+MID_SMALL = False
+MID = False
+MID_LARGE = False
+LARGE = False
+X_LARGE = False
+
 File_to_solve = os.path.join(DATS_DIR, 'E-n13-k4.dat')
+
 
 # SOLO PER TESTARE SE IL VALORE DELLA SOLUZIONE OTTIMA CORRISPONDE AL COSTO DLLE ROUTES UTILIZZATE
 #instance = Parser.make_instance_from_path_name('../resources/vrplib/Instances/P-n22-k8.vrp')
@@ -41,7 +50,7 @@ def solve_ampl_model(model_file, data_file):
 
     # Impostare il solver CPLEX con timeout di 180 secondi
     ampl.setOption('solver', 'cplex')
-    #ampl.setOption('cplex_options', 'timelimit=300')
+    ampl.setOption('cplex_options', 'timelimit=300')
 
     # Stampare le informazioni sui set
     if VERBOSE:
@@ -56,6 +65,10 @@ def solve_ampl_model(model_file, data_file):
     ampl.solve()
     end_time = time.perf_counter()
     print(f"Tempo di esecuzione: {end_time - start_time} secondi")
+
+    # Cattura e stampa l'output del solver
+    solver_output = ampl.getOutput()
+    print(solver_output)
 
     # Estrarre i risultati
     x = ampl.getVariable('x').getValues().toPandas()
@@ -139,8 +152,7 @@ def solve_multiple_instances(model_file, data_dir):
             # Utilizza la funzione sopra
             solve_single_instance(model_file, os.path.join(data_dir, filename))
 
-
 #Utils.calculate_routes_cost([[ 0,  2,  0 ],[ 0,  6,  0 ],[ 0,  8,  0 ],[ 0, 15, 12, 10,  0 ],[ 0, 14,  5,  0 ],[ 0, 13,  9,  7,  0 ],[ 0, 11,  4,  0 ],[ 0,  3,  1,  0 ]], weights, demands)
 #print(weights)
-#solve_single_instance(MODEL_PATH, File_to_solve)
+solve_single_instance(MODEL_PATH, File_to_solve)
 #solve_multiple_instances(MODEL_PATH, data_dir)
