@@ -7,12 +7,17 @@ Li_26.vrp
 Li_27.vrp
 Li_28.vrp
 Li_29.vrp
+Li_30.vrp
+Li_31.vrp
+Li_32.vrp
+Loggi-n1001-k31.vrp
 Loggi-n501-k24.vrp
 Loggi-n601-k19.vrp
 Loggi-n601-k42.vrp
 Loggi-n901-k42.vrp
 ORTEC-n510-k23.vrp
 ORTEC-n701-k64.vrp
+X-n1001-k43.vrp
 X-n502-k39.vrp
 X-n513-k21.vrp
 X-n524-k153.vrp

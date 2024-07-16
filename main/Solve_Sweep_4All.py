@@ -9,23 +9,33 @@ SWEEP_SELECTOR = 1
 # Selezionando come primo parametro selector = 1, verrà eseguito l'algoritmo di Sweep di Alessia
 # ------------------------------------------------------------------------------------------------------------
 
-SMALL = False
-MID_SMALL = False
-MID = False
-MID_LARGE = False
-LARGE = False
-X_LARGE = False
+SMALL = False   # FATTE
+MID_SMALL = False   # FATTE
+MID = False  # FATTE
+MID_LARGE = False   # FATTE
+LARGE = False   # Solo 2Opt
+X_LARGE = True
 
-# Esegui l'euristica per tutte le size delle istanze GITHUB ACTION
-path_dim = "./resources/vrplib/Name_of_instances_by_dimension/"
-OUTPUT_DIRECTORY = "./main/Results/Heuristic_Solutions/Sweep/"  # Directory di output per i risultati
+# ------------------------------------------------------------------------------------------------------------
+
+OPT_2 = True
+OPT_3 = True
+
+# ------------------------------------------------------------------------------------------------------------
+
+ACTIONS = False
+
+if ACTIONS:
+    # Esegui l'euristica per tutte le size delle istanze GITHUB ACTION
+    path_dim = "./resources/vrplib/Name_of_instances_by_dimension/"
+    OUTPUT_DIRECTORY = "./main/Results/Heuristic_Solutions/Sweep/"  # Directory di output per i risultati
+    INSTANCES_DIRECTORY = "./resources/vrplib/Instances/"  # Directory delle istanze
+else:
+    path_dim = "../resources/vrplib/Name_of_instances_by_dimension/"
+    OUTPUT_DIRECTORY = "Results/Heuristic_Solutions/Sweep/"  # Directory di output per i risultati
+    INSTANCES_DIRECTORY = "../resources/vrplib/Instances/"  # Directory delle istanze
+
 BASE_FILE_NAME = "Sweep_APX_and_Time"  # Aggiungere come prefisso il numero del run
-INSTANCES_DIRECTORY = "./resources/vrplib/Instances/"  # Directory delle istanze
-
-#path_dim = "../resources/vrplib/Name_of_instances_by_dimension/"
-#OUTPUT_DIRECTORY = "Results/Heuristic_Solutions/Sweep/"  # Directory di output per i risultati
-#BASE_FILE_NAME = "Sweep_APX_and_Time"  # Aggiungere come prefisso il numero del run
-#INSTANCES_DIRECTORY = "../resources/vrplib/Instances/"  # Directory delle istanze
 
 
 # Esegui l'euristica di Sweep per le istanze elencate nel file_path (tramite nome), le istanze verranno
@@ -101,7 +111,7 @@ def write_in_csv(line, f, size):
         # Registra il tempo di inizio
         start_time_2Opt = time.perf_counter()
 
-        routes_2Opt, costs_2Opt = sweepAle.sweep_algorithm(nodes, truck.get_capacity(), True, False)
+        routes_2Opt, costs_2Opt = sweepAle.sweep_algorithm(nodes, truck.get_capacity(), OPT_2, False)
 
         # Registra il tempo di fine
         end_time_2Opt = time.perf_counter()
@@ -114,7 +124,7 @@ def write_in_csv(line, f, size):
         # Registra il tempo di inizio
         start_time_3Opt = time.perf_counter()
 
-        routes_3Opt, costs_3Opt = sweepAle.sweep_algorithm(nodes, truck.get_capacity(), False, True)
+        routes_3Opt, costs_3Opt = sweepAle.sweep_algorithm(nodes, truck.get_capacity(), False, OPT_3)
 
         # Registra il tempo di fine
         end_time_3Opt = time.perf_counter()
