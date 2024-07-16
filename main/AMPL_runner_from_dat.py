@@ -8,13 +8,13 @@ import ParseInstances
 VERBOSE = True
 MODEL_PATH = 'VRP_Andrea.mod' # Se si vuole cambiare modello basta cambiare qui
 AMPL_ENVIROMENT_PATH = "C:\\Users\\andre\\AMPL"
-DATS_DIR = '../resources/vrplib/DATs'
-OUTPUT_PATH = 'Results/Modello_AMPL'
+DATS_DIR = "../resources/vrplib/DATs/"
+OUTPUT_PATH = "Results/Modello_AMPL/"
 OUTPUT_BASE_FILE_NAME = 'AMPL_results'
 NAME_BY_SIZE_DIR = "../resources/vrplib/Name_of_instances_by_dimension/"
 
 # Se impostati a True, eseguirà il modello MIP per VRP per le istanze di quel tipo
-SMALL = False
+SMALL = True
 MID_SMALL = False
 MID = False
 MID_LARGE = False
@@ -34,13 +34,9 @@ File_to_solve = os.path.join(DATS_DIR, 'P-n22-k8.dat')
 def solve_ampl_model(model_file, data_file):
     """
     Esegue un modello AMPL con un file di dati specifico.
-
-    Parameters:
-    - model_file (str): Il percorso al file del modello AMPL (.mod).
-    - data_file (str): Il percorso al file dei dati AMPL (.dat).
-
-    Returns:
-    - dict: Risultati del risolutore AMPL.
+    @param model_file: Il percorso al file del modello AMPL (.mod).
+    @param data_file: Il percorso al file dei dati AMPL (.dat).
+    @return: Risultati del risolutore AMPL.
     """
     if not os.path.exists(model_file):
         raise FileNotFoundError(f"Il file del modello {model_file} non esiste.")
@@ -125,10 +121,9 @@ def calculate_routes_from_matrix(x_val, y_val):
 def solve_single_instance(model_file, data_file):
     """
     Esegue un modello AMPL su un singolo file di dati specificato.
-
-    Parameters:
-    - model_file (str): Il percorso al file del modello AMPL (.mod).
-    - data_file (str): Il percorso al file dei dati AMPL (.dat).
+    @param model_file: Il percorso al file del modello AMPL (.mod).
+    @param data_file: Il percorso al file dei dati AMPL (.dat).
+    @return: Le routes calcolate, il costo totale e il tempo di esecuzione.
     """
     print(f"Solving for {data_file}")
     results = solve_ampl_model(model_file, data_file)
@@ -138,7 +133,7 @@ def solve_single_instance(model_file, data_file):
             print(r)
         print(results['Total_Cost'])
 
-    return routes, results['Total_Cost'], results['Execution_time']
+    return routes, results
 
 
 def solve_multiple_instances(size, model_file, names_file):
@@ -164,22 +159,22 @@ def solve_multiple_instances(size, model_file, names_file):
         if file_name.endswith(".vrp"):
             instance_name = os.path.splitext(filename)[0]
 
-            if instance_name in results_df['Instance_Name'].values:
+            # Se il file è già stato risolto, passa all'istanza successiva
+            if instance_name in out_filename:
                 print(f"{instance_name} già risolto.")
                 continue
 
-            data_file = os.path.join(DATS_DIR, filename)
-            routes, cost, exec_time = solve_single_instance(model_file, data_file)
+            dat_file = os.path.join(DATS_DIR, instance_name + ".dat")
+            routes, result = solve_single_instance(model_file, dat_file)
 
-            # Ottieni dettagli sull'istanza dai dati (per esempio, numero di nodi, veicoli, capacità)
-            # Qui suppongo che queste informazioni siano disponibili nei dati o nel nome del file
-            # Modifica questo codice per estrarre correttamente le informazioni necessarie
-            # Per esempio:
-            num_nodes = None
+            cost = result['Total_Cost']
+            exec_time = result['Execution_time']
             num_trucks = len(routes)
+
+            num_nodes = 0
             capacity = None  # Sostituisci con il valore corretto
             optimal_cost = None # Sostituisci con il valore corretto
-            apx = None
+            apx = cost / optimal_cost
 
             new_row = {
                 'Size': size,
@@ -192,9 +187,12 @@ def solve_multiple_instances(size, model_file, names_file):
                 'APX': apx,
                 'Execution_time': exec_time
             }
-            results_df = results_df.append(new_row, ignore_index=True)
 
-    results_df.to_csv(output_file, index=False)
+            f.write(f"{size},{file_name},{num_nodes},{num_trucks},{capacity},{optimal_cost},{cost},{apx},{exec_time}\n")
+
+        #results_df = results_df.append(new_row, ignore_index=True)
+
+        #results_df.to_csv(output_file, index=False)
 
 
 
