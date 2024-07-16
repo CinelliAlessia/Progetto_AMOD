@@ -13,8 +13,8 @@ SWEEP_SELECTOR = 1
 SMALL = False   # FATTE
 MID_SMALL = False   # FATTE
 MID = False  # FATTE
-MID_LARGE = False   # FATTE
-LARGE = False   # Solo 2Opt
+MID_LARGE = False   # FATTE andra tozzi
+LARGE = False  # Solo 2Opt
 X_LARGE = False
 
 # ------------------------------------------------------------------------------------------------------------
@@ -137,7 +137,7 @@ def write_in_csv(line, f, size):
         start_time_3_opt = time.perf_counter()   # Registra il tempo di inizio
 
         # Esegui l'algoritmo con un timeout di 5 minuti (300 secondi)
-        execute_with_timeout(nodes, truck.get_capacity(), 150)
+        execute_with_timeout(nodes, truck.get_capacity(), 300)
 
         # Calcola il tempo di esecuzione, se l'algoritmo è terminato
         if results['completed']:
