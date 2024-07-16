@@ -3,13 +3,4 @@ Antwerp2.vrp
 Brussels1.vrp
 Brussels2.vrp
 Flanders1.vrp
-Flanders2.vrp
-Ghent1.vrp
-Ghent2.vrp
-Leuven1.vrp
-Leuven2.vrp
-Li_30.vrp
-Li_31.vrp
-Li_32.vrp
-Loggi-n1001-k31.vrp
-X-n1001-k43.vrp
+

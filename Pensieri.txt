@@ -44,3 +44,13 @@ Route #7: 12 17 21 |total demand: 3000 |route cost: 83.95484129468383
 Route #8: 16 15 |total demand: 3000 |route cost: 53.184107294343086
 CALCULATED COST:  600.8255367310456
 
+Flanders2.vrp
+Ghent1.vrp
+Ghent2.vrp
+Leuven1.vrp
+Leuven2.vrp
+Li_30.vrp
+Li_31.vrp
+Li_32.vrp
+Loggi-n1001-k31.vrp
+X-n1001-k43.vrp
