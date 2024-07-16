@@ -5,6 +5,7 @@ import Clarke_Wright_Alessia as CwAle
 import ParseInstances as Parser
 import os
 import Utils
+import sys
 
 # ------------------------------------------------------------------------------------------------------------
 CW_SELECTOR = 0
@@ -12,8 +13,7 @@ CW_SELECTOR = 0
 # Selezionando come primo parametro selector = 1, verrà eseguito l'algoritmo di Clarke e Wright di Alessia
 # ------------------------------------------------------------------------------------------------------------
 
-
-ACTIONS = False
+ACTIONS = True
 
 if ACTIONS:
     # Directory dei file contenenti i nomi delle istanze
@@ -29,12 +29,12 @@ else:
 OUTPUT_BASE_FILE_NAME = "CW_APX_and_Time"  # Aggiungere come prefisso il numero del run
 
 # Se impostati a True, eseguirà l'euristica di Clarke e Wright per le istanze di quel tipo
-SMALL = True
+SMALL = False
 MID_SMALL = False
 MID = False
 MID_LARGE = False
 LARGE = False
-X_LARGE = False
+X_LARGE = True
 
 
 # Esegui l'euristica di Clarke e Wright per le istanze elencate nel file_path (tramite nome), le istanze verranno
@@ -71,7 +71,7 @@ def solve_cw_for_instance_name_in_file(size, file_path):
         i += 1
         file_name = line.strip()
         if file_name.endswith(".vrp"):
-            print(f"Solving {file_name}...")
+            print(f"Solving {file_name}...", file=sys.stdout)
             instance = Parser.make_instance_from_path_name(f"{INSTANCES_DIRECTORY}{file_name}")
             print("Fine parsing")
             if CW_SELECTOR == 0:  # CW Andrea

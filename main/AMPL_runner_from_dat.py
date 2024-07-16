@@ -20,7 +20,7 @@ LARGE = False
 X_LARGE = False
 
 # Per eseguire su una singola istanza
-file_to_solve = os.path.join(DATS_DIR, 'P-n22-k8.dat')
+file_to_solve = os.path.join(DATS_DIR, 'P-n16-k8.dat')
 
 
 # SOLO PER TESTARE SE IL VALORE DELLA SOLUZIONE OTTIMA CORRISPONDE AL COSTO DLLE ROUTES UTILIZZATE
@@ -198,7 +198,7 @@ def solve_multiple_instances(size, model_file, names_file):
 
 #Utils.calculate_routes_cost([[ 0,  2,  0 ],[ 0,  6,  0 ],[ 0,  8,  0 ],[ 0, 15, 12, 10,  0 ],[ 0, 14,  5,  0 ],[ 0, 13,  9,  7,  0 ],[ 0, 11,  4,  0 ],[ 0,  3,  1,  0 ]], weights, demands)
 #print(weights)
-solve_single_instance(MODEL_PATH, file_to_solve)
+#solve_single_instance(MODEL_PATH, file_to_solve)
 
 if SMALL:
     solve_multiple_instances("small", MODEL_PATH, f"{NAME_BY_SIZE_PATH}small_instances_name.txt")
