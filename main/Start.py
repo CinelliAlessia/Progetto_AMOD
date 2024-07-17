@@ -28,10 +28,10 @@ else:
     work_on_explicit = False
 
 
-path_instance = "../resources/vrplib/Instances/Brussels1.vrp"
+path_instance = "./resources/vrplib/Instances/Brussels1.vrp"
 instance = Parse.make_instance_from_path_name(path_instance)
 nodes, truck = Parse.work_on_instance(instance, work_on_explicit)
-
+print("Fine Parsing")
 
 def start():
     if nodes is None:
