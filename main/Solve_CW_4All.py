@@ -29,12 +29,12 @@ else:
 OUTPUT_BASE_FILE_NAME = "CW_APX_and_Time"  # Aggiungere come prefisso il numero del run
 
 # Se impostati a True, eseguirà l'euristica di Clarke e Wright per le istanze di quel tipo
-SMALL = True
+SMALL = False
 MID_SMALL = False
 MID = False
 MID_LARGE = False
 LARGE = False
-X_LARGE = False
+X_LARGE = True
 
 
 # Esegui l'euristica di Clarke e Wright per le istanze elencate nel file_path (tramite nome), le istanze verranno
