@@ -28,7 +28,7 @@ else:
     work_on_explicit = False
 
 
-path_instance = "../resources/vrplib/Instances/X-n459-k26.vrp"
+path_instance = "../resources/vrplib/Instances/Brussels1.vrp"
 instance = Parse.make_instance_from_path_name(path_instance)
 nodes, truck = Parse.work_on_instance(instance, work_on_explicit)
 
@@ -79,7 +79,7 @@ def start():
         # Registra il tempo di inizio
         start_time = time.perf_counter()
         # Chiamata alla funzione che vuoi misurare
-        routes, costs = sweepAle.sweep_algorithm(nodes, truck_capacity, True, True)
+        routes, costs = sweepAle.sweep_algorithm(nodes, truck_capacity, False, False)
 
         # Registra il tempo di fine
         end_time = time.perf_counter()
