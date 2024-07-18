@@ -15,7 +15,7 @@ MID_SMALL = False   # FATTE
 MID = False  # FATTE
 MID_LARGE = False   # FATTE andra tozzi
 LARGE = False  # Solo 2Opt
-X_LARGE = True
+X_LARGE = False
 
 # ------------------------------------------------------------------------------------------------------------
 
@@ -24,7 +24,7 @@ OPT_3 = True
 
 # ------------------------------------------------------------------------------------------------------------
 
-ACTIONS = False
+ACTIONS = True
 
 if ACTIONS:
     # Esegui l'euristica per tutte le size delle istanze GITHUB ACTION

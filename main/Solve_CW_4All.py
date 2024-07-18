@@ -18,11 +18,11 @@ MID_SMALL = False
 MID = False
 MID_LARGE = False
 LARGE = False
-X_LARGE = True
+X_LARGE = False
 
 # ------------------------------------------------------------------------------------------------------------
 
-ACTIONS = False
+ACTIONS = True
 
 if ACTIONS:
     # Directory dei file contenenti i nomi delle istanze
