@@ -10,12 +10,12 @@ SWEEP_SELECTOR = 1
 # Selezionando come primo parametro selector = 1, verrà eseguito l'algoritmo di Sweep di Alessia
 # ------------------------------------------------------------------------------------------------------------
 
-SMALL = True   # FATTE
+SMALL = False   # FATTE
 MID_SMALL = False   # FATTE
 MID = False  # FATTE
 MID_LARGE = False   # FATTE andra tozzi
 LARGE = False  # Solo 2Opt
-X_LARGE = False
+X_LARGE = True
 
 # ------------------------------------------------------------------------------------------------------------
 
@@ -150,8 +150,8 @@ def write_in_csv(line, f, size):
             execution_time_3_opt = 0
 
         # Scrittura dei risultati nel file csv
-        # opt = Parser.get_optimal_cost_from_instance(instance)
-        opt = Parser.get_optimal_cost_from_path(INSTANCES_DIRECTORY + file_name)
+        path = INSTANCES_DIRECTORY + file_name
+        opt = Parser.get_optimal_cost_from_path(path)
 
         if opt is not None:
             apx_no_opt = costs_no_opt / opt
