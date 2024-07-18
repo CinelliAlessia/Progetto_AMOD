@@ -1,4 +1,6 @@
 import itertools
+import time
+
 from Utils import calculate_cost
 
 PRINT = False
@@ -37,6 +39,7 @@ def initialize(nodes):
 
 
 def sweep_algorithm(nodes, vehicle_capacity, opt_2, opt_3):
+    start_time = time.pref_counter()
     nodes, id_depots = initialize(nodes)  # Ottengo i nodi ordinati per angolo minore
 
     clusters = []
