@@ -6,7 +6,7 @@ import os
 import Utils
 
 
-ACTIONS = False
+ACTIONS = True
 
 if ACTIONS:
     # Directory dei file contenenti i nomi delle istanze
