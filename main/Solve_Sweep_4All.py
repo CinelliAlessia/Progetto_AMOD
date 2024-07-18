@@ -150,7 +150,8 @@ def write_in_csv(line, f, size):
             execution_time_3_opt = 0
 
         # Scrittura dei risultati nel file csv
-        opt = Parser.get_optimal_cost_from_instance(instance)
+        # opt = Parser.get_optimal_cost_from_instance(instance)
+        opt = Parser.get_optimal_cost_from_path(INSTANCES_DIRECTORY + file_name)
 
         if opt is not None:
             apx_no_opt = costs_no_opt / opt

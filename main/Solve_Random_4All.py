@@ -5,25 +5,6 @@ import ParseInstances as Parser
 import os
 import Utils
 
-
-ACTIONS = True
-
-if ACTIONS:
-    # Directory dei file contenenti i nomi delle istanze
-    NAME_BY_SIZE_PATH = "./resources/vrplib/Name_of_instances_by_dimension/"
-    INSTANCES_DIRECTORY = "./resources/vrplib/Instances/"  # Directory delle istanze
-    OUTPUT_PATH = ".main/Results/Random_Solutions/"  # Directory di output per i risultati
-
-else:
-    # Directory dei file contenenti i nomi delle istanze
-    NAME_BY_SIZE_PATH = "../resources/vrplib/Name_of_instances_by_dimension/"
-    INSTANCES_DIRECTORY = "../resources/vrplib/Instances/"  # Directory delle istanze
-    OUTPUT_PATH = "Results/Random_Solutions/"  # Directory di output per i risultati
-
-OUTPUT_BASE_FILE_NAME = "RANDOM_APX_and_Time"  # Aggiungere come prefisso il numero del run
-
-RANDOM_ITERATION_NUMBER = 750
-
 # Se impostati a True, eseguirà l'euristica di Clarke e Wright per le istanze di quel tipo
 SMALL = False
 MID_SMALL = False
@@ -32,18 +13,46 @@ MID_LARGE = False
 LARGE = False
 X_LARGE = False
 
+# ------------------------------------------------------------------------------------------------------------
 
-# Esegui l'euristica di Clarke e Wright per le istanze elencate nel file_path (tramite nome), le istanze verranno
-# recuperate nella directory "Results/vrplib/Instances"
+ACTIONS = True
+
+if ACTIONS:
+    # Directory dei file contenenti i nomi delle istanze
+    NAME_BY_SIZE_PATH = "./resources/vrplib/Name_of_instances_by_dimension/"
+    OUTPUT_PATH = "./main/Results/Random_Solutions/"  # Directory di output per i risultati
+    INSTANCES_DIRECTORY = "./resources/vrplib/Instances/"  # Directory delle istanze
+
+else:
+    # Directory dei file contenenti i nomi delle istanze
+    NAME_BY_SIZE_PATH = "../resources/vrplib/Name_of_instances_by_dimension/"
+    OUTPUT_PATH = "Results/Random_Solutions/"  # Directory di output per i risultati
+    INSTANCES_DIRECTORY = "../resources/vrplib/Instances/"  # Directory delle istanze
+
+OUTPUT_BASE_FILE_NAME = "RANDOM_APX_and_Time"  # Aggiungere come prefisso il numero del run
+RANDOM_ITERATION_NUMBER = 750
+
+
 def solve_random_for_instance_name_in_file(size, file_path):
+    """
+    Esegue un modello Randomico per le istanze elencate nel file_path (tramite nome)
+    :param size:
+    :param file_path:
+    :return:
+    """
+
     # Verifico che il file contenente i nomi delle istanze esista
     if not os.path.exists(file_path):
-        print("Il file non esiste")
+        print(f"Il file {file_path} non esiste")
         return
-    # Apro il file in lettura
+
+    # Apro il file in lettura per leggere i nomi delle istanze separate per dimensione
     n = open(file_path, "r")
-    # Apri un nuovo file di output per salvare i risultati
-    # Prima devo vedere l'ultimo file creato e incrementare il numero
+
+    # Verifico che la directory di output esista, altrimenti la creo
+    if not os.path.exists(f"{OUTPUT_PATH}"):
+        os.makedirs(OUTPUT_PATH)
+
     filename = size + "_" + OUTPUT_BASE_FILE_NAME
 
     i = 0
@@ -55,12 +64,11 @@ def solve_random_for_instance_name_in_file(size, file_path):
 
     # Scrivi nel file l'intestazione
     f.write("Size,Instance_Name,#Node,#Truck,Capacity,Optimal_Cost,BEST_Random,APX,Execution_time,#Iteration\n")
+
     # -----------------------------------------------------------------------------------------
     # Per ogni riga (riga = file_name) in n (file_path),
     # esegui l'euristica di Clarke e Wright sull'istanza corrispondente
-    i = 0
     for line in n:
-        i += 1
         file_name = line.strip()
         if file_name.endswith(".vrp"):
             print(f"Solving {file_name}...")

@@ -1,10 +1,2 @@
-Antwerp1.vrp
-Antwerp2.vrp
-Brussels1.vrp
-Brussels2.vrp
 Flanders1.vrp
 Flanders2.vrp
-Ghent1.vrp
-Ghent2.vrp
-Leuven1.vrp
-Leuven2.vrp

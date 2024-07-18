@@ -5,8 +5,6 @@ import Clarke_Wright_Alessia as CwAle
 import ParseInstances as Parser
 import os
 import Utils
-import sys
-
 # ------------------------------------------------------------------------------------------------------------
 CW_SELECTOR = 0
 # Selezionando come primo parametro selector = 0, verrà eseguito l'algoritmo di Clarke e Wright di Andrea
