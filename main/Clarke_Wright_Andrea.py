@@ -1,9 +1,12 @@
+import time
 import ParseInstances as Parser
 import Utils
 
+EXECUTION_TIMEOUT = 300  # Tempo massimo di esecuzione in secondi
 VERBOSE = False  # Se True, stampa valori delle istanze e i passaggi dell'euristica di Clarke e Wright
-SAVE_SOLUTION_ON_FILE = False  # Se True, salva i risultati in un file .sol
+SAVE_SOLUTION_ON_FILE = True  # Se True, salva i risultati in un file .sol
 RESULT_DIRECTORY = "Results/Heuristic_Solutions/CW_Solutions"  # Directory di output per i risultati
+
 # ------------ Definisco le variabili globali che descrivono l'istanza specifica ------------------------
 global weights, demands, depots, depot_index, truck_capacity, name  # Imposto variabili globali
 
@@ -13,7 +16,7 @@ global weights, demands, depots, depot_index, truck_capacity, name  # Imposto va
 def calculate_saves_and_sort_descent(instance):
     n = Parser.get_nodes_dimension(instance)
     saves = []
-    for i in range(0, n):
+    for i in range(1, n):  # todo ho cambiato da 0 a 1
         for j in range(i + 1, n):
             # formato di un save: (nodo, nodo, valore)
             # deve essere calcolato solo se i e j non sono depositi
@@ -60,6 +63,7 @@ def merge_routes_if_possible(routes, i, j):
 # input: path del file .vrp
 # output: costo totale dei percorsi e lista di percorsi
 def solve_clarke_and_wright_on_instance(instance):
+    print("Solving: ", Parser.get_name(instance))
     # --------------- Inizializzo le variabili globali ---------------
     global demands, weights, depots, depot_index, truck_capacity, name
     demands = Parser.get_node_demands(instance)
@@ -77,22 +81,27 @@ def solve_clarke_and_wright_on_instance(instance):
         if i not in depots:  # Se il cliente i non è un deposito
             routes.append([depot_index, i, depot_index])
             cw_cost += weights[depot_index][i] + weights[i][depot_index]
-    if VERBOSE:
-        print(f"First n Route: {routes} \nCost {cw_cost}")
+    # ------------------------- Inizializzazione timer di esecuzione ----------------------------
+    start_time = time.perf_counter()  # Almeno una soluzione anche se banale e pessima è definita
     # -----------------------------------------------------------------------------------
     # Passo 1: Calcolo saves per ogni coppia di nodi e li ordino in modo decrescente
     saves = calculate_saves_and_sort_descent(instance)
     if VERBOSE:
-        print("Saves Ordered:")
-        for s in saves:
-            print(s)
+        if n < 50:
+            print("Saves Ordered:")
+            for s in saves:
+                print(s)
     # -----------------------------------------------------------------------------------
     # Passo 2: Unisco le route in modo ammissibile (Provo solo save positivi)
     for s in saves:
         i, j, save_value = s
-        if save_value >= 0:
+        if save_value > 0:
             if merge_routes_if_possible(routes, i, j):
                 cw_cost -= save_value
+            # --------- Controllo timeout --------------
+            execution_time = (time.perf_counter() - start_time)
+            if execution_time > EXECUTION_TIMEOUT:
+                break
         # Se il save è negativo, non ha senso unire i percorsi
     # -----------------------------------------------------------------------------------
     # Passo 3: salva il risultato in un file .sol e stampa i risultati
@@ -111,9 +120,10 @@ def solve_clarke_and_wright_on_instance(instance):
 
 
 def solve_clarke_and_wright_from_file(file_path):
+    print("Parsing: ", file_path)
     instance = Parser.make_instance_from_path_name(file_path)
     return solve_clarke_and_wright_on_instance(instance)
 
 
 # -------------------------- Test -----------------------------
-# solve_clarke_and_wright_from_file("../resources/vrplib/Instances/P-n22-k8.vrp")
+# solve_clarke_and_wright_from_file("../resources/vrplib/Instances/X-n1001-k43.vrp")
