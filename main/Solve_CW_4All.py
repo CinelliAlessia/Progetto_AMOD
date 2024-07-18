@@ -34,7 +34,7 @@ MID_SMALL = False
 MID = False
 MID_LARGE = False
 LARGE = False
-X_LARGE = True
+X_LARGE = False
 
 
 # Esegui l'euristica di Clarke e Wright per le istanze elencate nel file_path (tramite nome), le istanze verranno
