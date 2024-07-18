@@ -11,18 +11,9 @@ CW_SELECTOR = 0
 # Selezionando come primo parametro selector = 0, verrà eseguito l'algoritmo di Clarke e Wright di Andrea
 # Selezionando come primo parametro selector = 1, verrà eseguito l'algoritmo di Clarke e Wright di Alessia
 # ------------------------------------------------------------------------------------------------------------
-
-# Se impostati a True, eseguirà l'euristica di Clarke e Wright per le istanze di quel tipo
-SMALL = False
-MID_SMALL = False
-MID = False
-MID_LARGE = False
-LARGE = False
-X_LARGE = False
-
+OUTPUT_BASE_FILE_NAME = "CW_APX_and_Time"  # Nome base del file di output, verranno aggiunti prefisso e suffisso
 # ------------------------------------------------------------------------------------------------------------
-
-ACTIONS = True
+ACTIONS = True  # Impostare a True se si sta eseguendo il codice dalle github Actions, False se in locale
 
 if ACTIONS:
     # Directory dei file contenenti i nomi delle istanze
@@ -34,8 +25,15 @@ else:
     NAME_BY_SIZE_PATH = "../resources/vrplib/Name_of_instances_by_dimension/"
     OUTPUT_PATH = "Results/Heuristic_Solutions/Clarke_&_Wright_run/"  # Directory di output per i risultati
     INSTANCES_DIRECTORY = "../resources/vrplib/Instances/"  # Directory delle istanze
-
-OUTPUT_BASE_FILE_NAME = "CW_APX_and_Time"  # Aggiungere come prefisso il numero del run
+# ------------------------------------------------------------------------------------------------------------
+# Se impostati a True, eseguirà l'euristica di Clarke e Wright per le istanze di quel tipo
+SMALL = False
+MID_SMALL = False
+MID = False
+MID_LARGE = False
+LARGE = False
+X_LARGE = True
+# ------------------------------------------------------------------------------------------------------------
 
 
 def solve_cw_for_instance_name_in_file(size, file_path):
@@ -107,20 +105,19 @@ def solve_cw_for_instance_name_in_file(size, file_path):
                 apx = cw_cost / opt
             else:
                 apx = None
-
             # Recupera informazioni sull'istanza: numero di nodi, numero di veicoli, capacità dei veicoli
-            capacity = Parser.get_truck(instance).get_capacity()
             n_nodes = Parser.get_nodes_dimension(instance)
             n_truck = Parser.get_truck(instance).get_min_num()
             if n_truck == 0:
                 n_truck = None
-
+            capacity = Parser.get_truck(instance).get_capacity()
             # Stampa il valore ottimo affiancato al risultato dell'euristica
             print("Costo ottimo: ", opt, "| CW_cost:", cw_cost, "| APX: ", apx, "| Tempo di esecuzione: ",
                   execution_time)
             # Salva tali valori, con lo stesso formato su una nuova riga del file APX_and_Time.txt
             f.write(f"{size},{file_name},{n_nodes},{n_truck},{capacity},{opt},{cw_cost},{apx},{execution_time}\n")
     print(f"Finished solving for {size} instances")
+    f.close()
 
 
 if SMALL:

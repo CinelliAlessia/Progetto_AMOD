@@ -13,7 +13,7 @@ SWEEP_SELECTOR = 1
 SMALL = False   # FATTE
 MID_SMALL = False   # FATTE
 MID = False  # FATTE
-MID_LARGE = False   # FATTE andra tozzi
+MID_LARGE = False   # FATTE andrea tozzi
 LARGE = False  # Solo 2Opt
 X_LARGE = True
 
