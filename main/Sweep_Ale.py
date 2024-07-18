@@ -1,10 +1,18 @@
 import itertools
-import time
-
-from Utils import calculate_cost
+from tornado import concurrent
+from Utils import calculate_cost, verify_if_feasible
 
 PRINT = False
 distance_matrix = []
+
+TIMEOUT = 30
+global inc_route, inc_cost, vehicles_capacity, nodes_global
+
+
+def update_incumbent(routes, costs):
+    global inc_route, inc_cost
+    if verify_if_feasible(routes, vehicles_capacity, nodes_global):
+        inc_route, inc_cost = routes, costs
 
 
 def initialize(nodes):
@@ -38,7 +46,11 @@ def initialize(nodes):
     return nodes, id_depots
 
 
-def sweep_algorithm(nodes, vehicle_capacity, opt_2, opt_3):
+def sweep_inner(nodes, vehicle_capacity, opt_2, opt_3):
+    global vehicles_capacity, nodes_global
+    vehicles_capacity = vehicle_capacity
+    nodes_global = nodes
+
     nodes, id_depots = initialize(nodes)  # Ottengo i nodi ordinati per angolo minore
 
     clusters = []
@@ -83,9 +95,21 @@ def sweep_algorithm(nodes, vehicle_capacity, opt_2, opt_3):
         print_result("Clusters non ottimizzati", clusters, nodes)
 
     if not opt_2 and not opt_3:
-        return clusters, sum(costs)
+        best_route, best_costs = clusters, sum(costs)
+        update_incumbent(best_route, best_costs)
+        return best_route, best_costs
     else:
-        return optimize_clusters(clusters, costs, opt_2, opt_3)
+        return optimize_2opt(clusters, opt_3)
+
+
+def sweep_algorithm(nodes, vehicle_capacity, opt_2, opt_3):
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        future = executor.submit(sweep_inner, nodes, vehicle_capacity, opt_2, opt_3)
+        try:
+            return future.result(timeout=TIMEOUT)  # Timeout di 5 minuti (300 secondi)
+        except concurrent.futures.TimeoutError:
+            print("Timeout! Restituisco l'incumbent trovato fino ad ora.", opt_2, opt_3)
+            return inc_route, inc_cost
 
 
 def print_result(string, clusters, nodes):
@@ -98,33 +122,8 @@ def print_result(string, clusters, nodes):
     # Plotter.plot_if_not_explicit(clusters, nodes)
 
 
-def optimize_clusters(clusters, costs, opt_2, opt_3):
-    # Return immediately if no optimization is enabled
-    if not (opt_2 or opt_3):
-        return clusters, costs
+def optimize_2opt(clusters, opt_3):
 
-    if opt_2 and not opt_3:
-        optimized_clusters_2 = []
-        costs_2opt = []
-
-        for cluster in clusters:
-            cluster_2opt, cost = two_opt(cluster)
-
-            costs_2opt.append(cost)
-            optimized_clusters_2.append(cluster_2opt)
-
-        return optimized_clusters_2, sum(costs_2opt)
-
-    if opt_3:
-        return opt3_on_opt2(clusters)
-
-
-def opt3_on_opt2(clusters):
-    """
-    Applica l'algoritmo 2-opt e successivamente 3-opt su ogni cluster ottimizzato con 2-opt.
-    :param clusters: Clusters calcolati con Sweep
-    :return: Le routes ottimizzate con 2-opt e 3-opt.
-    """
     optimized_clusters_2 = []
     costs_2opt = []
 
@@ -134,21 +133,42 @@ def opt3_on_opt2(clusters):
         costs_2opt.append(cost)
         optimized_clusters_2.append(cluster_2opt)
 
+    best_route, best_costs = optimized_clusters_2, sum(costs_2opt)
+    update_incumbent(best_route, best_costs)
+
+    if not opt_3:
+        return best_route, best_costs
+    else:
+        return opt3_on_opt2(best_route, best_costs)
+
+
+def opt3_on_opt2(clusters_2opt, costs_2opt):
+    """
+    Applica l'algoritmo 2-opt e successivamente 3-opt su ogni cluster ottimizzato con 2-opt.
+    :param clusters_2opt:
+    :param costs_2opt:
+    :return: Le routes ottimizzate con 2-opt o 3-opt.
+    """
+
     optimized_clusters_3 = []
     costs_3opt = []
 
-    for cluster in optimized_clusters_2:
+    for cluster in clusters_2opt:
         cluster_3opt, cost = three_opt(cluster)
-
         costs_3opt.append(cost)
         optimized_clusters_3.append(cluster_3opt)
 
-    if costs_2opt < costs_3opt:
+    costs_3opt = sum(costs_3opt)
+
+    if costs_2opt <= costs_3opt:
         if PRINT: print("Soluzione scelta: 2-opt")
-        return optimized_clusters_2, sum(costs_2opt)
+        best_route, best_costs = clusters_2opt, costs_2opt
+        update_incumbent(best_route, best_costs)
     else:
         if PRINT: print("Soluzione scelta: 3-opt")
-        return optimized_clusters_3, sum(costs_3opt)
+        best_route, best_costs = optimized_clusters_3, costs_3opt
+        update_incumbent(best_route, best_costs)
+    return best_route, best_costs
 
 
 def two_opt_swap(tour, i, j):
@@ -157,6 +177,7 @@ def two_opt_swap(tour, i, j):
 
 
 def two_opt(tour):
+
     num_nodes = len(tour)
     best_tour = tour
     best_distance = calculate_total_distance(tour)
@@ -173,9 +194,8 @@ def two_opt(tour):
                 new_distance = calculate_total_distance(new_tour)
                 delta_distance = new_distance - best_distance
                 if delta_distance < 0:
-                    best_tour = new_tour
+                    best_tour, best_distance = new_tour, new_distance
                     improved = True
-                    best_distance = new_distance
 
     return best_tour, best_distance
 
@@ -222,11 +242,10 @@ def three_opt(route):
             # print(f"3-opt swap: {i} {j} {k}")
             new_route, new_distance = apply_3opt(best_route, i, j, k)
             if new_distance < best_distance:
-                best_route = new_route
-                best_distance = new_distance
+                best_route, best_distance = new_route, new_distance
                 improved = True
-                # print(f"local best root {best_route}")
                 break   # Esco dal ciclo for
+
         if improved:    # Se ho trovato un miglioramento, continuo, se non ne ho trovato, esco
             continue
 
@@ -250,6 +269,5 @@ def apply_3opt(route, i, j, k):
     for r in new_tours:
         distance = calculate_total_distance(r)
         if distance < opt_cost:
-            opt_cost = distance
-            opt_route = r
+            opt_route, opt_cost = r, distance
     return opt_route, opt_cost

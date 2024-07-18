@@ -67,10 +67,10 @@ def calculate_routes_cost(routes, weights, demands):
         route_str = " ".join(str(node) for node in route[1:-1])  # Escludi l'ID del deposito
         total_demand = sum(demands[node] for node in route[1:-1])  # Escludi il deposito
         route_cost += sum(weights[route[i]][route[i + 1]] for i in range(len(route) - 1))
-        #print(f"Route #{index + 1}: {route_str} |total demand: {total_demand} |route cost: "
-        #      f"{route_cost}")
+        print(f"Route #{index + 1}: {route_str} |total demand: {total_demand} |route cost: "
+              f"{route_cost}")
         total_cost += route_cost
-    #print(f"CALCULATED COST:  {total_cost}")
+    print(f"CALCULATED COST:  {total_cost}")
     return total_cost
 
 
@@ -104,6 +104,19 @@ def get_license():
 def total_demands(nodes):
     return sum([node.get_demand() for node in nodes])
 
+
+def verify_if_feasible(routes, truck_capacity, nodes):
+    for route in routes:
+        total_demand = sum(find_by_id(node, nodes).get_demand() for node in route[1:-1])  # Escludi il deposito
+        if total_demand > truck_capacity:
+            return False
+    return True
+
+
+def find_by_id(id, nodes):
+    for node in nodes:
+        if node.get_id() == id:
+            return node
 
 
 # TEST
