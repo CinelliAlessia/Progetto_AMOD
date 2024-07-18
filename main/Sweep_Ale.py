@@ -158,6 +158,8 @@ def opt3_on_opt2(clusters_2opt, costs_2opt):
         costs_3opt.append(cost)
         optimized_clusters_3.append(cluster_3opt)
 
+    costs_3opt = sum(costs_3opt)
+
     if costs_2opt <= costs_3opt:
         if PRINT: print("Soluzione scelta: 2-opt")
         best_route, best_costs = clusters_2opt, sum(costs_2opt)
