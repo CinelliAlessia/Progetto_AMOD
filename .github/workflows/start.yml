@@ -1,4 +1,4 @@
-name: Run Python Script Start
+name: Start
 
 on: [push]
 

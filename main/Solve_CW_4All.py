@@ -40,6 +40,8 @@ X_LARGE = True
 # Esegui l'euristica di Clarke e Wright per le istanze elencate nel file_path (tramite nome), le istanze verranno
 # recuperate nella directory "Results/vrplib/Instances"
 def solve_cw_for_instance_name_in_file(size, file_path):
+    print(f"Starting solving for {size} instances")
+
     # Verifico che il file contenente i nomi delle istanze esista
     if not os.path.exists(file_path):
         print("Il file non esiste")
@@ -113,6 +115,7 @@ def solve_cw_for_instance_name_in_file(size, file_path):
                   execution_time)
             # Salva tali valori, con lo stesso formato su una nuova riga del file APX_and_Time.txt
             f.write(f"{size},{file_name},{n_nodes},{n_truck},{capacity},{opt},{cw_cost},{apx},{execution_time}\n")
+    print(f"Finished solving for {size} instances")
     f.close()
 
 
