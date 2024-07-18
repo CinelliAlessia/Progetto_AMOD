@@ -13,7 +13,7 @@ CW_SELECTOR = 0
 # ------------------------------------------------------------------------------------------------------------
 OUTPUT_BASE_FILE_NAME = "CW_APX_and_Time"  # Nome base del file di output, verranno aggiunti prefisso e suffisso
 # ------------------------------------------------------------------------------------------------------------
-ACTIONS = False  # Impostare a True se si sta eseguendo il codice dalle github Actions, False se in locale
+ACTIONS = True  # Impostare a True se si sta eseguendo il codice dalle github Actions, False se in locale
 
 if ACTIONS:
     # Directory dei file contenenti i nomi delle istanze
@@ -32,7 +32,7 @@ MID_SMALL = False
 MID = False
 MID_LARGE = False
 LARGE = False
-X_LARGE = False
+X_LARGE = True
 # ------------------------------------------------------------------------------------------------------------
 
 
@@ -69,13 +69,14 @@ def solve_cw_for_instance_name_in_file(size, file_path):
     f = open(f"{OUTPUT_PATH}{filename}.csv", "w")
 
     # Scrivi nel file l'intestazione
-    f.write("Size,Instance_Name,#Node,#Truck,Capacity,Optimal_Cost,CW_cost,APX,Execution_time\n")
+    f.write("Size,Instance_Name,#Node,#Truck,Capacity,Optimal_Cost,CW_cost,APX,Execution_time,Status\n")
 
-    # -----------------------------------------------------------------------------------------
+    # ----------------------------------------------------------------------------------------------
     # Per ogni riga (riga = file_name) in n (file_path),
     # esegui l'euristica di Clarke e Wright sull'istanza corrispondente
     cw_cost = 0
     execution_time = 0
+    status = "Finished"
     for line in n:
         file_name = line.strip()
         if file_name.endswith(".vrp"):
@@ -86,7 +87,7 @@ def solve_cw_for_instance_name_in_file(size, file_path):
             if CW_SELECTOR == 0:  # CW Andrea
 
                 start_time = time.perf_counter()    # Registra il tempo di inizio
-                cw_cost, _ = CwAndre.solve_clarke_and_wright_on_instance(instance)
+                cw_cost, _, status = CwAndre.solve_clarke_and_wright_on_instance(instance)
                 end_time = time.perf_counter()  # Registra il tempo di fine
                 execution_time = end_time - start_time  # Calcola la durata dell'esecuzione
 
@@ -113,9 +114,10 @@ def solve_cw_for_instance_name_in_file(size, file_path):
             capacity = Parser.get_truck(instance).get_capacity()
             # Stampa il valore ottimo affiancato al risultato dell'euristica
             print("Costo ottimo: ", opt, "| CW_cost:", cw_cost, "| APX: ", apx, "| Tempo di esecuzione: ",
-                  execution_time)
+                  execution_time, "Stato", status)
             # Salva tali valori, con lo stesso formato su una nuova riga del file APX_and_Time.txt
-            f.write(f"{size},{file_name},{n_nodes},{n_truck},{capacity},{opt},{cw_cost},{apx},{execution_time}\n")
+            f.write(f"{size},{file_name},{n_nodes},{n_truck},{capacity},{opt},{cw_cost},{apx},{execution_time},"
+                    f"{status}\n")
     print(f"Finished solving for {size} instances")
     f.close()
 

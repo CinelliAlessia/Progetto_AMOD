@@ -1,10 +1,11 @@
+from tornado import concurrent
 import time
 import ParseInstances as Parser
 import Utils
 
 EXECUTION_TIMEOUT = 300  # Tempo massimo di esecuzione in secondi
 VERBOSE = False  # Se True, stampa valori delle istanze e i passaggi dell'euristica di Clarke e Wright
-SAVE_SOLUTION_ON_FILE = True  # Se True, salva i risultati in un file .sol
+SAVE_SOLUTION_ON_FILE = False  # Se True, salva i risultati in un file .sol
 RESULT_DIRECTORY = "Results/Heuristic_Solutions/CW_Solutions"  # Directory di output per i risultati
 
 # ------------ Definisco le variabili globali che descrivono l'istanza specifica ------------------------
@@ -74,6 +75,7 @@ def solve_clarke_and_wright_on_instance(instance):
     # -------------- Variabili da calcolare --------------
     routes = []  # Inizializzo le route come vuote (inizialmente ogni cliente ha un proprio veicolo, n route)
     cw_cost = 0  # Variabile che esprime il costo totale dei percorsi
+    status = "Finished"
     # -----------------------------------------------------------------------------------
     # Passo 0: Devo definire un cammino per ogni cliente: (depotIndex, i, depotIndex)
     n = Parser.get_nodes_dimension(instance)
@@ -85,13 +87,17 @@ def solve_clarke_and_wright_on_instance(instance):
     start_time = time.perf_counter()  # Almeno una soluzione anche se banale e pessima è definita
     # -----------------------------------------------------------------------------------
     # Passo 1: Calcolo saves per ogni coppia di nodi e li ordino in modo decrescente
-    saves = calculate_saves_and_sort_descent(instance)
-    print('Saves calcolati')
-    if VERBOSE:
-        if n < 50:
-            print("Saves Ordered:")
-            for s in saves:
-                print(s)
+    with concurrent.futures.ThreadPoolExecutor() as executor:
+        future = executor.submit(calculate_saves_and_sort_descent, instance)
+        try:
+            saves = future.result(timeout=EXECUTION_TIMEOUT)
+        except concurrent.futures.TimeoutError:
+            print('Timeout scaduto durante il calcolo dei saves')
+            status = "Timeout " + str(EXECUTION_TIMEOUT)
+            saves = None
+    if saves is None:
+        Utils.save_results_to_file(routes, cw_cost, RESULT_DIRECTORY, "CW_" + name)
+        return routes, cw_cost, status
     # -----------------------------------------------------------------------------------
     # Passo 2: Unisco le route in modo ammissibile (Provo solo save positivi)
     for s in saves:
@@ -102,6 +108,8 @@ def solve_clarke_and_wright_on_instance(instance):
             # --------- Controllo timeout --------------
             execution_time = (time.perf_counter() - start_time)
             if execution_time > EXECUTION_TIMEOUT:
+                print('Timeout Scaduto')
+                status = "Timeout " + str(EXECUTION_TIMEOUT)
                 break
         # Se il save è negativo, non ha senso unire i percorsi
     # -----------------------------------------------------------------------------------
@@ -117,7 +125,7 @@ def solve_clarke_and_wright_on_instance(instance):
             print(f"Route #{index + 1}: {route_str} |total demand: {total_demand} |route cost: "
                   f"{sum(weights[route[i]][route[i + 1]] for i in range(len(route) - 1))}")
         print(f"Cost {cw_cost}")
-    return cw_cost, routes  # todo invertire
+    return cw_cost, routes, status  # todo invertire
 
 
 def solve_clarke_and_wright_from_file(file_path):
@@ -127,4 +135,4 @@ def solve_clarke_and_wright_from_file(file_path):
 
 
 # -------------------------- Test -----------------------------
-solve_clarke_and_wright_from_file("../resources/vrplib/Instances/Antwerp1.vrp")
+#solve_clarke_and_wright_from_file("../resources/vrplib/Instances/Antwerp1.vrp")
