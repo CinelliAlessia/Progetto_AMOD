@@ -24,7 +24,7 @@ OPT_3 = True
 
 # ------------------------------------------------------------------------------------------------------------
 
-ACTIONS = True
+ACTIONS = False
 
 if ACTIONS:
     # Esegui l'euristica per tutte le size delle istanze GITHUB ACTION
@@ -64,11 +64,11 @@ def solve_sweep_for_instance_name_in_file(size, file_path):
     filename = size + "_" + OUTPUT_BASE_FILE_NAME
 
     i = 0
-    while os.path.exists(f"{OUTPUT_PATH}{filename + ".csv"}"):
+    while os.path.exists(f"{OUTPUT_PATH}{filename}.csv"):
         i += 1
-        filename = f"{size + "_" + OUTPUT_BASE_FILE_NAME}({i})"
+        filename = f"{size}_{OUTPUT_BASE_FILE_NAME}({i})"
 
-    f = open(f"{OUTPUT_PATH}{filename + ".csv"}", "w")
+    f = open(f"{OUTPUT_PATH}{filename}.csv", "w")
 
     # Scrivi nel file l'intestazione
     f.write("Size,Instance_Name,#Node,#Truck,Capacity,Optimal_Cost,Cost_NoOpt,Apx_NoOpt,Execution_time_NoOpt,Cost_2Opt,Apx_2Opt,Execution_time_2Opt,Cost_3Opt,Apx_3Opt,Execution_time_3Opt\n")

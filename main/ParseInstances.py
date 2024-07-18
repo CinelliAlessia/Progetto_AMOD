@@ -144,15 +144,15 @@ def get_truck(instance):
                 min_truck = int(trucks_info.split(",")[0])
                 max_truck = float('inf')
             except ValueError:
-                if VERBOSE: print(f"Error converting '{trucks_info.split(",")[0]}' to int")
+                if VERBOSE: print(f"Error converting '{trucks_info.split(',')[0]}' to int")
 
         elif "No of trucks:" in comment:
             trucks_info = comment.split("No of trucks:")[1].strip()
             try:
-                min_truck = int(trucks_info.split(",")[0])
+                min_truck = int(trucks_info.split(',')[0])
                 max_truck = min_truck
             except ValueError:
-                if VERBOSE: print(f"Error converting '{trucks_info.split(",")[0]}' to int")
+                if VERBOSE: print(f"Error converting '{trucks_info.split(',')[0]}' to int")
         else:
             min_truck = 0
             max_truck = float('inf')
