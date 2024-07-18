@@ -12,13 +12,13 @@ if ACTIONS:
     # Directory dei file contenenti i nomi delle istanze
     NAME_BY_SIZE_PATH = "./resources/vrplib/Name_of_instances_by_dimension/"
     INSTANCES_DIRECTORY = "./resources/vrplib/Instances/"  # Directory delle istanze
-    OUTPUT_PATH = "Results/Random_Solutions/"  # Directory di output per i risultati
+    OUTPUT_PATH = ".main/Results/Random_Solutions/"  # Directory di output per i risultati
 
 else:
     # Directory dei file contenenti i nomi delle istanze
     NAME_BY_SIZE_PATH = "../resources/vrplib/Name_of_instances_by_dimension/"
     INSTANCES_DIRECTORY = "../resources/vrplib/Instances/"  # Directory delle istanze
-    OUTPUT_PATH = "./main/Results/Random_Solutions/"  # Directory di output per i risultati
+    OUTPUT_PATH = "Results/Random_Solutions/"  # Directory di output per i risultati
 
 OUTPUT_BASE_FILE_NAME = "RANDOM_APX_and_Time"  # Aggiungere come prefisso il numero del run
 

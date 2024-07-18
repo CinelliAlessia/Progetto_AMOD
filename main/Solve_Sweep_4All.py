@@ -75,7 +75,6 @@ def solve_sweep_for_instance_name_in_file(size, file_path):
     # Verifico che il file contenente i nomi delle istanze esista
     if not os.path.exists(file_path):
         print(f"Il file {file_path} non esiste")
-        # todo CHIAMA il programma che genera i file con i nomi delle istanze
         return
 
     # Apro il file in lettura per leggere i nomi delle istanze separate per dimensione
@@ -116,7 +115,6 @@ def write_in_csv(line, f, size):
         print("Fine parsing")
 
         nodes, truck = Parser.work_on_instance(instance, False)
-        opt = Parser.get_optimal_cost_from_path(INSTANCES_DIRECTORY + file_name)
 
         # ----- Calcolo Sweep NoOpt -----
 
@@ -150,6 +148,9 @@ def write_in_csv(line, f, size):
             costs_3_opt = 0
             # Calcola la durata dell'esecuzione
             execution_time_3_opt = 0
+
+        # Scrittura dei risultati nel file csv
+        opt = Parser.get_optimal_cost_from_instance(instance)
 
         if opt is not None:
             apx_no_opt = costs_no_opt / opt

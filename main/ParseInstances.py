@@ -64,6 +64,23 @@ def get_optimal_cost_from_path(path):
             return None
 
 
+def get_optimal_cost_from_instance(instance):
+    comment = instance.get('comment')
+    if comment is not None:
+        if "Optimal value:" in comment:
+            optimal_value = comment.split("Optimal value:")[1].strip()
+            # Rimuovi eventuali caratteri non numerici alla fine del valore
+            optimal_value = re.sub(r"[^\d.]+", "", optimal_value)
+            return float(optimal_value)
+        elif "Best value:" in comment:
+            optimal_value = comment.split("Best value:")[1].strip()
+            # Rimuovi eventuali caratteri non numerici alla fine del valore
+            optimal_value = re.sub(r"[^\d.]+", "", optimal_value)
+            return float(optimal_value)
+        elif re.match(r"^\d+(\.\d+)?$", comment):
+            return float(comment)
+    return None
+
 # Restituisce il numero dei nodi (compreso deposito) andando a leggere il campo 'dimension' dell'istanza
 def get_nodes_dimension(instance):
     return instance.get('dimension')
