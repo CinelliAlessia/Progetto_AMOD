@@ -1,5 +1,7 @@
 import os
 
+import ParseInstances as Parser
+
 
 def save_results_to_file(routes, cw_cost, directory, instance_name):
     """
@@ -65,10 +67,10 @@ def calculate_routes_cost(routes, weights, demands):
         route_str = " ".join(str(node) for node in route[1:-1])  # Escludi l'ID del deposito
         total_demand = sum(demands[node] for node in route[1:-1])  # Escludi il deposito
         route_cost += sum(weights[route[i]][route[i + 1]] for i in range(len(route) - 1))
-        print(f"Route #{index + 1}: {route_str} |total demand: {total_demand} |route cost: "
-              f"{route_cost}")
+        #print(f"Route #{index + 1}: {route_str} |total demand: {total_demand} |route cost: "
+        #      f"{route_cost}")
         total_cost += route_cost
-    print(f"CALCULATED COST:  {total_cost}")
+    #print(f"CALCULATED COST:  {total_cost}")
     return total_cost
 
 
@@ -101,3 +103,130 @@ def get_license():
 
 def total_demands(nodes):
     return sum([node.get_demand() for node in nodes])
+
+
+
+# TEST
+
+
+def read_sol_file(filepath):
+    routes = []
+
+    with open(filepath, 'r') as file:
+        lines = file.readlines()
+
+        for line in lines:
+            if line.startswith('Route #'):
+                route_str = line.strip().split(': ')[1]
+                nodes = list(map(int, route_str.split()))
+                formatted_route = [0] + nodes + [0]
+                routes.append(formatted_route)
+            elif line.startswith('Cost'):
+                cost = int(line.split()[1].strip())
+
+    return routes, cost
+
+
+def fix_cost(directory):
+    # Controlla che la directory esista
+    if not os.path.isdir(directory):
+        print(f"Directory '{directory}' non trovata.")
+        return
+
+    # Ottieni la lista dei file .sol nella directory
+    sol_files = [f for f in os.listdir(directory) if f.endswith('.sol')]
+
+    for sol_file in sol_files:
+        filepath = os.path.join(directory, sol_file)
+        print(f"Modifica del file: {filepath}")
+
+        # Leggi le routes e il costo dal file .sol
+        routes, file_cost = read_sol_file(filepath)
+
+        name_file = sol_file.split(".")[0]
+
+        # Carica l'istanza dal file VRP
+        instance_path = f'../resources/vrplib/Instances/{name_file}.vrp'
+        instance = Parser.make_instance_from_path_name(instance_path)
+
+        # Ottieni i pesi degli archi e le richieste dei nodi
+        weights = Parser.get_edge_weight(instance)
+        demands = Parser.get_node_demands(instance)
+
+        # Calcola il costo totale delle routes
+        calculated_cost = calculate_routes_cost(routes, weights, demands)
+        print(f"Costo calcolato dalle routes: {calculated_cost}")
+        print(f"Costo indicato nel file .sol: {file_cost}")
+
+        # Confronto tra costo calcolato e costo dal file .sol
+        if calculated_cost == file_cost:
+            print("I costi coincidono.")
+        else:
+            modify_optimal_value_vrp(instance_path, calculated_cost)
+            print("Attenzione: i costi non coincidono.")
+
+        print()  # Linea vuota per separare le stampe dei vari file
+
+
+def modify_optimal_value_vrp(filepath, new_optimal_value):
+    # Leggi tutte le linee dal file VRP
+    with open(filepath, 'r') as file:
+        lines = file.readlines()
+
+    # Trova e modifica l'optimal value
+    for i, line in enumerate(lines):
+        if line.startswith('COMMENT'):
+            parts = line.split(':')
+            parts[-1] = f' Optimal value: {new_optimal_value})\n'
+            lines[i] = ':'.join(parts)
+            break
+
+    # Sovrascrivi il file VRP con l'optimal value modificato
+    with open(filepath, 'w') as file:
+        file.writelines(lines)
+
+
+import os
+
+def add_optimal_value_to_vrp(filepath, optimal_value):
+    with open(filepath, 'r') as file:
+        lines = file.readlines()
+
+    comment_found = False
+    for i, line in enumerate(lines):
+        if line.startswith('COMMENT'):
+            lines[i] = line.strip() + f', Optimal value: {optimal_value})\n'
+            comment_found = True
+            break
+
+    if not comment_found:
+        for i, line in enumerate(lines):
+            if line.startswith('TYPE'):
+                lines.insert(i, f'COMMENT : Optimal value: {optimal_value}\n')
+                break
+
+    with open(filepath, 'w') as file:
+        file.writelines(lines)
+
+def add_optimal_value_to_all_vrps_in_directory(directory, optimal_value):
+    if not os.path.isdir(directory):
+        print(f"Directory '{directory}' non trovata.")
+        return
+
+    vrp_files = [f for f in os.listdir(directory) if f.endswith('.vrp')]
+
+    for vrp_file in vrp_files:
+        filepath = os.path.join(directory, vrp_file)
+        print(f"Modifica del file: {filepath}")
+        add_optimal_value_to_vrp(filepath, optimal_value)
+        print(f"Valore ottimale aggiunto: {optimal_value}")
+
+
+# Esempio di utilizzo per la directory specificata
+directory_path = "../resources/vrplib/Solutions"
+fix_cost(directory_path)
+
+
+
+
+

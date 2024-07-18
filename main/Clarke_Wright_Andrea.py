@@ -131,5 +131,3 @@ def solve_clarke_and_wright_from_file(file_path):
     return solve_clarke_and_wright_on_instance(instance)
 
 
-# -------------------------- Test -----------------------------
-#solve_clarke_and_wright_from_file("../resources/vrplib/Instances/Antwerp1.vrp")
