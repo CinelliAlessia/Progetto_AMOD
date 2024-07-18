@@ -10,7 +10,7 @@ from Sweep_Andrea import solve_sweep_on_instance
 
 
 def print_roots(roots):
-    if len(nodes) < 50:
+    if len(all_nodes) < 50:
         for c in roots:
             print(c)
 
@@ -30,11 +30,11 @@ else:
 
 path_instance = "./resources/vrplib/Instances/Brussels1.vrp"
 instance = Parse.make_instance_from_path_name(path_instance)
-nodes, truck = Parse.work_on_instance(instance, work_on_explicit)
+all_nodes, truck = Parse.work_on_instance(instance, work_on_explicit)
 print("Fine Parsing")
 
 def start():
-    if nodes is None:
+    if all_nodes is None:
         return None
 
     # ALESSIA CW
@@ -42,15 +42,15 @@ def start():
         # Registra il tempo di inizio
         start_time = time.time()
         # Chiamata alla funzione che vuoi misurare
-        routes = cwAle.start(nodes, truck)
+        routes = cwAle.start(all_nodes, truck)
         # Registra il tempo di fine
         end_time = time.time()
         # Calcola la durata dell'esecuzione
         execution_time = end_time - start_time
         print(f"Tempo di esecuzione cwAle: {execution_time} secondi")
 
-        Plotter.plot_if_not_explicit(routes, nodes)
-        cost = Utils.calculate_cost(routes, nodes)
+        Plotter.plot_if_not_explicit(routes, all_nodes)
+        cost = Utils.calculate_cost(routes, all_nodes)
         print_roots(routes)
         print(f"Costi CW ALESSIA {cost}")
 
@@ -66,9 +66,9 @@ def start():
         execution_time = end_time - start_time
         print(f"Tempo di esecuzione cwAndre: {execution_time} secondi")
 
-        Plotter.plot_if_not_explicit(routes, nodes)
+        Plotter.plot_if_not_explicit(routes, all_nodes)
 
-        cost = Utils.calculate_cost(routes, nodes)
+        cost = Utils.calculate_cost(routes, all_nodes)
         print_roots(routes)
         print(f"Costi CW ANDREA {cost}")
 
@@ -79,7 +79,7 @@ def start():
         # Registra il tempo di inizio
         start_time = time.perf_counter()
         # Chiamata alla funzione che vuoi misurare
-        routes, costs = sweepAle.sweep_algorithm(nodes, truck_capacity, False, False)
+        routes, costs = sweepAle.sweep_algorithm(all_nodes, truck_capacity, False, False)
 
         # Registra il tempo di fine
         end_time = time.perf_counter()
@@ -87,9 +87,9 @@ def start():
         execution_time = end_time - start_time
         print(f"Tempo di esecuzione sweep Ale: {execution_time} secondi")
 
-        Plotter.plot_if_not_explicit(routes, nodes)
+        Plotter.plot_if_not_explicit(routes, all_nodes)
         print_roots(routes)
-        print(f"Costo: {Utils.calculate_cost(routes, nodes)}")
+        print(f"Costo: {Utils.calculate_cost(routes, all_nodes)}")
 
         print(f"Costi SWEEP ALESSIA: {costs}")
 
@@ -105,14 +105,14 @@ def start():
         execution_time = end_time - start_time
         print(f"Tempo di esecuzione sweep Andrea: {execution_time} secondi")
 
-        Plotter.plot_if_not_explicit(routes, nodes)
+        Plotter.plot_if_not_explicit(routes, all_nodes)
 
-        cost = Utils.calculate_cost(routes, nodes)
+        cost = Utils.calculate_cost(routes, all_nodes)
         print_roots(routes)
         print(f"Costi SWEEP ANDREA {cost}")
 
     if RANDOM:
-        total_demand = Utils.total_demands(nodes)
+        total_demand = Utils.total_demands(all_nodes)
         id_depots = Parse.get_depots_index(instance)[0]
 
         best_cost = float("inf")
@@ -121,7 +121,7 @@ def start():
         # Registra il tempo di inizio
         start_time = time.perf_counter()
         for i in range(RANDOM_ITERATION_NUMBER):
-            routes, costs = vrp_random(nodes, truck.get_capacity(), total_demand, id_depots)
+            routes, costs = vrp_random(all_nodes, truck.get_capacity(), total_demand, id_depots)
             if costs < best_cost:
                 best_cost = costs
                 best_root = routes  # Registra il tempo di fine
@@ -131,7 +131,7 @@ def start():
         execution_time = end_time - start_time
 
         print_roots(best_root)
-        Plotter.plot_if_not_explicit(best_root, nodes)
+        Plotter.plot_if_not_explicit(best_root, all_nodes)
 
         print(f"Costi random: {best_cost}")
         print(f"Tempo di esecuzione random: {execution_time} secondi")

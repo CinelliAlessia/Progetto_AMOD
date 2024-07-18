@@ -101,3 +101,17 @@ def get_license():
 
 def total_demands(nodes):
     return sum([node.get_demand() for node in nodes])
+
+
+def verify_if_feasible(routes, truck_capacity, nodes):
+    for route in routes:
+        total_demand = sum(find_by_id(node, nodes).get_demand() for node in route[1:-1])  # Escludi il deposito
+        if total_demand > truck_capacity:
+            return False
+    return True
+
+
+def find_by_id(id, nodes):
+    for node in nodes:
+        if node.get_id() == id:
+            return node
