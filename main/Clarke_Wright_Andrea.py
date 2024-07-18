@@ -86,6 +86,7 @@ def solve_clarke_and_wright_on_instance(instance):
     # -----------------------------------------------------------------------------------
     # Passo 1: Calcolo saves per ogni coppia di nodi e li ordino in modo decrescente
     saves = calculate_saves_and_sort_descent(instance)
+    print('Saves calcolati')
     if VERBOSE:
         if n < 50:
             print("Saves Ordered:")
@@ -126,4 +127,4 @@ def solve_clarke_and_wright_from_file(file_path):
 
 
 # -------------------------- Test -----------------------------
-# solve_clarke_and_wright_from_file("../resources/vrplib/Instances/X-n1001-k43.vrp")
+solve_clarke_and_wright_from_file("../resources/vrplib/Instances/Antwerp1.vrp")
