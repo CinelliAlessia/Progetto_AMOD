@@ -5,12 +5,21 @@ import Clarke_Wright_Alessia as CwAle
 import ParseInstances as Parser
 import os
 import Utils
-import sys
 
 # ------------------------------------------------------------------------------------------------------------
 CW_SELECTOR = 0
 # Selezionando come primo parametro selector = 0, verrà eseguito l'algoritmo di Clarke e Wright di Andrea
 # Selezionando come primo parametro selector = 1, verrà eseguito l'algoritmo di Clarke e Wright di Alessia
+# ------------------------------------------------------------------------------------------------------------
+
+# Se impostati a True, eseguirà l'euristica di Clarke e Wright per le istanze di quel tipo
+SMALL = False
+MID_SMALL = False
+MID = False
+MID_LARGE = False
+LARGE = False
+X_LARGE = False
+
 # ------------------------------------------------------------------------------------------------------------
 
 ACTIONS = True
@@ -28,27 +37,27 @@ else:
 
 OUTPUT_BASE_FILE_NAME = "CW_APX_and_Time"  # Aggiungere come prefisso il numero del run
 
-# Se impostati a True, eseguirà l'euristica di Clarke e Wright per le istanze di quel tipo
-SMALL = False
-MID_SMALL = False
-MID = False
-MID_LARGE = False
-LARGE = False
-X_LARGE = True
 
-
-# Esegui l'euristica di Clarke e Wright per le istanze elencate nel file_path (tramite nome), le istanze verranno
-# recuperate nella directory "Results/vrplib/Instances"
 def solve_cw_for_instance_name_in_file(size, file_path):
+    """
+    Esegui l'euristica di Clarke e Wright per le istanze elencate nel file_path (tramite nome), le istanze verranno
+    :param size: nome della dimensione delle istanze
+    :param file_path: path del file contenente i nomi delle istanze
+    :return:
+    """
     print(f"Starting solving for {size} instances")
 
     # Verifico che il file contenente i nomi delle istanze esista
     if not os.path.exists(file_path):
-        print("Il file non esiste")
+        print(f"Il file {file_path} non esiste")
         return
 
-    # Apro il file in lettura
+    # Apro il file in lettura per leggere i nomi delle istanze separate per dimensione
     n = open(file_path, "r")
+
+    # Verifico che la directory di output esista, altrimenti la creo
+    if not os.path.exists(f"{OUTPUT_PATH}"):
+        os.makedirs(OUTPUT_PATH)
 
     # Apri un nuovo file di output per salvare i risultati
     # Prima devo vedere l'ultimo file creato e incrementare il numero
@@ -63,39 +72,33 @@ def solve_cw_for_instance_name_in_file(size, file_path):
 
     # Scrivi nel file l'intestazione
     f.write("Size,Instance_Name,#Node,#Truck,Capacity,Optimal_Cost,CW_cost,APX,Execution_time\n")
+
     # -----------------------------------------------------------------------------------------
     # Per ogni riga (riga = file_name) in n (file_path),
     # esegui l'euristica di Clarke e Wright sull'istanza corrispondente
-    i = 0
     cw_cost = 0
     execution_time = 0
     for line in n:
-        i += 1
         file_name = line.strip()
         if file_name.endswith(".vrp"):
-            print(f"Solving {file_name}...", file=sys.stdout)
+            print(f"Solving {file_name}...")
+
             instance = Parser.make_instance_from_path_name(f"{INSTANCES_DIRECTORY}{file_name}")
             print("Fine parsing")
             if CW_SELECTOR == 0:  # CW Andrea
-                # Registra il tempo di inizio
-                start_time = time.perf_counter()
-                # Chiamata alla funzione che vuoi misurare
+
+                start_time = time.perf_counter()    # Registra il tempo di inizio
                 cw_cost, _ = CwAndre.solve_clarke_and_wright_on_instance(instance)
-                # Registra il tempo di fine
-                end_time = time.perf_counter()
-                # Calcola la durata dell'esecuzione
-                execution_time = end_time - start_time
+                end_time = time.perf_counter()  # Registra il tempo di fine
+                execution_time = end_time - start_time  # Calcola la durata dell'esecuzione
+
             elif CW_SELECTOR == 1:  # CW Alessia
                 nodes, truck = Parser.work_on_instance(instance, True)
-                # Registra il tempo di inizio
-                start_time = time.perf_counter()
-                # Chiamata alla funzione che vuoi misurare
+                start_time = time.perf_counter()    # Registra il tempo di inizio
                 routes = CwAle.start(nodes, truck)
-                # Registra il tempo di fine
-                end_time = time.perf_counter()
                 cw_cost = Utils.calculate_cost(routes, nodes)
-                # Calcola la durata dell'esecuzione
-                execution_time = end_time - start_time
+                end_time = time.perf_counter()  # Registra il tempo di fine
+                execution_time = end_time - start_time  # Calcola la durata dell'esecuzione
 
             path = INSTANCES_DIRECTORY + file_name
             opt = Parser.get_optimal_cost_from_path(path)
@@ -104,19 +107,20 @@ def solve_cw_for_instance_name_in_file(size, file_path):
                 apx = cw_cost / opt
             else:
                 apx = None
+
             # Recupera informazioni sull'istanza: numero di nodi, numero di veicoli, capacità dei veicoli
+            capacity = Parser.get_truck(instance).get_capacity()
             n_nodes = Parser.get_nodes_dimension(instance)
             n_truck = Parser.get_truck(instance).get_min_num()
             if n_truck == 0:
                 n_truck = None
-            capacity = Parser.get_truck(instance).get_capacity()
+
             # Stampa il valore ottimo affiancato al risultato dell'euristica
             print("Costo ottimo: ", opt, "| CW_cost:", cw_cost, "| APX: ", apx, "| Tempo di esecuzione: ",
                   execution_time)
             # Salva tali valori, con lo stesso formato su una nuova riga del file APX_and_Time.txt
             f.write(f"{size},{file_name},{n_nodes},{n_truck},{capacity},{opt},{cw_cost},{apx},{execution_time}\n")
     print(f"Finished solving for {size} instances")
-    f.close()
 
 
 if SMALL:
