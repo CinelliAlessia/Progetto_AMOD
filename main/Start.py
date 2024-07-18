@@ -17,7 +17,7 @@ def print_roots(roots):
 
 CW_ALE = False
 CW_ANDRE = False
-SWEEP_ALE = True
+SWEEP_ALE = False
 SWEEP_ANDRE = False
 RANDOM = False
 RANDOM_ITERATION_NUMBER = 750
