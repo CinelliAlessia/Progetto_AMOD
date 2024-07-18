@@ -162,11 +162,11 @@ def opt3_on_opt2(clusters_2opt, costs_2opt):
 
     if costs_2opt <= costs_3opt:
         if PRINT: print("Soluzione scelta: 2-opt")
-        best_route, best_costs = clusters_2opt, sum(costs_2opt)
+        best_route, best_costs = clusters_2opt, costs_2opt
         update_incumbent(best_route, best_costs)
     else:
         if PRINT: print("Soluzione scelta: 3-opt")
-        best_route, best_costs = optimized_clusters_3, sum(costs_3opt)
+        best_route, best_costs = optimized_clusters_3, costs_3opt
         update_incumbent(best_route, best_costs)
     return best_route, best_costs
 
