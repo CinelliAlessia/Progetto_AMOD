@@ -95,9 +95,7 @@ def solve_clarke_and_wright_on_instance(instance):
         except concurrent.futures.TimeoutError:
             print('Timeout scaduto durante il calcolo dei saves')
             status = "Timeout " + str(EXECUTION_TIMEOUT)
-            saves = None
-    if saves is None:
-        return routes, cw_cost, status
+            return routes, cw_cost, status
     # -----------------------------------------------------------------------------------
     # Passo 2: Unisco le route in modo ammissibile (Provo solo save positivi)
     for s in saves:
