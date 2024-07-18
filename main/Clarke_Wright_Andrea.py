@@ -67,6 +67,7 @@ def solve_clarke_and_wright_on_instance(instance):
     print("Solving: ", Parser.get_name(instance))
     # --------------- Inizializzo le variabili globali ---------------
     global demands, weights, depots, depot_index, truck_capacity, name
+    name = Parser.get_name(instance)
     demands = Parser.get_node_demands(instance)
     truck_capacity = Parser.get_truck(instance).capacity
     weights = Parser.get_edge_weight(instance)
@@ -96,7 +97,6 @@ def solve_clarke_and_wright_on_instance(instance):
             status = "Timeout " + str(EXECUTION_TIMEOUT)
             saves = None
     if saves is None:
-        Utils.save_results_to_file(routes, cw_cost, RESULT_DIRECTORY, "CW_" + name)
         return routes, cw_cost, status
     # -----------------------------------------------------------------------------------
     # Passo 2: Unisco le route in modo ammissibile (Provo solo save positivi)
@@ -115,7 +115,6 @@ def solve_clarke_and_wright_on_instance(instance):
     # -----------------------------------------------------------------------------------
     # Passo 3: salva il risultato in un file .sol e stampa i risultati
     if SAVE_SOLUTION_ON_FILE:
-        name = Parser.get_name(instance)
         Utils.save_results_to_file(routes, cw_cost, RESULT_DIRECTORY, "CW_" + name)
     # Stampa i risultati a schermo
     if VERBOSE:
