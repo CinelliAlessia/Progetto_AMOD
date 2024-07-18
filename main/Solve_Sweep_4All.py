@@ -162,11 +162,11 @@ def write_in_csv(line, f, size):
 
         # Stampa informazioni sull'istanza: nome, numero di nodi, numero di veicoli
 
+        capacity = Parser.get_truck(instance).get_capacity()
         n_nodes = Parser.get_nodes_dimension(instance)
         n_truck = Parser.get_truck(instance).get_min_num()
         if n_truck == 0:
             n_truck = None
-        capacity = Parser.get_truck(instance).get_capacity()
 
         # Salva tali valori, con lo stesso formato su una nuova riga del file APX_and_Time.txt
         f.write(f"{size},{file_name},{n_nodes},{n_truck},{capacity},{opt},{costs_no_opt},{apx_no_opt},{execution_time_no_opt},{costs_2_opt},{apx_2_opt},{execution_time_2_opt},{costs_3_opt},{apx_3_opt},{execution_time_3_opt}\n")

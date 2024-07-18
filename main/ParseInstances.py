@@ -25,7 +25,13 @@ def get_edge_weight_type_from_path(path):
     return None
 
 
+# Restituisce il costo ottimo dell'istanza andando a leggere il campo 'comment' dell'istanza
+# Caso 1: COMMENT: altri campi "Optimal value: 845.26" altri campi
+# Caso 2: COMMENT: altri campi "best value: 524.61" altri campi
+# Caso 3: COMMENT: 524.61
+# Caso 4: Non è definito nel commento -> Guardare il file .sol alla riga cost
 def get_optimal_cost_from_path(path):
+    print(f"Path per il calcolo del costo ottimo: {path}")
     # apro il file e leggo la riga
     with open(path, "r") as f:
         for line in f:
@@ -56,28 +62,6 @@ def get_optimal_cost_from_path(path):
 
             if VERBOSE: print(f"Optimal Cost not found for: {name}")
             return None
-
-
-# Restituisce il costo ottimo dell'istanza andando a leggere il campo 'comment' dell'istanza
-# Caso 1: COMMENT: altri campi "Optimal value: 845.26" altri campi
-# Caso 2: COMMENT: altri campi "best value: 524.61" altri campi
-# Caso 3: COMMENT: 524.61
-# Caso 4: Non è definito nel commento -> Guardare il file .sol alla riga cost
-def get_optimal_cost_from_instance(instance):
-    comment = instance.get('comment')
-
-    if "Optimal value:" in comment:
-        optimal_value = comment.split("Optimal value:")[1].strip()
-        # Rimuovi eventuali caratteri non numerici alla fine del valore
-        optimal_value = re.sub(r"[^\d.]+", "", optimal_value)
-        return float(optimal_value)
-    elif "Best value:" in comment:
-        optimal_value = comment.split("Best value:")[1].strip()
-        # Rimuovi eventuali caratteri non numerici alla fine del valore
-        optimal_value = re.sub(r"[^\d.]+", "", optimal_value)
-        return float(optimal_value)
-    elif re.match(r"^\d+(\.\d+)?$", comment):
-        return float(comment)
 
 
 # Restituisce il numero dei nodi (compreso deposito) andando a leggere il campo 'dimension' dell'istanza
