@@ -62,11 +62,11 @@ def solve_cw_for_instance_name_in_file(size, file_path):
     filename = size + "_" + OUTPUT_BASE_FILE_NAME
 
     i = 0
-    while os.path.exists(f"{OUTPUT_PATH}{filename + ".csv"}"):
+    while os.path.exists(f"{OUTPUT_PATH}{filename}.csv"):
         i += 1
-        filename = f"{size + "_" + OUTPUT_BASE_FILE_NAME}({i})"
+        filename = f"{size}_{OUTPUT_BASE_FILE_NAME}({i})"
 
-    f = open(f"{OUTPUT_PATH}{filename + ".csv"}", "w")
+    f = open(f"{OUTPUT_PATH}{filename}.csv", "w")
 
     # Scrivi nel file l'intestazione
     f.write("Size,Instance_Name,#Node,#Truck,Capacity,Optimal_Cost,CW_cost,APX,Execution_time\n")

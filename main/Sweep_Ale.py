@@ -1,4 +1,6 @@
 import itertools
+import time
+
 from Utils import calculate_cost
 
 PRINT = False

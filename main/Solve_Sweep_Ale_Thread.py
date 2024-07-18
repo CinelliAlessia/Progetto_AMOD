@@ -2,6 +2,7 @@ import time
 import Sweep_Ale as sweepAle
 import ParseInstances as Parser
 import os
+import threading
 
 # ------------------------------------------------------------------------------------------------------------
 SWEEP_SELECTOR = 1
@@ -12,9 +13,9 @@ SWEEP_SELECTOR = 1
 SMALL = False   # FATTE
 MID_SMALL = False   # FATTE
 MID = False  # FATTE
-MID_LARGE = False   # FATTE andrea tozzi
-LARGE = True  # Solo 2Opt
-X_LARGE = False
+MID_LARGE = False   # FATTE andra tozzi
+LARGE = False  # Solo 2Opt
+X_LARGE = True
 
 # ------------------------------------------------------------------------------------------------------------
 
@@ -36,6 +37,29 @@ else:
     INSTANCES_DIRECTORY = "../resources/vrplib/Instances/"  # Directory delle istanze
 
 OUTPUT_BASE_FILE_NAME = "Sweep_APX_and_Time"  # Aggiungere come prefisso il numero del run
+
+# Struttura dati per salvare i risultati dell'algoritmo
+results = {
+    'routes': None,
+    'costs': None,
+    'completed': False
+}
+
+
+def run_sweep_algorithm(nodes, truck):
+    global results
+    routes, costs = sweepAle.sweep_algorithm(nodes, truck, False, OPT_3)
+
+    results['costs'] = costs
+    results['completed'] = True
+    results['routes'] = routes
+
+
+# Funzione per eseguire l'algoritmo con timeout
+def execute_with_timeout(nodes, truck, timeout_seconds):
+    thread = threading.Thread(target=run_sweep_algorithm, args=(nodes, truck))
+    thread.start()
+    thread.join(timeout=timeout_seconds)
 
 
 # Esegui l'euristica di Sweep per le istanze elencate nel file_path (tramite nome), le istanze verranno
@@ -109,12 +133,23 @@ def write_in_csv(line, f, size):
         # ----- Calcolo Sweep 3Opt -----
 
         start_time_3_opt = time.perf_counter()   # Registra il tempo di inizio
-        routes_3_opt, costs_3_opt = sweepAle.sweep_algorithm(nodes, truck.get_capacity(), False, OPT_3)
-        end_time_3_opt = time.perf_counter()    # Registra il tempo di fine
-        execution_time_3_opt = end_time_3_opt - start_time_3_opt
+
+        # Esegui l'algoritmo con un timeout di 5 minuti (300 secondi)
+        execute_with_timeout(nodes, truck.get_capacity(), 300)
+
+        # Calcola il tempo di esecuzione, se l'algoritmo è terminato
+        if results['completed']:
+            end_time_3_opt = time.perf_counter()
+            execution_time_3_opt = end_time_3_opt - start_time_3_opt
+            costs_3_opt = results['costs']
+            print(f"Tempo di esecuzione: {execution_time_3_opt} secondi")
+        else:
+            print("L'algoritmo non è terminato in tempo")
+            costs_3_opt = 0
+            # Calcola la durata dell'esecuzione
+            execution_time_3_opt = 0
 
         # Scrittura dei risultati nel file csv
-
         path = INSTANCES_DIRECTORY + file_name
         opt = Parser.get_optimal_cost_from_path(path)
 
