@@ -2,7 +2,6 @@ import time
 import Sweep_Ale as sweepAle
 import ParseInstances as Parser
 import os
-import threading
 
 # ------------------------------------------------------------------------------------------------------------
 SWEEP_SELECTOR = 1
@@ -14,8 +13,8 @@ SMALL = False   # FATTE
 MID_SMALL = False   # FATTE
 MID = False  # FATTE
 MID_LARGE = False   # FATTE andrea tozzi
-LARGE = False  # Solo 2Opt
-X_LARGE = True
+LARGE = True  # Solo 2Opt
+X_LARGE = False
 
 # ------------------------------------------------------------------------------------------------------------
 
@@ -24,7 +23,7 @@ OPT_3 = True
 
 # ------------------------------------------------------------------------------------------------------------
 
-ACTIONS = False
+ACTIONS = True
 
 if ACTIONS:
     # Esegui l'euristica per tutte le size delle istanze GITHUB ACTION
