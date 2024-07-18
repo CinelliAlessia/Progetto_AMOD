@@ -10,7 +10,7 @@ SWEEP_SELECTOR = 1
 # Selezionando come primo parametro selector = 1, verrà eseguito l'algoritmo di Sweep di Alessia
 # ------------------------------------------------------------------------------------------------------------
 
-SMALL = False   # FATTE
+SMALL = True   # FATTE
 MID_SMALL = False   # FATTE
 MID = False  # FATTE
 MID_LARGE = False   # FATTE andra tozzi
@@ -24,7 +24,7 @@ OPT_3 = True
 
 # ------------------------------------------------------------------------------------------------------------
 
-ACTIONS = True
+ACTIONS = False
 
 if ACTIONS:
     # Esegui l'euristica per tutte le size delle istanze GITHUB ACTION

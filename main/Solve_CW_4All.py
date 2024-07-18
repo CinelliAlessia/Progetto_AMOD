@@ -5,6 +5,7 @@ import Clarke_Wright_Alessia as CwAle
 import ParseInstances as Parser
 import os
 import Utils
+
 # ------------------------------------------------------------------------------------------------------------
 CW_SELECTOR = 0
 # Selezionando come primo parametro selector = 0, verrà eseguito l'algoritmo di Clarke e Wright di Andrea
@@ -12,7 +13,7 @@ CW_SELECTOR = 0
 # ------------------------------------------------------------------------------------------------------------
 
 # Se impostati a True, eseguirà l'euristica di Clarke e Wright per le istanze di quel tipo
-SMALL = False
+SMALL = True
 MID_SMALL = False
 MID = False
 MID_LARGE = False
@@ -21,7 +22,7 @@ X_LARGE = True
 
 # ------------------------------------------------------------------------------------------------------------
 
-ACTIONS = True
+ACTIONS = False
 
 if ACTIONS:
     # Directory dei file contenenti i nomi delle istanze
