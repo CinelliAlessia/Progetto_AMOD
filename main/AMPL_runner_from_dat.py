@@ -5,7 +5,7 @@ from amplpy import AMPL, Environment
 
 VERBOSE = True
 MODEL_PATH = 'VRP_Andrea.mod' # Se si vuole cambiare modello basta cambiare qui
-AMPL_ENVIROMENT_PATH = "C:\\Users\\andre\\AMPL"
+AMPL_ENVIROMENT_PATH = "C:\\Users\\cinel\\AMPL"
 DATS_DIR = "../resources/vrplib/DATs/"
 OUTPUT_PATH = "Results/Modello_AMPL/"
 OUTPUT_BASE_FILE_NAME = 'AMPL_results'

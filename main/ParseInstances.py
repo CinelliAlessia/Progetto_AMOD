@@ -6,61 +6,14 @@ from Model.Truck import Truck
 
 VERBOSE = False
 
-# Crea l'oggetto dell'istanza
+
 def make_instance_from_path_name(path):
+    """
+    :param path: path del file .vrp
+    :return: Istanza dell'oggetto
+    """
     instance = vrplib.read_instance(path)
     return instance
-
-
-# Restituisce il costo ottimo dell'istanza andando a leggere il campo 'comment' dell'istanza
-# Caso 1: COMMENT: altri campi "Optimal value: 845.26" altri campi
-# Caso 2: COMMENT: altri campi "best value: 524.61" altri campi
-# Caso 3: COMMENT: 524.61
-# Caso 4: Non è definito nel commento -> Guardare il file .sol alla riga cost
-def get_optimal_cost_from_instance(instance):
-    comment = instance.get('comment')
-    # Convert comment to string to ensure compatibility with re.match
-    str_comment = str(comment)
-    if comment is not None:
-        # Caso 1 e Caso 2
-        if "Optimal value:" in str_comment:
-            optimal_value = str_comment.split("Optimal value:")[1].strip()
-            # Rimuovi eventuali caratteri non numerici alla fine del valore
-            optimal_value = re.sub(r"[^\d.]+", "", optimal_value)
-            return float(optimal_value)
-        elif "Best value:" in str_comment:
-            optimal_value = str_comment.split("Best value:")[1].strip()
-            # Rimuovi eventuali caratteri non numerici alla fine del valore
-            optimal_value = re.sub(r"[^\d.]+", "", optimal_value)
-            return float(optimal_value)
-        # Caso 3
-        elif re.match(r"^\d+(\.\d+)?$", str_comment):
-            return float(str_comment)
-    # Caso 4, leggo il file .sol (se esiste) nella directory Results/vrplib/Solutions
-    if os.path.exists(f"../resources/vrplib/Solutions/{get_name(instance)}.sol"):
-        with open(f"../resources/vrplib/Solutions/{get_name(instance)}.sol", "r") as f:
-            # Cerco la linea che inizia con "Cost VALUE"
-            for line in f:
-                if line.startswith("Cost"):
-                    optimal_value = line.split(" ")[1].strip()
-                    return float(optimal_value)
-
-    if VERBOSE: print(f"Optimal Cost not found for: {get_name(instance)}")
-    return None
-
-
-def get_optimal_cost_from_path(path):
-    instance = make_instance_from_path_name(path)
-    return get_optimal_cost_from_instance(instance)
-
-
-# Restituisce il numero dei nodi (compreso deposito) andando a leggere il campo 'dimension' dell'istanza
-def get_nodes_dimension(instance):
-    return instance.get('dimension')
-
-
-def get_edge_weight_type(instance):
-    return instance.get('edge_weight_type')
 
 
 def get_edge_weight_type_from_path(path):
@@ -70,6 +23,70 @@ def get_edge_weight_type_from_path(path):
             if "EDGE_WEIGHT_TYPE" in line:
                 return line.split(":")[1].strip()
     return None
+
+
+def get_optimal_cost_from_path(path):
+    # apro il file e leggo la riga
+    with open(path, "r") as f:
+        for line in f:
+            if "COMMENT" in line:
+                comment = line
+                if "Optimal value:" in comment:
+                    optimal_value = comment.split("Optimal value:")[1].strip()
+                    # Rimuovi eventuali caratteri non numerici alla fine del valore
+                    optimal_value = re.sub(r"[^\d.]+", "", optimal_value)
+                    return float(optimal_value)
+                elif "Best value:" in comment:
+                    optimal_value = comment.split("Best value:")[1].strip()
+                    # Rimuovi eventuali caratteri non numerici alla fine del valore
+                    optimal_value = re.sub(r"[^\d.]+", "", optimal_value)
+                    return float(optimal_value)
+                elif re.match(r"^\d+(\.\d+)?$", comment):
+                    return float(comment)
+
+            name = os.path.basename(path)
+            # Caso 4, leggo il file .sol (se esiste) nella directory Results/vrplib/Solutions
+            if os.path.exists(f"../resources/vrplib/Solutions/{name}.sol"):
+                with open(f"../resources/vrplib/Solutions/{name}.sol", "r") as f:
+                    # Cerco la linea che inizia con "Cost VALUE"
+                    for line in f:
+                        if line.startswith("Cost"):
+                            optimal_value = line.split(" ")[1].strip()
+                            return float(optimal_value)
+
+            if VERBOSE: print(f"Optimal Cost not found for: {name}")
+            return None
+
+
+# Restituisce il costo ottimo dell'istanza andando a leggere il campo 'comment' dell'istanza
+# Caso 1: COMMENT: altri campi "Optimal value: 845.26" altri campi
+# Caso 2: COMMENT: altri campi "best value: 524.61" altri campi
+# Caso 3: COMMENT: 524.61
+# Caso 4: Non è definito nel commento -> Guardare il file .sol alla riga cost
+def get_optimal_cost_from_instance(instance):
+    comment = instance.get('comment')
+
+    if "Optimal value:" in comment:
+        optimal_value = comment.split("Optimal value:")[1].strip()
+        # Rimuovi eventuali caratteri non numerici alla fine del valore
+        optimal_value = re.sub(r"[^\d.]+", "", optimal_value)
+        return float(optimal_value)
+    elif "Best value:" in comment:
+        optimal_value = comment.split("Best value:")[1].strip()
+        # Rimuovi eventuali caratteri non numerici alla fine del valore
+        optimal_value = re.sub(r"[^\d.]+", "", optimal_value)
+        return float(optimal_value)
+    elif re.match(r"^\d+(\.\d+)?$", comment):
+        return float(comment)
+
+
+# Restituisce il numero dei nodi (compreso deposito) andando a leggere il campo 'dimension' dell'istanza
+def get_nodes_dimension(instance):
+    return instance.get('dimension')
+
+
+def get_edge_weight_type(instance):
+    return instance.get('edge_weight_type')
 
 
 def get_edge_weight_format(instance):
