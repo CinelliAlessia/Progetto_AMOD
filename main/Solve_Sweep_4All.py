@@ -64,7 +64,7 @@ def solve_sweep_for_instance_name_in_file(size, file_path):
     # Per ogni riga (riga = file_name) in n (file_path),
     # esegui l'euristica di Sweep sull'istanza corrispondente
     for line in n:  # Per ogni istanza scritta nel file
-        filename = line + "_" + OUTPUT_BASE_FILE_NAME
+        filename = line.split('.')[0] + "_" + OUTPUT_BASE_FILE_NAME
 
         i = 0
         while os.path.exists(f"{OUTPUT_PATH}{filename}.csv"):
