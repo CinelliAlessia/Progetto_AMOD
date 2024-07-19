@@ -6,7 +6,7 @@ ACTION_PARSE = True
 
 
 #
-TIMEOUT_ON = True
+TIMEOUT_ON = False
 if TIMEOUT_ON:
     TIMEOUT = 300  # Timeout di 5 minuti (300 secondi)
 else:

@@ -56,6 +56,10 @@ def initialize(nodes):
 
 def sweep_algorithm(nodes, vehicle_capacity, opt_2, opt_3):
     global stop_requested
+
+    # Resetta stop_requested a False all'inizio dell'esecuzione
+    stop_requested = False
+
     with concurrent.futures.ThreadPoolExecutor() as executor:
         future = executor.submit(sweep_inner, nodes, vehicle_capacity, opt_2, opt_3)
         try:
@@ -69,9 +73,6 @@ def sweep_algorithm(nodes, vehicle_capacity, opt_2, opt_3):
 
 def sweep_inner(nodes, vehicle_capacity, opt_2, opt_3):
     global vehicles_capacity, nodes_global, stop_requested
-
-    # Resetta stop_requested a False all'inizio dell'esecuzione
-    stop_requested = False
 
     vehicles_capacity = vehicle_capacity
     nodes_global = nodes
