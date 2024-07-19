@@ -15,7 +15,7 @@ def print_roots(roots):
             print(c)
 
 
-CW_ALE = True
+CW_ALE = False
 CW_ANDRE = False
 SWEEP_ALE = False
 SWEEP_ANDRE = False
@@ -28,7 +28,7 @@ else:
     work_on_explicit = False
 
 
-path_instance = "../resources/vrplib/Instances/E-n30-k3.vrp"
+path_instance = "../resources/vrplib/Instances/Brussels1.vrp"
 instance = Parse.make_instance_from_path_name(path_instance)
 all_nodes, truck = Parse.work_on_instance(instance, work_on_explicit)
 print("Fine Parsing")
@@ -60,15 +60,15 @@ def start():
         # Registra il tempo di inizio
         start_time = time.time()
         # Chiamata alla funzione che vuoi misurare
-        _, routes, _ = Cw.solve_clarke_and_wright_on_instance(instance)
+        routes, _, _ = Cw.solve_clarke_and_wright_on_instance(instance)
         # Registra il tempo di fine
         end_time = time.time()
         # Calcola la durata dell'esecuzione
         execution_time = end_time - start_time
         print(f"Tempo di esecuzione cwAndre: {execution_time} secondi")
-
+        print("Plotting...")
         Plotter.plot_if_not_explicit(routes, all_nodes)
-
+        print("Calcolo costo...")
         cost = Utils.calculate_cost(routes, all_nodes)
         print_roots(routes)
         print(f"Costi CW ANDREA {cost}")

@@ -13,7 +13,7 @@ CW_SELECTOR = 0
 # ------------------------------------------------------------------------------------------------------------
 OUTPUT_BASE_FILE_NAME = "CW_APX_and_Time"  # Nome base del file di output, verranno aggiunti prefisso e suffisso
 # ------------------------------------------------------------------------------------------------------------
-ACTIONS = False  # Impostare a True se si sta eseguendo il codice dalle github Actions, False se in locale
+ACTIONS = True  # Impostare a True se si sta eseguendo il codice dalle github Actions, False se in locale
 
 if ACTIONS:
     # Directory dei file contenenti i nomi delle istanze
@@ -25,7 +25,6 @@ else:
     NAME_BY_SIZE_PATH = "../resources/vrplib/Name_of_instances_by_dimension/"
     OUTPUT_PATH = "Results/Heuristic_Solutions/Clarke_&_Wright_run/"  # Directory di output per i risultati
     INSTANCES_DIRECTORY = "../resources/vrplib/Instances/"  # Directory delle istanze
-
 # ------------------------------------------------------------------------------------------------------------
 # Se impostati a True, eseguirà l'euristica di Clarke e Wright per le istanze di quel tipo
 SMALL = False
@@ -88,7 +87,7 @@ def solve_cw_for_instance_name_in_file(size, file_path):
             if CW_SELECTOR == 0:  # CW Andrea
 
                 start_time = time.perf_counter()    # Registra il tempo di inizio
-                cw_cost, _, status = CwAndre.solve_clarke_and_wright_on_instance(instance)
+                _, cw_cost, status = CwAndre.solve_clarke_and_wright_on_instance(instance)
                 end_time = time.perf_counter()  # Registra il tempo di fine
                 execution_time = end_time - start_time  # Calcola la durata dell'esecuzione
 
