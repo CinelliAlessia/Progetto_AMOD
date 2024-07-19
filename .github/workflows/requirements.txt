@@ -1,4 +1,5 @@
 networkx
+gurobipy
 tornado
 vrplib
 numpy
