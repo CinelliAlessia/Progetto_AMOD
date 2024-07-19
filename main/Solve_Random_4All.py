@@ -10,8 +10,8 @@ SMALL = False
 MID_SMALL = False
 MID = False
 MID_LARGE = False
-LARGE = True
-X_LARGE = False
+LARGE = False
+X_LARGE = True
 
 # ------------------------------------------------------------------------------------------------------------
 

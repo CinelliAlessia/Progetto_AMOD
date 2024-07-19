@@ -13,17 +13,17 @@ SMALL = False   # FATTE
 MID_SMALL = False   # FATTE
 MID = False  # FATTE
 MID_LARGE = False   # FATTE andrea tozzi
-LARGE = True  # Solo 2Opt
-X_LARGE = False
+LARGE = False  # Solo 2Opt
+X_LARGE = True
 
 # ------------------------------------------------------------------------------------------------------------
 
-OPT_2 = True
+OPT_2 = False
 OPT_3 = False
 
 # ------------------------------------------------------------------------------------------------------------
 
-ACTIONS = False  # Impostare a True se si sta eseguendo il codice dalle github Actions, False se in locale
+ACTIONS = True  # Impostare a True se si sta eseguendo il codice dalle github Actions, False se in locale
 
 if ACTIONS:
     # Esegui l'euristica per tutte le size delle istanze GITHUB ACTION
