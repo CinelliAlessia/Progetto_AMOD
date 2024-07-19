@@ -4,6 +4,12 @@ from Model.Node import Node
 from Model.Truck import Truck
 
 VERBOSE = False
+ACTION = True
+
+if ACTION:
+    resources_path = "./resources"
+else:
+    resources_path = "../resources"
 
 
 def make_instance_from_path_name(path):
@@ -50,18 +56,8 @@ def get_optimal_cost_from_instance(instance):
     #             return float(str_comment)
 
     # Caso 4, leggo il file .sol (se esiste) nella directory Results/vrplib/Solutions
-    if not os.path.exists(f"../resources/vrplib/Solutions/{get_name(instance)}.sol"):
-        if not os.path.exists(f"./resources/vrplib/Solutions/{get_name(instance)}.sol"):
-            return None
-        else:
-            with open(f"./resources/vrplib/Solutions/{get_name(instance)}.sol", "r") as f:
-                # Cerco la linea che inizia con "Cost VALUE"
-                for line in f:
-                    if line.startswith("Cost"):
-                        optimal_value = line.split(" ")[1].strip()
-                        return float(optimal_value)
-    else:
-        with open(f"../resources/vrplib/Solutions/{get_name(instance)}.sol", "r") as f:
+    if os.path.exists(f"{resources_path}/vrplib/Solutions/{get_name(instance)}.sol"):
+        with open(f"{resources_path}/vrplib/Solutions/{get_name(instance)}.sol", "r") as f:
             # Cerco la linea che inizia con "Cost VALUE"
             for line in f:
                 if line.startswith("Cost"):
