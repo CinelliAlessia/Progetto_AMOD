@@ -31,24 +31,25 @@ def get_edge_weight_type_from_path(path):
 # Caso 3: COMMENT: 524.61
 # Caso 4: Non è definito nel commento -> Guardare il file .sol alla riga cost
 def get_optimal_cost_from_instance(instance):
-    comment = instance.get('comment')
-    # Convert comment to string to ensure compatibility with re.match
-    str_comment = str(comment)
-    if comment is not None:
-        # Caso 1 e Caso 2
-        if "Optimal value:" in str_comment:
-            optimal_value = str_comment.split("Optimal value:")[1].strip()
-            # Rimuovi eventuali caratteri non numerici alla fine del valore
-            optimal_value = re.sub(r"[^\d.]+", "", optimal_value)
-            return float(optimal_value)
-        elif "Best value:" in str_comment:
-            optimal_value = str_comment.split("Best value:")[1].strip()
-            # Rimuovi eventuali caratteri non numerici alla fine del valore
-            optimal_value = re.sub(r"[^\d.]+", "", optimal_value)
-            return float(optimal_value)
-        # Caso 3
-        elif re.match(r"^\d+(\.\d+)?$", str_comment):
-            return float(str_comment)
+    # comment = instance.get('comment')
+    #     # Convert comment to string to ensure compatibility with re.match
+    #     str_comment = str(comment)
+    #     if comment is not None:
+    #         # Caso 1 e Caso 2
+    #         if "Optimal value:" in str_comment:
+    #             optimal_value = str_comment.split("Optimal value:")[1].strip()
+    #             # Rimuovi eventuali caratteri non numerici alla fine del valore
+    #             optimal_value = re.sub(r"[^\d.]+", "", optimal_value)
+    #             return float(optimal_value)
+    #         elif "Best value:" in str_comment:
+    #             optimal_value = str_comment.split("Best value:")[1].strip()
+    #             # Rimuovi eventuali caratteri non numerici alla fine del valore
+    #             optimal_value = re.sub(r"[^\d.]+", "", optimal_value)
+    #             return float(optimal_value)
+    #         # Caso 3
+    #         elif re.match(r"^\d+(\.\d+)?$", str_comment):
+    #             return float(str_comment)
+
     # Caso 4, leggo il file .sol (se esiste) nella directory Results/vrplib/Solutions
     if os.path.exists(f"../resources/vrplib/Solutions/{get_name(instance)}.sol"):
         with open(f"../resources/vrplib/Solutions/{get_name(instance)}.sol", "r") as f:

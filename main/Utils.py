@@ -123,8 +123,13 @@ def find_by_id(id, nodes):
 
 
 def read_sol_file(filepath):
+    """
+    Legge le routes e il costo da un file .sol
+    :param filepath: path del file .sol
+    :return: routes, costo
+    """
     routes = []
-
+    cost = None
     with open(filepath, 'r') as file:
         lines = file.readlines()
 
@@ -135,13 +140,19 @@ def read_sol_file(filepath):
                 formatted_route = [0] + nodes + [0]
                 routes.append(formatted_route)
             elif line.startswith('Cost'):
-                cost = int(line.split()[1].strip())
+                cost = float(line.split()[1].strip())
 
     return routes, cost
 
 
 def fix_cost(directory):
-    # Controlla che la directory esista
+    """
+
+    :param directory:
+    :return:
+    """
+
+    # Controlla che la directory dei file .sol esista
     if not os.path.isdir(directory):
         print(f"Directory '{directory}' non trovata.")
         return
@@ -175,13 +186,19 @@ def fix_cost(directory):
         if calculated_cost == file_cost:
             print("I costi coincidono.")
         else:
-            modify_optimal_value_vrp(instance_path, calculated_cost)
+            modify_optimal_cost_sol(filepath, calculated_cost)
             print("Attenzione: i costi non coincidono.")
 
         print()  # Linea vuota per separare le stampe dei vari file
 
 
 def modify_optimal_value_vrp(filepath, new_optimal_value):
+    """
+    Modifica il costo ottimo di un'istanza VRP nel campo 'comment' se è identificato con Optimal value: {value}
+    :param filepath:
+    :param new_optimal_value:
+    :return:
+    """
     # Leggi tutte le linee dal file VRP
     with open(filepath, 'r') as file:
         lines = file.readlines()
@@ -189,7 +206,7 @@ def modify_optimal_value_vrp(filepath, new_optimal_value):
     # Trova e modifica l'optimal value
     for i, line in enumerate(lines):
         if line.startswith('COMMENT'):
-            parts = line.split(':')
+            parts = line.split('Optimal value:')
             parts[-1] = f' Optimal value: {new_optimal_value})\n'
             lines[i] = ':'.join(parts)
             break
@@ -199,47 +216,30 @@ def modify_optimal_value_vrp(filepath, new_optimal_value):
         file.writelines(lines)
 
 
-import os
-
-def add_optimal_value_to_vrp(filepath, optimal_value):
+def modify_optimal_cost_sol(filepath, new_optimal_value):
+    """
+    Modifica il costo ottimo di un'istanza VRP nel campo 'Cost {value}' di un file .sol
+    :param filepath:
+    :param new_optimal_value:
+    :return:
+    """
+    # Leggi tutte le linee dal file .sol
     with open(filepath, 'r') as file:
         lines = file.readlines()
 
-    comment_found = False
+    # Trova e modifica l'optimal value
     for i, line in enumerate(lines):
-        if line.startswith('COMMENT'):
-            lines[i] = line.strip() + f', Optimal value: {optimal_value})\n'
-            comment_found = True
+        if line.startswith('Cost'):
+            parts = line.split('Cost')
+            parts[-1] = f'Cost {new_optimal_value}\n'
+            lines[i] = ''.join(parts)
             break
 
-    if not comment_found:
-        for i, line in enumerate(lines):
-            if line.startswith('TYPE'):
-                lines.insert(i, f'COMMENT : Optimal value: {optimal_value}\n')
-                break
-
+    # Sovrascrivi il file .sol con l'optimal value modificato
     with open(filepath, 'w') as file:
         file.writelines(lines)
 
-def add_optimal_value_to_all_vrps_in_directory(directory, optimal_value):
-    if not os.path.isdir(directory):
-        print(f"Directory '{directory}' non trovata.")
-        return
-
-    vrp_files = [f for f in os.listdir(directory) if f.endswith('.vrp')]
-
-    for vrp_file in vrp_files:
-        filepath = os.path.join(directory, vrp_file)
-        print(f"Modifica del file: {filepath}")
-        add_optimal_value_to_vrp(filepath, optimal_value)
-        print(f"Valore ottimale aggiunto: {optimal_value}")
-
 
 # Esempio di utilizzo per la directory specificata
-directory_path = "../resources/vrplib/Solutions"
+directory_path = "../resources/vrplib/Solutions/"
 fix_cost(directory_path)
-
-
-
-
-
