@@ -1,10 +1,11 @@
 import os
 import vrplib
+import Config
 from Model.Node import Node
 from Model.Truck import Truck
 
 VERBOSE = False
-ACTION = True
+ACTION = Config.ACTION_PARSE
 
 if ACTION:
     resources_path = "./resources"

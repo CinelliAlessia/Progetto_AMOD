@@ -1,4 +1,6 @@
 import time
+
+import Config
 import Sweep_Ale as sweepAle
 import ParseInstances as Parser
 import os
@@ -23,7 +25,7 @@ OPT_3 = True
 
 # ------------------------------------------------------------------------------------------------------------
 
-ACTIONS = True  # Impostare a True se si sta eseguendo il codice dalle github Actions, False se in locale
+ACTIONS = Config.ACTION_SWEEP  # Impostare a True se si sta eseguendo il codice dalle github Actions, False se in locale
 
 if ACTIONS:
     # Esegui l'euristica per tutte le size delle istanze GITHUB ACTION
@@ -137,7 +139,6 @@ def write_in_csv(line, f, size):
 
         # Salva tali valori, con lo stesso formato su una nuova riga del file APX_and_Time.txt
         f.write(f"{size},{file_name},{n_nodes},{n_truck},{capacity},{opt},{costs_no_opt},{apx_no_opt},{execution_time_no_opt},{costs_2_opt},{apx_2_opt},{execution_time_2_opt},{costs_3_opt},{apx_3_opt},{execution_time_3_opt}\n")
-        print(f"{size},{file_name},{n_nodes},{n_truck},{capacity},{opt},{costs_no_opt},{apx_no_opt},{execution_time_no_opt},{costs_2_opt},{apx_2_opt},{execution_time_2_opt},{costs_3_opt},{apx_3_opt},{execution_time_3_opt}\n")
 
 
 if SMALL:

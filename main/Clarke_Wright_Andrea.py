@@ -1,9 +1,10 @@
 from tornado import concurrent
 import time
+import Config
 import ParseInstances as Parser
 import Utils
 
-EXECUTION_TIMEOUT = 300  # Tempo massimo di esecuzione in secondi
+EXECUTION_TIMEOUT = Config.TIMEOUT  # Tempo massimo di esecuzione in secondi
 INTERRUPT = 0  # Interruzione dell'esecuzione
 VERBOSE = False  # Se True, stampa valori delle istanze e i passaggi dell'euristica di Clarke e Wright
 SAVE_SOLUTION_ON_FILE = False  # Se True, salva i risultati in un file .sol

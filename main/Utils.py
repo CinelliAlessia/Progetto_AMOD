@@ -1,7 +1,5 @@
 import os
 
-import ParseInstances as Parser
-
 
 def save_results_to_file(routes, cw_cost, directory, instance_name):
     """
@@ -98,6 +96,15 @@ def get_license():
             if "license" in line:
                 licence = line.split("=")[1].strip()
                 return licence
+
+
+def get_action():
+    path = "../config.properties"
+    with open(path, "r") as file:
+        for line in file:
+            if "action" in line:
+                action = line.split("=")[1].strip()
+                return action
 
 
 def total_demands(nodes):

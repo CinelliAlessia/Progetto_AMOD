@@ -1,5 +1,6 @@
 import time
 
+import Config
 import Random_Ale as Random
 import ParseInstances as Parser
 import os
@@ -15,7 +16,7 @@ X_LARGE = True
 
 # ------------------------------------------------------------------------------------------------------------
 
-ACTIONS = False  # Impostare a True se si sta eseguendo il codice dalle github Actions, False se in locale
+ACTIONS = Config.ACTION_RANDOM
 
 if ACTIONS:
     # Directory dei file contenenti i nomi delle istanze
