@@ -23,7 +23,7 @@ OPT_3 = False
 
 # ------------------------------------------------------------------------------------------------------------
 
-ACTIONS = True
+ACTIONS = False  # Impostare a True se si sta eseguendo il codice dalle github Actions, False se in locale
 
 if ACTIONS:
     # Esegui l'euristica per tutte le size delle istanze GITHUB ACTION
