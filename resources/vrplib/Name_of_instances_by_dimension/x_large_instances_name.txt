@@ -1,2 +1,4 @@
-Brussels1.vrp
-Brussels2.vrp
+Ghent1.vrp
+Ghent2.vrp
+Leuven1.vrp
+Leuven2.vrp

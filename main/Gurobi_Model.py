@@ -42,12 +42,18 @@ def solve_vrp_with_gurobi(instance, verbose=False, max_time_seconds=300, gap=0.0
     u = m.addVars(n_customers, k, vtype=GRB.CONTINUOUS, name="u")
 
     # Funzione obiettivo: minimizzare la distanza totale percorsa
-    m.setObjective(quicksum(dist[i, j] * x[i, j, h] for i in range(n_customers) for j in range(n_customers) for h in range(k)), GRB.MINIMIZE)
+    m.setObjective(
+        quicksum(dist[i, j] * x[i, j, h] for i in range(n_customers) for j in range(n_customers) for h in range(k)),
+        GRB.MINIMIZE)
 
     # Vincoli
     # 1. Ogni cliente deve essere visitato esattamente una volta
-    m.addConstrs(quicksum(x[i, j, h] for j in range(n_customers) if i != j) == y[i, h] for i in range(1, n_customers) for h in range(k))
-    m.addConstrs(quicksum(x[j, i, h] for j in range(n_customers) if i != j) == y[i, h] for i in range(1, n_customers) for h in range(k))
+    m.addConstrs(
+        quicksum(x[i, j, h] for j in range(n_customers) if i != j) == y[i, h] for i in range(1, n_customers) for h in
+        range(k))
+    m.addConstrs(
+        quicksum(x[j, i, h] for j in range(n_customers) if i != j) == y[i, h] for i in range(1, n_customers) for h in
+        range(k))
 
     # 2. I veicoli devono partire e tornare al deposito
     m.addConstrs(quicksum(x[0, j, h] for j in range(1, n_customers)) == 1 for h in range(k))
@@ -72,12 +78,15 @@ def solve_vrp_with_gurobi(instance, verbose=False, max_time_seconds=300, gap=0.0
     # Estrazione e visualizzazione della soluzione
     routes = []
     total_cost = None
+    status = "Infeasible"
 
     if m.status == GRB.OPTIMAL or m.status == GRB.TIME_LIMIT:
         if m.status == GRB.OPTIMAL:
             print("Soluzione ottimale trovata.")
+            status = "Optimal"
         elif m.status == GRB.TIME_LIMIT:
-            print("Tempo limite raggiunto. Soluzione migliore trovata entro il tempo limite:")
+            print("Timout raggiunto")
+            status = "Timeout"
         total_cost = m.objVal
         print("Costo totale del percorso: ", total_cost)
 
@@ -90,7 +99,7 @@ def solve_vrp_with_gurobi(instance, verbose=False, max_time_seconds=300, gap=0.0
     else:
         print("Nessuna soluzione ottimale trovata.")
 
-    return routes, total_cost, execution_time
+    return routes, total_cost, execution_time, status
 
 
 def calculate_routes_from_gurobi_solution(x_val, y_val, n_customers, k):
@@ -113,12 +122,6 @@ def calculate_routes_from_gurobi_solution(x_val, y_val, n_customers, k):
         routes[h] = route  # Assegna la route costruita al veicolo corrente
     return routes
 
-
 # Esempio di utilizzo
-instance_path = "../resources/vrplib/Instances/A-n32-k5.vrp"
-instance = Parser.make_instance_from_path_name(instance_path)
-routes, total_cost, elapsed_time = solve_vrp_with_gurobi(instance, VERBOSE)
-
-print("Routes:", routes)
-print("Total Cost:", total_cost)
-print("Execution Time:", elapsed_time)
+#instance_path = "../resources/vrplib/Instances/A-n32-k5.vrp"
+#instance = Parser.make_instance_from_path_name(instance_path)
