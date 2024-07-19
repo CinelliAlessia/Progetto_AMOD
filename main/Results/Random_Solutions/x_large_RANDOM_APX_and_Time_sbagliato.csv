@@ -1,3 +1,0 @@
-Size,Instance_Name,#Node,#Truck,Capacity,Optimal_Cost,BEST_Random,APX,Execution_time,#Iteration
-x_large,Antwerp1.vrp,6001,None,30,477277.0,4703377.897532496,9.854608325003081,84.88849330000812,750
-x_large,Antwerp2.vrp,7001,None,100,291350.0,5697949.592941334,19.5570605558309,36.41218539996771,750
