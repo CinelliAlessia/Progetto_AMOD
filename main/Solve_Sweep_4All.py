@@ -15,8 +15,8 @@ SMALL = False   # FATTE
 MID_SMALL = False   # FATTE
 MID = False  # FATTE
 MID_LARGE = False   # FATTE andrea tozzi
-LARGE = False  # Solo 2Opt
-X_LARGE = True
+LARGE = True  # Solo 2Opt
+X_LARGE = False
 
 # ------------------------------------------------------------------------------------------------------------
 
