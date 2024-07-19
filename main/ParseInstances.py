@@ -60,13 +60,13 @@ def get_optimal_cost_from_instance(instance):
                     if line.startswith("Cost"):
                         optimal_value = line.split(" ")[1].strip()
                         return float(optimal_value)
-
-    with open(f"../resources/vrplib/Solutions/{get_name(instance)}.sol", "r") as f:
-        # Cerco la linea che inizia con "Cost VALUE"
-        for line in f:
-            if line.startswith("Cost"):
-                optimal_value = line.split(" ")[1].strip()
-                return float(optimal_value)
+    else:
+        with open(f"../resources/vrplib/Solutions/{get_name(instance)}.sol", "r") as f:
+            # Cerco la linea che inizia con "Cost VALUE"
+            for line in f:
+                if line.startswith("Cost"):
+                    optimal_value = line.split(" ")[1].strip()
+                    return float(optimal_value)
 
     if VERBOSE: print(f"Optimal Cost not found for: {get_name(instance)}")
     return None
