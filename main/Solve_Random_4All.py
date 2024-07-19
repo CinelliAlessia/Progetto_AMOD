@@ -15,7 +15,7 @@ X_LARGE = True
 
 # ------------------------------------------------------------------------------------------------------------
 
-ACTIONS = True  # Impostare a True se si sta eseguendo il codice dalle github Actions, False se in locale
+ACTIONS = False  # Impostare a True se si sta eseguendo il codice dalle github Actions, False se in locale
 
 if ACTIONS:
     # Directory dei file contenenti i nomi delle istanze

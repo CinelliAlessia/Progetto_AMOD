@@ -13,7 +13,7 @@ CW_SELECTOR = 0
 # ------------------------------------------------------------------------------------------------------------
 OUTPUT_BASE_FILE_NAME = "CW_APX_and_Time"  # Nome base del file di output, verranno aggiunti prefisso e suffisso
 # ------------------------------------------------------------------------------------------------------------
-ACTIONS = False  # Impostare a True se si sta eseguendo il codice dalle github Actions, False se in locale
+ACTIONS = True  # Impostare a True se si sta eseguendo il codice dalle github Actions, False se in locale
 
 if ACTIONS:
     # Directory dei file contenenti i nomi delle istanze
