@@ -23,7 +23,7 @@ OPT_3 = False
 
 # ------------------------------------------------------------------------------------------------------------
 
-ACTIONS = True
+ACTIONS = False
 
 if ACTIONS:
     # Esegui l'euristica per tutte le size delle istanze GITHUB ACTION
