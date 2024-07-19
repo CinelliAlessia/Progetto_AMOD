@@ -1,19 +1,19 @@
 from gurobipy import Model, GRB, quicksum
-import ParseInstances as ip
+import ParseInstances as Parser
 
 VERBOSE = False
 
 
 def solve_vrp_whit_gurobi(instance):
     # Parametri del problema
-    n_customers = ip.get_nodes_dimension(instance)  # Numero di nodi nel sistema, incluso il deposito
-    vehicle_capacity = ip.get_truck(instance).get_capacity()  # Capacità del veicolo
+    n_customers = Parser.get_nodes_dimension(instance)  # Numero di nodi nel sistema, incluso il deposito
+    vehicle_capacity = Parser.get_truck(instance).get_capacity()  # Capacità del veicolo
 
     # Domanda di ogni cliente
-    demands = ip.get_node_demands(instance)
+    demands = Parser.get_node_demands(instance)
 
     # Matrice delle distanze (simmetrica)
-    dist = ip.get_edge_weight(instance)
+    dist = Parser.get_edge_weight(instance)
     print(dist)
 
     # Verifica che la matrice delle distanze abbia le dimensioni corrette
@@ -50,7 +50,7 @@ def solve_vrp_whit_gurobi(instance):
 
     # Imposta limite di tempo (ad esempio 300 secondi) e MIP gap (ad esempio 1%)
     m.setParam(GRB.Param.TimeLimit, 300)
-    m.setParam(GRB.Param.MIPGap, 0.01)
+    m.setParam(GRB.Param.MIPGap, 0.0001)
 
     # Risoluzione del modello
     m.optimize()
@@ -78,5 +78,5 @@ def solve_vrp_whit_gurobi(instance):
 
 # Esempio di utilizzo
 instance_path = "../resources/vrplib/Instances/E-n13-k4.vrp"
-make_instance = ip.make_instance_from_path_name(instance_path)
+make_instance = Parser.make_instance_from_path_name(instance_path)
 solve_vrp_whit_gurobi(make_instance)

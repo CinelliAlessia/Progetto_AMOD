@@ -80,7 +80,7 @@ def solve_clarke_and_wright_on_instance(instance):
     # -------------- Variabili da calcolare --------------
     routes = []  # Inizializzo le route come vuote (inizialmente ogni cliente ha un proprio veicolo, n route)
     cw_cost = 0  # Variabile che esprime il costo totale dei percorsi
-    status = "Finished"
+    status = "Finished" + str(EXECUTION_TIMEOUT)
     INTERRUPT = 0
     # ------------------------- Inizializzazione timer di esecuzione ----------------------------
     start_time = time.perf_counter()  # Almeno una soluzione anche se banale e pessima è definita
