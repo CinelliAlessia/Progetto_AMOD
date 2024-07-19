@@ -66,6 +66,6 @@ def solve_vrp_with_ampl_andrea(instance):
 
 instance_path = "../resources/vrplib/Instances/E-n13-k4.vrp"
 # Esempio di utilizzo
-make_instance = ip.make_instance_from_path_name(instance_path)
-optimal_cost = solve_vrp_with_ampl_andrea(make_instance)
-print(f"Costo totale ottimale: {optimal_cost}")
+#make_instance = ip.make_instance_from_path_name(instance_path)
+#optimal_cost = solve_vrp_with_ampl_andrea(make_instance)
+#print(f"Costo totale ottimale: {optimal_cost}")

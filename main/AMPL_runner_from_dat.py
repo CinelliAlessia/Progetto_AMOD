@@ -13,7 +13,7 @@ OUTPUT_BASE_FILE_NAME = 'AMPL_results'
 NAME_BY_SIZE_PATH = "../resources/vrplib/Name_of_instances_by_dimension/"
 
 # Se impostati a True, eseguirà il modello MIP per VRP per le istanze di quel tipo
-SMALL = True
+SMALL = False
 MID_SMALL = False
 MID = False
 MID_LARGE = False
