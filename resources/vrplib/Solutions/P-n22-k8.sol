@@ -6,4 +6,4 @@ Route #5: 13 11
 Route #6: 10 8 3 4 
 Route #7: 9 2 1 6 
 Route #8: 7 5 
-Cost 603
+Cost 601.4237061659817

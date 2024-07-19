@@ -81,7 +81,7 @@ def plot_statistics():
 
 def boxPlot():
     # Carica il file CSV
-    df = pd.read_csv('Results/Heuristic_Solutions/Sweep/Tutte.csv')
+    df = pd.read_csv('Results/Heuristic_Solutions/Sweep/Sweep_all.csv')
 
     # Seleziona solo le colonne necessarie
     df_selected = df[['Size', 'Apx_3Opt']]

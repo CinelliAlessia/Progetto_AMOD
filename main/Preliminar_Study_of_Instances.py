@@ -118,7 +118,7 @@ def found_instance_size(directory_path="../resources/vrplib/Instances"):
 
 #found_avrp_instances()
 #found_mdvrp_instances()
-found_instance_size()
+#found_instance_size()
 
 
 # ----- Aggiornamento costi nel file .sol -----
@@ -146,7 +146,7 @@ def read_sol_file(filepath):
     return routes, cost
 
 
-def fix_cost(directory_sol):
+def fix_cost(directory_sol, path_file_size):
     """
 
     :param directory_sol:
@@ -158,10 +158,16 @@ def fix_cost(directory_sol):
         print(f"Directory '{directory_sol}' non trovata.")
         return
 
-    # Ottieni la lista dei file .sol nella directory
-    sol_files = [f for f in os.listdir(directory_sol) if f.endswith('.sol')]
+    # Verifico che il file contenente i nomi delle istanze esista
+    if not os.path.exists(path_file_size):
+        print(f"Il file {path_file_size} non esiste")
+        return
 
-    for sol_file in sol_files:
+    # Apro il file in lettura per leggere i nomi delle istanze separate per dimensione
+    n = open(path_file_size, "r")
+
+    for line in n:  # Per ogni istanza scritta nel file -> line = file.vrp
+        sol_file = line.strip().replace(".vrp", ".sol")
         filepath = os.path.join(directory_sol, sol_file)
         print(f"Modifica del file: {filepath}")
 
@@ -220,8 +226,8 @@ def modify_optimal_value_vrp(filepath, new_optimal_value):
 def modify_optimal_cost_sol(filepath, new_optimal_value):
     """
     Modifica il costo ottimo di un'istanza VRP nel campo 'Cost {value}' di un file .sol
-    :param filepath:
-    :param new_optimal_value:
+    :param filepath: path del file .sol
+    :param new_optimal_value: nuovo costo ottimo
     :return:
     """
     # Leggi tutte le linee dal file .sol
@@ -244,4 +250,4 @@ def modify_optimal_cost_sol(filepath, new_optimal_value):
 # Esempio di utilizzo per la directory specificata
 directory_path_sol = "../resources/vrplib/Solutions/"
 directory_path_name_instances = "../resources/vrplib/Name_of_instances_by_dimension/"
-fix_cost(directory_path_sol)
+fix_cost(directory_path_sol, f"{directory_path_name_instances}x_large_instances_name.txt")
