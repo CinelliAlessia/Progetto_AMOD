@@ -5,7 +5,7 @@ from Utils import calculate_cost, verify_if_feasible
 PRINT = False
 distance_matrix = []
 
-TIMEOUT = 30
+TIMEOUT = 300  # Timeout di 5 minuti (300 secondi)
 global inc_route, inc_cost, vehicles_capacity, nodes_global
 
 

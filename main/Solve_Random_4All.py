@@ -15,7 +15,7 @@ X_LARGE = True
 
 # ------------------------------------------------------------------------------------------------------------
 
-ACTIONS = True
+ACTIONS = False
 
 if ACTIONS:
     # Directory dei file contenenti i nomi delle istanze
