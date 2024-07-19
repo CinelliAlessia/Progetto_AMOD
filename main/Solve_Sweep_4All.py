@@ -9,17 +9,17 @@ SWEEP_SELECTOR = 1
 # Selezionando come primo parametro selector = 1, verrà eseguito l'algoritmo di Sweep di Alessia
 # ------------------------------------------------------------------------------------------------------------
 
-SMALL = False   # FATTE
-MID_SMALL = False   # FATTE
-MID = False  # FATTE
-MID_LARGE = False   # FATTE andrea tozzi
+SMALL = True   # FATTE
+MID_SMALL = True   # FATTE
+MID = True  # FATTE
+MID_LARGE = True   # FATTE andrea tozzi
 LARGE = False  # Solo 2Opt
-X_LARGE = True
+X_LARGE = False
 
 # ------------------------------------------------------------------------------------------------------------
 
 OPT_2 = True
-OPT_3 = False
+OPT_3 = True
 
 # ------------------------------------------------------------------------------------------------------------
 
@@ -60,25 +60,23 @@ def solve_sweep_for_instance_name_in_file(size, file_path):
     if not os.path.exists(f"{OUTPUT_PATH}"):
         os.makedirs(OUTPUT_PATH)
 
+    filename = size + "_" + OUTPUT_BASE_FILE_NAME
+
+    i = 0
+    while os.path.exists(f"{OUTPUT_PATH}{filename}.csv"):
+        i += 1
+        filename = f"{size}_{OUTPUT_BASE_FILE_NAME}({i})"
+
+    f = open(f"{OUTPUT_PATH}{filename}.csv", "w")
+
+    # Scrivi nel file l'intestazione
+    f.write("Size,Instance_Name,#Node,#Truck,Capacity,Optimal_Cost,Cost_NoOpt,Apx_NoOpt,Execution_time_NoOpt,Cost_2Opt,Apx_2Opt,Execution_time_2Opt,Cost_3Opt,Apx_3Opt,Execution_time_3Opt\n")
+
     # -----------------------------------------------------------------------------------------
     # Per ogni riga (riga = file_name) in n (file_path),
     # esegui l'euristica di Sweep sull'istanza corrispondente
     for line in n:  # Per ogni istanza scritta nel file
-        filename = line.split('.')[0] + "_" + OUTPUT_BASE_FILE_NAME
-
-        i = 0
-        while os.path.exists(f"{OUTPUT_PATH}{filename}.csv"):
-            i += 1
-            filename = f"{line}_{OUTPUT_BASE_FILE_NAME}({i})"
-
-        f = open(f"{OUTPUT_PATH}{filename}.csv", "w")
-
-        # Scrivi nel file l'intestazione
-        f.write("Size,Instance_Name,#Node,#Truck,Capacity,Optimal_Cost,Cost_NoOpt,Apx_NoOpt,Execution_time_NoOpt,Cost_2Opt,Apx_2Opt,Execution_time_2Opt,Cost_3Opt,Apx_3Opt,Execution_time_3Opt\n")
-
         write_in_csv(line, f, size)
-
-        f.close()
 
 
 def write_in_csv(line, f, size):

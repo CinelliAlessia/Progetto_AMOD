@@ -1,5 +1,4 @@
 import os
-import re
 import vrplib
 from Model.Node import Node
 from Model.Truck import Truck
@@ -51,13 +50,23 @@ def get_optimal_cost_from_instance(instance):
     #             return float(str_comment)
 
     # Caso 4, leggo il file .sol (se esiste) nella directory Results/vrplib/Solutions
-    if os.path.exists(f"../resources/vrplib/Solutions/{get_name(instance)}.sol"):
-        with open(f"../resources/vrplib/Solutions/{get_name(instance)}.sol", "r") as f:
-            # Cerco la linea che inizia con "Cost VALUE"
-            for line in f:
-                if line.startswith("Cost"):
-                    optimal_value = line.split(" ")[1].strip()
-                    return float(optimal_value)
+    if not os.path.exists(f"../resources/vrplib/Solutions/{get_name(instance)}.sol"):
+        if not os.path.exists(f"./resources/vrplib/Solutions/{get_name(instance)}.sol"):
+            return None
+        else:
+            with open(f"./resources/vrplib/Solutions/{get_name(instance)}.sol", "r") as f:
+                # Cerco la linea che inizia con "Cost VALUE"
+                for line in f:
+                    if line.startswith("Cost"):
+                        optimal_value = line.split(" ")[1].strip()
+                        return float(optimal_value)
+
+    with open(f"../resources/vrplib/Solutions/{get_name(instance)}.sol", "r") as f:
+        # Cerco la linea che inizia con "Cost VALUE"
+        for line in f:
+            if line.startswith("Cost"):
+                optimal_value = line.split(" ")[1].strip()
+                return float(optimal_value)
 
     if VERBOSE: print(f"Optimal Cost not found for: {get_name(instance)}")
     return None

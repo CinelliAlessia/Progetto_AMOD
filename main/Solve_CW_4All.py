@@ -13,7 +13,7 @@ CW_SELECTOR = 0
 # ------------------------------------------------------------------------------------------------------------
 OUTPUT_BASE_FILE_NAME = "CW_APX_and_Time"  # Nome base del file di output, verranno aggiunti prefisso e suffisso
 # ------------------------------------------------------------------------------------------------------------
-ACTIONS = False  # Impostare a True se si sta eseguendo il codice dalle github Actions, False se in locale
+ACTIONS = True  # Impostare a True se si sta eseguendo il codice dalle github Actions, False se in locale
 
 if ACTIONS:
     # Directory dei file contenenti i nomi delle istanze
@@ -27,11 +27,11 @@ else:
     INSTANCES_DIRECTORY = "../resources/vrplib/Instances/"  # Directory delle istanze
 # ------------------------------------------------------------------------------------------------------------
 # Se impostati a True, eseguirà l'euristica di Clarke e Wright per le istanze di quel tipo
-SMALL = False
-MID_SMALL = False
-MID = False
-MID_LARGE = False
-LARGE = False
+SMALL = True
+MID_SMALL = True
+MID = True
+MID_LARGE = True
+LARGE = True
 X_LARGE = False
 # ------------------------------------------------------------------------------------------------------------
 
