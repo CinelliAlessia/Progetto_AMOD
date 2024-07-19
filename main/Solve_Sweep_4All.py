@@ -19,7 +19,7 @@ X_LARGE = False
 # ------------------------------------------------------------------------------------------------------------
 
 OPT_2 = True
-OPT_3 = True
+OPT_3 = False
 
 # ------------------------------------------------------------------------------------------------------------
 
@@ -60,23 +60,25 @@ def solve_sweep_for_instance_name_in_file(size, file_path):
     if not os.path.exists(f"{OUTPUT_PATH}"):
         os.makedirs(OUTPUT_PATH)
 
-    filename = size + "_" + OUTPUT_BASE_FILE_NAME
-
-    i = 0
-    while os.path.exists(f"{OUTPUT_PATH}{filename}.csv"):
-        i += 1
-        filename = f"{size}_{OUTPUT_BASE_FILE_NAME}({i})"
-
-    f = open(f"{OUTPUT_PATH}{filename}.csv", "w")
-
-    # Scrivi nel file l'intestazione
-    f.write("Size,Instance_Name,#Node,#Truck,Capacity,Optimal_Cost,Cost_NoOpt,Apx_NoOpt,Execution_time_NoOpt,Cost_2Opt,Apx_2Opt,Execution_time_2Opt,Cost_3Opt,Apx_3Opt,Execution_time_3Opt\n")
-
     # -----------------------------------------------------------------------------------------
     # Per ogni riga (riga = file_name) in n (file_path),
     # esegui l'euristica di Sweep sull'istanza corrispondente
     for line in n:  # Per ogni istanza scritta nel file
+        filename = line + "_" + OUTPUT_BASE_FILE_NAME
+
+        i = 0
+        while os.path.exists(f"{OUTPUT_PATH}{filename}.csv"):
+            i += 1
+            filename = f"{line}_{OUTPUT_BASE_FILE_NAME}({i})"
+
+        f = open(f"{OUTPUT_PATH}{filename}.csv", "w")
+
+        # Scrivi nel file l'intestazione
+        f.write("Size,Instance_Name,#Node,#Truck,Capacity,Optimal_Cost,Cost_NoOpt,Apx_NoOpt,Execution_time_NoOpt,Cost_2Opt,Apx_2Opt,Execution_time_2Opt,Cost_3Opt,Apx_3Opt,Execution_time_3Opt\n")
+
         write_in_csv(line, f, size)
+
+        f.close()
 
 
 def write_in_csv(line, f, size):
@@ -137,6 +139,7 @@ def write_in_csv(line, f, size):
 
         # Salva tali valori, con lo stesso formato su una nuova riga del file APX_and_Time.txt
         f.write(f"{size},{file_name},{n_nodes},{n_truck},{capacity},{opt},{costs_no_opt},{apx_no_opt},{execution_time_no_opt},{costs_2_opt},{apx_2_opt},{execution_time_2_opt},{costs_3_opt},{apx_3_opt},{execution_time_3_opt}\n")
+        print(f"{size},{file_name},{n_nodes},{n_truck},{capacity},{opt},{costs_no_opt},{apx_no_opt},{execution_time_no_opt},{costs_2_opt},{apx_2_opt},{execution_time_2_opt},{costs_3_opt},{apx_3_opt},{execution_time_3_opt}\n")
 
 
 if SMALL:
