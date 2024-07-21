@@ -135,7 +135,7 @@ def write(routes, total_cost, execution_time, status):
     if not os.path.exists(f"{OUTPUT_PATH}{NAME_FILE}"):
         f = open(f"{OUTPUT_PATH}{NAME_FILE}", "w")
         # Intestazione del file csv
-        f.write("Instance_Name,#Node,#Truck,Capacity,Optimal_Cost,Execution_time,Status,Roots\n")
+        f.write("Instance_Name,#Node,#Truck,Capacity,Optimal_Cost,Execution_time,Status,Routes\n")
     else:
         f = open(f"{OUTPUT_PATH}{NAME_FILE}", "a")
 

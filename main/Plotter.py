@@ -1,9 +1,10 @@
 import matplotlib.pyplot as plt
 import networkx as nx
+import numpy as np
 import pandas as pd
 
 
-def plot_roots_graph(nodes, roots):
+def plot_routes_graph(nodes, routes):
     # Creazione del grafo
     G = nx.Graph()
 
@@ -16,11 +17,11 @@ def plot_roots_graph(nodes, roots):
         else:
             G.nodes[n.get_id()]['color'] = 'cyan'
 
-    # Aggiunta degli archi con colori specifici per ogni root
+    # Aggiunta degli archi con colori specifici per ogni routes
     colori = ['blue', 'green', 'magenta', 'black', 'orange', 'purple', 'brown', 'pink', 'gray', 'olive', 'maroon',
               'cyan', 'teal', 'navy', 'lime', 'gold', 'indigo', 'coral', 'khaki', 'yellow']
 
-    for index, r in enumerate(roots):
+    for index, r in enumerate(routes):
         colore_arco = colori[index % len(colori)]  # Seleziona un colore dalla lista, usa modulo per evitare errori di indice
         for i in range(len(r)-1):
             G.add_edge(r[i], r[i+1], color=colore_arco, weight=2.5)
@@ -46,9 +47,9 @@ def plot_roots_graph(nodes, roots):
     plt.show()
 
 
-def plot_if_not_explicit(roots, nodes):
+def plot_if_not_explicit(routes, nodes):
     if nodes[0].get_x() is not None:
-        plot_roots_graph(nodes, roots)
+        plot_routes_graph(nodes, routes)
     else:
         print("L'istanza ha formato 'EXPLICIT', non è possibile visualizzare i nodi su un grafico.")
 
@@ -177,7 +178,14 @@ def evaluate_apx_sweep(csv_file, title):
     plt.legend()
     plt.grid(True)
 
-    # Mostra il grafico
+    # Determine the range of your data to set appropriate y-ticks
+    y_min = min(min(apx1), min(apx2), min(apx3))
+    y_max = max(max(apx1), max(apx2), max(apx3))
+
+    # Set y-ticks at more granular intervals
+    plt.yticks(np.arange(y_min, y_max, step=(y_max - y_min) / 20))  # Adjust the step as needed
+
+    # Show the plot
     plt.show()
 
 
@@ -194,14 +202,14 @@ MID_LARGE_SWEEP = RESULT_SWEEP + 'mid_large_Sweep_APX_and_Time.csv'
 LARGE_SWEEP = RESULT_SWEEP + 'large_Sweep_APX_and_Time_No_Timeout.csv'
 X_LARGE_SWEEP = RESULT_SWEEP + 'x_large_Sweep_APX_and_Time2OPT.csv'
 
-PLOT = False
+PLOT = True
 if PLOT:
     evaluate_apx_sweep(SMALL_SWEEP, 'Performance dell\'Algoritmo di Sweep nel VRP - small')
     evaluate_apx_sweep(MID_SMALL_SWEEP, 'Performance dell\'Algoritmo di Sweep nel VRP - mid small')
     evaluate_apx_sweep(MID_SWEEP, 'Performance dell\'Algoritmo di Sweep nel VRP - mid')
     evaluate_apx_sweep(MID_LARGE_SWEEP, 'Performance dell\'Algoritmo di Sweep nel VRP - mid large')
-    evaluate_apx_sweep(LARGE_SWEEP, 'Performance dell\'Algoritmo di Sweep nel VRP - large')
-    evaluate_apx_sweep(X_LARGE_SWEEP, 'Performance dell\'Algoritmo di Sweep nel VRP - x large')
+    #evaluate_apx_sweep(LARGE_SWEEP, 'Performance dell\'Algoritmo di Sweep nel VRP - large')
+    #evaluate_apx_sweep(X_LARGE_SWEEP, 'Performance dell\'Algoritmo di Sweep nel VRP - x large')
 
 
 SMALL_CW = RESULT_CW + 'small_CW_APX_and_Time.csv'

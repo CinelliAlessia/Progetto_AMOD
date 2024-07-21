@@ -31,11 +31,11 @@ def save_results_to_file(routes, cw_cost, directory, instance_name):
     print(f"Results saved to {output_path}")
 
 
-def calculate_cost(roots, nodes):
+def calculate_cost(routes, nodes):
     total_cost = []
     dist = get_distance(nodes)
 
-    for r in roots:
+    for r in routes:
         cost = 0
         for i in range(len(r)-1):
             cost += dist[r[i]][r[i + 1]]
@@ -45,10 +45,10 @@ def calculate_cost(roots, nodes):
     return sum(total_cost)
 
 
-def calculate_cost_whit_matrix(roots, matrix):
+def calculate_cost_whit_matrix(routes, matrix):
     total_cost = []
 
-    for r in roots:
+    for r in routes:
         cost = 0
         for i in range(len(r)-1):
             cost += matrix[r[i]][r[i + 1]]

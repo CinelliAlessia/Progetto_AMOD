@@ -10,9 +10,9 @@ from Random_Ale import vrp_random
 from Sweep_Andrea import solve_sweep_on_instance
 
 
-def print_roots(roots):
+def print_routes(routes):
     if len(all_nodes) < 50:
-        for c in roots:
+        for c in routes:
             print(c)
 
 
@@ -29,7 +29,7 @@ else:
     work_on_explicit = False
 
 
-path_instance = "../resources/vrplib/Instances/E-n30-k3.vrp"
+path_instance = "../resources/vrplib/Instances/CMT8.vrp"
 instance = Parse.make_instance_from_path_name(path_instance)
 all_nodes, truck = Parse.work_on_instance(instance, work_on_explicit)
 print("Fine Parsing")
@@ -53,7 +53,7 @@ def start():
 
         Plotter.plot_if_not_explicit(routes, all_nodes)
         cost = Utils.calculate_cost(routes, all_nodes)
-        print_roots(routes)
+        print_routes(routes)
         print(f"Costi CW ALESSIA {cost}")
 
     # ANDREA CW
@@ -71,7 +71,7 @@ def start():
         Plotter.plot_if_not_explicit(routes, all_nodes)
         print("Calcolo costo...")
         cost = Utils.calculate_cost(routes, all_nodes)
-        print_roots(routes)
+        print_routes(routes)
         print(f"Costi CW ANDREA {cost}")
 
     # SWEEP ALESSIA
@@ -92,7 +92,7 @@ def start():
 
         Plotter.plot_if_not_explicit(routes, all_nodes)
         print("Routes opt3:")
-        print_roots(routes)
+        print_routes(routes)
         print(f"Costi SWEEP ALESSIA: {costs}")
 
     # SWEEP ANDREA
@@ -111,7 +111,7 @@ def start():
 
         cost = Utils.calculate_cost(routes, all_nodes)
         print("Routes:")
-        print_roots(routes)
+        print_routes(routes)
         print(f"Costi SWEEP ANDREA {cost}")
 
     if RANDOM:
@@ -119,7 +119,7 @@ def start():
         id_depots = Parse.get_depots_index(instance)[0]
 
         best_cost = float("inf")
-        best_root = []
+        best_routes = []
 
         # Registra il tempo di inizio
         start_time = time.perf_counter()
@@ -127,14 +127,14 @@ def start():
             routes, costs = vrp_random(all_nodes, truck.get_capacity(), total_demand, id_depots)
             if costs < best_cost:
                 best_cost = costs
-                best_root = routes  # Registra il tempo di fine
+                best_routes = routes  # Registra il tempo di fine
         end_time = time.perf_counter()
 
         # Calcola la durata dell'esecuzione
         execution_time = end_time - start_time
 
-        print_roots(best_root)
-        Plotter.plot_if_not_explicit(best_root, all_nodes)
+        print_routes(best_routes)
+        Plotter.plot_if_not_explicit(best_routes, all_nodes)
 
         print(f"Costi random: {best_cost}")
         print(f"Tempo di esecuzione random: {execution_time} secondi")
@@ -142,9 +142,9 @@ def start():
 
 start()
 
-sol_path = "../resources/vrplib/Solutions/E-n30-k3.sol"
+sol_path = "../resources/vrplib/Solutions/CMT8.sol"
 route, cost = read_sol_file(sol_path)
 Plotter.plot_if_not_explicit(route, all_nodes)
 print("Route from sol file;")
-print_roots(route)
+print_routes(route)
 print(f"Cost from sol file: {cost}")
