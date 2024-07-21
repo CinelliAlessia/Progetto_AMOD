@@ -82,17 +82,7 @@ def start():
         start_time = time.perf_counter()
         # Chiamata alla funzione che vuoi misurare
 
-        routes, costs = sweepAle.sweep_algorithm(all_nodes, truck_capacity, False, False)
-        print("Routes sweep:")
-        print_roots(routes)
-
-        routes, costs = sweepAle.sweep_algorithm(all_nodes, truck_capacity, True, False)
-        print("Routes opt2:")
-        print_roots(routes)
-
         routes, costs = sweepAle.sweep_algorithm(all_nodes, truck_capacity, False, True)
-        print("Routes opt3:")
-        print_roots(routes)
 
         # Registra il tempo di fine
         end_time = time.perf_counter()
@@ -101,7 +91,7 @@ def start():
         print(f"Tempo di esecuzione sweep Ale: {execution_time} secondi")
 
         Plotter.plot_if_not_explicit(routes, all_nodes)
-        print("Routes:")
+        print("Routes opt3:")
         print_roots(routes)
         print(f"Costi SWEEP ALESSIA: {costs}")
 
@@ -154,6 +144,7 @@ start()
 
 sol_path = "../resources/vrplib/Solutions/E-n30-k3.sol"
 route, cost = read_sol_file(sol_path)
-print("Route from sol file")
-print_roots(route)
 Plotter.plot_if_not_explicit(route, all_nodes)
+print("Route from sol file;")
+print_roots(route)
+print(f"Cost from sol file: {cost}")
