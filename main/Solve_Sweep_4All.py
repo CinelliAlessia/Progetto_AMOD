@@ -14,9 +14,9 @@ SWEEP_SELECTOR = 1
 SMALL = True
 MID_SMALL = False
 MID = False
-MID_LARGE = False
-LARGE = False
-X_LARGE = True
+MID_LARGE = True
+LARGE = True
+X_LARGE = False
 
 # ------------------------------------------------------------------------------------------------------------
 
