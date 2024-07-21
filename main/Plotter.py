@@ -155,22 +155,57 @@ def evaluate_single_column_two_files(csv_file1, csv_file2, csv_file3, column, ti
     plt.show()
 
 
+def evaluate_apx_sweep(csv_file, title):
+    # Carica i dati dal file CSV usando il delimitatore ';'
+    data = pd.read_csv(csv_file, delimiter=',')
+
+    # Estrai le colonne di interesse
+    apx1 = data['Apx_NoOpt']
+    apx2 = data['Apx_2Opt']
+    apx3 = data['Apx_3Opt']
+
+    # Crea il grafico
+    plt.figure(figsize=(10, 6))
+    plt.plot(apx1, marker='o', linestyle='-', label='Sweep')
+    plt.plot(apx2, marker='s', linestyle='--', label='2 Opt')
+    plt.plot(apx3, marker='x', linestyle='-.', label='3 Opt')
+
+    # Etichette del grafico
+    plt.title(title)
+    plt.xlabel('Istanze')
+    plt.ylabel("APX")
+    plt.legend()
+    plt.grid(True)
+
+    # Mostra il grafico
+    plt.show()
+
 
 # Esempio di utilizzo
 
-SWEEP = 'Results/Heuristic_Solutions/Sweep/'
-CW = 'Results/Heuristic_Solutions/Clarke_&_Wright_run/'
-RANDOM = 'Results/Random_Solutions/'
+RESULT_SWEEP = 'Results/Heuristic_Solutions/Sweep/'
+RESULT_CW = 'Results/Heuristic_Solutions/Clarke_&_Wright_run/'
+RESULT_RANDOM = 'Results/Random_Solutions/'
 
-csv_file = 'Results/Heuristic_Solutions/Sweep/All.csv'
-evaluate_two_column(csv_file, 'Size', 'Apx_3Opt', 'Performance dell\'Algoritmo di Sweep nel VRP')
+SMALL_SWEEP = RESULT_SWEEP + 'small_Sweep_APX_and_Time.csv'
+MID_SMALL_SWEEP = RESULT_SWEEP + 'mid_small_Sweep_APX_and_Time.csv'
+MID_SWEEP = RESULT_SWEEP + 'mid_Sweep_APX_and_Time.csv'
+MID_LARGE_SWEEP = RESULT_SWEEP + 'mid_large_Sweep_APX_and_Time.csv'
+LARGE_SWEEP = RESULT_SWEEP + 'large_Sweep_APX_and_Time.csv'
+X_LARGE_SWEEP = RESULT_SWEEP + 'x_large_Sweep_APX_and_Time.csv'
+
+evaluate_apx_sweep(SMALL_SWEEP, 'Performance dell\'Algoritmo di Sweep nel VRP - small')
+evaluate_apx_sweep(MID_SMALL_SWEEP, 'Performance dell\'Algoritmo di Sweep nel VRP - mid small')
+evaluate_apx_sweep(MID_SWEEP, 'Performance dell\'Algoritmo di Sweep nel VRP - mid')
+evaluate_apx_sweep(MID_LARGE_SWEEP, 'Performance dell\'Algoritmo di Sweep nel VRP - mid large')
+evaluate_apx_sweep(LARGE_SWEEP, 'Performance dell\'Algoritmo di Sweep nel VRP - large')
+evaluate_apx_sweep(X_LARGE_SWEEP, 'Performance dell\'Algoritmo di Sweep nel VRP - x large')
 
 
-cvs1 = SWEEP + 'mid_Sweep_APX_and_Time.csv'
-cvs2 = CW + 'mid_CW_APX_and_Time.csv'
-cvs3 = RANDOM + "mid_Random_APX_and_Time.csv"
+SMALL_CW = RESULT_CW + 'small_CW_APX_and_Time.csv'
+SMALL_RANDOM = RESULT_RANDOM + "small_Random_APX_and_Time.csv"
 
-evaluate_single_column_two_files(cvs1, cvs2, cvs3, 'APX', 'Confronto tra Sweep, Clarke & Wright e Random')
+#evaluate_single_column_two_files(SMALL_SWEEP, SMALL_CW, SMALL_RANDOM, 'APX', 'Confronto tra Sweep, Clarke & Wright e Random')
 
 
 

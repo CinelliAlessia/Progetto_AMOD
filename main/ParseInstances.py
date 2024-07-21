@@ -141,28 +141,33 @@ def get_truck(instance):
     min_truck = 0
     max_truck = float('inf')
 
-    comment = instance.get('comment')
+    # Prendo il numero dei veicoli dal nome del file
+    if "-k" in instance.get('name'):
+        min_truck = int(instance.get('name').split("-k")[1].split(".")[0])
+        max_truck = min_truck
+    else:
+        comment = instance.get('comment')
 
-    # se commento non è none e non è un numero
-    if comment is not None and not str(comment).replace('.', '', 1).isdigit():
-        if "Min no of trucks:" in comment:
-            trucks_info = comment.split("Min no of trucks:")[1].strip()
-            try:
-                min_truck = int(trucks_info.split(",")[0])
+        # se commento non è none e non è un numero
+        if comment is not None and not str(comment).replace('.', '', 1).isdigit():
+            if "Min no of trucks:" in comment:
+                trucks_info = comment.split("Min no of trucks:")[1].strip()
+                try:
+                    min_truck = int(trucks_info.split(",")[0])
+                    max_truck = float('inf')
+                except ValueError:
+                    if VERBOSE: print(f"Error converting '{trucks_info.split(',')[0]}' to int")
+
+            elif "No of trucks:" in comment:
+                trucks_info = comment.split("No of trucks:")[1].strip()
+                try:
+                    min_truck = int(trucks_info.split(',')[0])
+                    max_truck = min_truck
+                except ValueError:
+                    if VERBOSE: print(f"Error converting '{trucks_info.split(',')[0]}' to int")
+            else:
+                min_truck = 0
                 max_truck = float('inf')
-            except ValueError:
-                if VERBOSE: print(f"Error converting '{trucks_info.split(',')[0]}' to int")
-
-        elif "No of trucks:" in comment:
-            trucks_info = comment.split("No of trucks:")[1].strip()
-            try:
-                min_truck = int(trucks_info.split(',')[0])
-                max_truck = min_truck
-            except ValueError:
-                if VERBOSE: print(f"Error converting '{trucks_info.split(',')[0]}' to int")
-        else:
-            min_truck = 0
-            max_truck = float('inf')
 
     capacity = instance.get('capacity')
     truck = Truck(min_truck, max_truck, capacity)

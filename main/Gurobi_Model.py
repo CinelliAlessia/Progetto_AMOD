@@ -8,6 +8,7 @@ OUTPUT_PATH = "Results/MIP/"  # Directory di output per i risultati
 NAME_FILE = "MIP_Solutions.csv"  # Nome del file di output
 CURRENT_INSTANCE = None
 
+
 def solve_vrp_with_gurobi(instance, verbose=False, max_time_seconds=300, gap=0.0001, integrality_focus=1):
     # Parametri del problema
     n_customers = Parser.get_nodes_dimension(instance)  # Numero di nodi nel sistema, incluso il deposito

@@ -11,11 +11,11 @@ SWEEP_SELECTOR = 1
 # Selezionando come primo parametro selector = 1, verrà eseguito l'algoritmo di Sweep di Alessia
 # ------------------------------------------------------------------------------------------------------------
 
-SMALL = True   # FATTE
-MID_SMALL = False   # FATTE
-MID = False  # FATTE
-MID_LARGE = False   # FATTE andrea tozzi
-LARGE = False  # Solo 2Opt
+SMALL = True
+MID_SMALL = False
+MID = True
+MID_LARGE = True
+LARGE = False
 X_LARGE = False
 
 # ------------------------------------------------------------------------------------------------------------

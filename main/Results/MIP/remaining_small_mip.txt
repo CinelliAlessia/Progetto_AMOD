@@ -1,8 +1,3 @@
-X-n219-k73.vrp
-A-n39-k5.vrp
-A-n39-k6.vrp
-A-n44-k6.vrp
-A-n45-k6.vrp
 A-n45-k7.vrp
 A-n46-k7.vrp
 A-n48-k7.vrp
