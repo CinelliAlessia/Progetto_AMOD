@@ -17,8 +17,8 @@ def print_roots(roots):
 
 
 CW_ALE = False
-CW_ANDRE = True
-SWEEP_ALE = False
+CW_ANDRE = False
+SWEEP_ALE = True
 SWEEP_ANDRE = False
 RANDOM = False
 RANDOM_ITERATION_NUMBER = 750
@@ -29,7 +29,7 @@ else:
     work_on_explicit = False
 
 
-path_instance = "../resources/vrplib/Instances/P-n22-k8.vrp"
+path_instance = "../resources/vrplib/Instances/E-n30-k3.vrp"
 instance = Parse.make_instance_from_path_name(path_instance)
 all_nodes, truck = Parse.work_on_instance(instance, work_on_explicit)
 print("Fine Parsing")
@@ -81,7 +81,18 @@ def start():
         # Registra il tempo di inizio
         start_time = time.perf_counter()
         # Chiamata alla funzione che vuoi misurare
+
+        routes, costs = sweepAle.sweep_algorithm(all_nodes, truck_capacity, False, False)
+        print("Routes sweep:")
+        print_roots(routes)
+
+        routes, costs = sweepAle.sweep_algorithm(all_nodes, truck_capacity, True, False)
+        print("Routes opt2:")
+        print_roots(routes)
+
         routes, costs = sweepAle.sweep_algorithm(all_nodes, truck_capacity, False, True)
+        print("Routes opt3:")
+        print_roots(routes)
 
         # Registra il tempo di fine
         end_time = time.perf_counter()
@@ -90,9 +101,8 @@ def start():
         print(f"Tempo di esecuzione sweep Ale: {execution_time} secondi")
 
         Plotter.plot_if_not_explicit(routes, all_nodes)
+        print("Routes:")
         print_roots(routes)
-        print(f"Costo: {Utils.calculate_cost(routes, all_nodes)}")
-
         print(f"Costi SWEEP ALESSIA: {costs}")
 
     # SWEEP ANDREA
@@ -110,6 +120,7 @@ def start():
         Plotter.plot_if_not_explicit(routes, all_nodes)
 
         cost = Utils.calculate_cost(routes, all_nodes)
+        print("Routes:")
         print_roots(routes)
         print(f"Costi SWEEP ANDREA {cost}")
 
@@ -141,6 +152,8 @@ def start():
 
 start()
 
-sol_path = "../resources/vrplib/Solutions/P-n22-k8.sol"
+sol_path = "../resources/vrplib/Solutions/E-n30-k3.sol"
 route, cost = read_sol_file(sol_path)
+print("Route from sol file")
+print_roots(route)
 Plotter.plot_if_not_explicit(route, all_nodes)
