@@ -1,11 +1,12 @@
+import os
 from gurobipy import Model, GRB, quicksum
-import pandas as pd
 import ParseInstances as Parser
 import time
-from AMPL_runner_from_dat import calculate_routes_from_matrix
 
 VERBOSE = False
-
+OUTPUT_PATH = "Results/MIP/"  # Directory di output per i risultati
+NAME_FILE = "MIP_Solutions.cvs"  # Nome del file di output
+CURRENT_INSTANCE = None
 
 def solve_vrp_with_gurobi(instance, verbose=False, max_time_seconds=300, gap=0.0001, integrality_focus=1):
     # Parametri del problema
@@ -99,6 +100,7 @@ def solve_vrp_with_gurobi(instance, verbose=False, max_time_seconds=300, gap=0.0
     else:
         print("Nessuna soluzione ottimale trovata.")
 
+    write(routes, total_cost, execution_time, status)
     return routes, total_cost, execution_time, status
 
 
@@ -122,6 +124,39 @@ def calculate_routes_from_gurobi_solution(x_val, y_val, n_customers, k):
         routes[h] = route  # Assegna la route costruita al veicolo corrente
     return routes
 
-# Esempio di utilizzo
-#instance_path = "../resources/vrplib/Instances/A-n32-k5.vrp"
-#instance = Parser.make_instance_from_path_name(instance_path)
+
+def write(routes, total_cost, execution_time, status):
+    # Verifico che la directory di output esista, altrimenti la creo
+    if not os.path.exists(f"{OUTPUT_PATH}"):
+        os.makedirs(OUTPUT_PATH)
+
+    # Se non esiste, lo creo e scrivo l'intestazione, altrimenti appendo solamente le soluzioni
+    if not os.path.exists(f"{OUTPUT_PATH}{NAME_FILE}"):
+        f = open(f"{OUTPUT_PATH}{NAME_FILE}", "w")
+        # Intestazione del file csv
+        f.write("Instance_Name,#Node,#Truck,Capacity,Optimal_Cost,Execution_time,Status,Roots\n")
+    else:
+        f = open(f"{OUTPUT_PATH}{NAME_FILE}", "a")
+
+    capacity = Parser.get_truck(instance).get_capacity()
+    n_nodes = Parser.get_nodes_dimension(instance)
+    n_truck = Parser.get_truck(instance).get_min_num()
+    if n_truck == 0:
+        n_truck = None
+
+    # Salva tali valori, con lo stesso formato su una nuova riga del file APX_and_Time.txt
+    f.write(f"{CURRENT_INSTANCE},{n_nodes},{n_truck},{capacity},{total_cost},{execution_time},{status},{routes}\n")
+    f.close()
+
+
+# Apro il file .txt in lettura per leggere i nomi delle istanze separate per dimensione
+txt_path = "Results/MIP/remaining_small_mip.txt"
+n = open(txt_path, "r")
+
+for line in n:  # Per ogni istanza scritta nel file
+    # Esempio di utilizzo
+    line = line.strip()
+    CURRENT_INSTANCE = line
+    instance_path = "../resources/vrplib/Instances/" + line
+    instance = Parser.make_instance_from_path_name(instance_path)
+    solve_vrp_with_gurobi(instance, True)

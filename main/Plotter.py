@@ -166,9 +166,9 @@ csv_file = 'Results/Heuristic_Solutions/Sweep/All.csv'
 evaluate_two_column(csv_file, 'Size', 'Apx_3Opt', 'Performance dell\'Algoritmo di Sweep nel VRP')
 
 
-cvs1 = 'Results/Heuristic_Solutions/Sweep/small_Sweep_APX_and_Time.csv'
-cvs2 = CW + 'small_CW_APX_and_Time.csv'
-cvs3 = RANDOM + "small_Random_APX_and_Time.csv"
+cvs1 = SWEEP + 'mid_Sweep_APX_and_Time.csv'
+cvs2 = CW + 'mid_CW_APX_and_Time.csv'
+cvs3 = RANDOM + "mid_Random_APX_and_Time.csv"
 
 evaluate_single_column_two_files(cvs1, cvs2, cvs3, 'APX', 'Confronto tra Sweep, Clarke & Wright e Random')
 

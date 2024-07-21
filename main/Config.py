@@ -1,6 +1,6 @@
 #
 ACTION_RANDOM = True
-ACTION_CW = True
+ACTION_CW = False
 ACTION_SWEEP = True
 ACTION_MIP = False
 
