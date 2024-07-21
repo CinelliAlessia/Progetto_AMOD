@@ -191,8 +191,8 @@ SMALL_SWEEP = RESULT_SWEEP + 'small_Sweep_APX_and_Time.csv'
 MID_SMALL_SWEEP = RESULT_SWEEP + 'mid_small_Sweep_APX_and_Time.csv'
 MID_SWEEP = RESULT_SWEEP + 'mid_Sweep_APX_and_Time.csv'
 MID_LARGE_SWEEP = RESULT_SWEEP + 'mid_large_Sweep_APX_and_Time.csv'
-LARGE_SWEEP = RESULT_SWEEP + 'large_Sweep_APX_and_Time.csv'
-X_LARGE_SWEEP = RESULT_SWEEP + 'x_large_Sweep_APX_and_Time.csv'
+LARGE_SWEEP = RESULT_SWEEP + 'large_Sweep_APX_and_Time_No_Timeout.csv'
+X_LARGE_SWEEP = RESULT_SWEEP + 'x_large_Sweep_APX_and_Time2OPT.csv'
 
 evaluate_apx_sweep(SMALL_SWEEP, 'Performance dell\'Algoritmo di Sweep nel VRP - small')
 evaluate_apx_sweep(MID_SMALL_SWEEP, 'Performance dell\'Algoritmo di Sweep nel VRP - mid small')

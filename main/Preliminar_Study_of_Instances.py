@@ -118,7 +118,7 @@ def found_instance_size(directory_path="../resources/vrplib/Instances"):
 
 #found_avrp_instances()
 #found_mdvrp_instances()
-#found_instance_size()
+found_instance_size()
 
 
 # ----- Aggiornamento costi nel file .sol -----

@@ -5,6 +5,7 @@ import ParseInstances as Parse
 import Plotter
 import Sweep_Ale as sweepAle
 import Utils
+from Preliminar_Study_of_Instances import read_sol_file
 from Random_Ale import vrp_random
 from Sweep_Andrea import solve_sweep_on_instance
 
@@ -16,7 +17,7 @@ def print_roots(roots):
 
 
 CW_ALE = False
-CW_ANDRE = False
+CW_ANDRE = True
 SWEEP_ALE = False
 SWEEP_ANDRE = False
 RANDOM = False
@@ -28,7 +29,7 @@ else:
     work_on_explicit = False
 
 
-path_instance = "../resources/vrplib/Instances/CMT13.vrp"
+path_instance = "../resources/vrplib/Instances/P-n22-k8.vrp"
 instance = Parse.make_instance_from_path_name(path_instance)
 all_nodes, truck = Parse.work_on_instance(instance, work_on_explicit)
 print("Fine Parsing")
@@ -139,3 +140,7 @@ def start():
 
 
 start()
+
+sol_path = "../resources/vrplib/Solutions/P-n22-k8.sol"
+route, cost = read_sol_file(sol_path)
+Plotter.plot_if_not_explicit(route, all_nodes)
