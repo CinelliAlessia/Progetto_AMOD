@@ -23,7 +23,7 @@ else:
     INSTANCES_DIRECTORY = "../resources/vrplib/Instances/"
 
 # Esegui per le diverse dimensioni delle istanze
-SMALL = True
+SMALL = False
 MID_SMALL = False
 MID = False
 MID_LARGE = False

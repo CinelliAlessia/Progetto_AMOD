@@ -11,12 +11,12 @@ SWEEP_SELECTOR = 1
 # Selezionando come primo parametro selector = 1, verrà eseguito l'algoritmo di Sweep di Alessia
 # ------------------------------------------------------------------------------------------------------------
 
-SMALL = False   # FATTE
+SMALL = True   # FATTE
 MID_SMALL = False   # FATTE
 MID = False  # FATTE
 MID_LARGE = False   # FATTE andrea tozzi
 LARGE = False  # Solo 2Opt
-X_LARGE = True
+X_LARGE = False
 
 # ------------------------------------------------------------------------------------------------------------
 
@@ -55,33 +55,33 @@ def solve_sweep_for_instance_name_in_file(size, file_path):
         print(f"Il file {file_path} non esiste")
         return
 
-    # Apro il file in lettura per leggere i nomi delle istanze separate per dimensione
-    n = open(file_path, "r")
-
     # Verifico che la directory di output esista, altrimenti la creo
     if not os.path.exists(f"{OUTPUT_PATH}"):
         os.makedirs(OUTPUT_PATH)
 
+    # Creo il file di output
     filename = size + "_" + OUTPUT_BASE_FILE_NAME
-
     i = 0
     while os.path.exists(f"{OUTPUT_PATH}{filename}.csv"):
         i += 1
         filename = f"{size}_{OUTPUT_BASE_FILE_NAME}({i})"
-
     f = open(f"{OUTPUT_PATH}{filename}.csv", "w")
 
-    # Scrivi nel file l'intestazione
+    # Intestazione del file csv
     f.write("Size,Instance_Name,#Node,#Truck,Capacity,Optimal_Cost,Cost_NoOpt,Apx_NoOpt,Execution_time_NoOpt,Cost_2Opt,Apx_2Opt,Execution_time_2Opt,Cost_3Opt,Apx_3Opt,Execution_time_3Opt\n")
 
     # -----------------------------------------------------------------------------------------
     # Per ogni riga (riga = file_name) in n (file_path),
     # esegui l'euristica di Sweep sull'istanza corrispondente
+
+    # Apro il file .txt in lettura per leggere i nomi delle istanze separate per dimensione
+    n = open(file_path, "r")
+
     for line in n:  # Per ogni istanza scritta nel file
-        write_in_csv(line, f, size)
+        calculate_sweep_and_write_in_csv(line, f, size)
 
 
-def write_in_csv(line, f, size):
+def calculate_sweep_and_write_in_csv(line, f, size):
     file_name = line.strip()
     if file_name.endswith(".vrp"):
         print(f"Solving {file_name}...")

@@ -55,3 +55,9 @@ Ghent1.vrp
 Ghent2.vrp
 Leuven1.vrp
 Leuven2.vrp
+
+
+
+PROBLEMATICHE
+E-n13-k4.vrp
+E-n31-k7.vrp

@@ -102,4 +102,75 @@ def boxPlot():
     plt.show()
 
 
-boxPlot()
+#boxPlot()
+
+def evaluate_two_column(csv_file, column1, column2, title):
+    # Carica i dati dal file CSV usando il delimitatore ';'
+    data = pd.read_csv(csv_file, delimiter=';')
+
+    # Crea il grafico
+    plt.figure(figsize=(10, 6))
+
+    # Raggruppa i dati
+    grouped_data = data.groupby(column1)[column2].mean().reset_index()
+
+    plt.plot(grouped_data[column1], grouped_data[column2], marker='o', linestyle='-')
+
+    # Etichette del grafico
+    plt.title(title)
+    plt.xlabel(column1)
+    plt.ylabel(column2)
+    plt.grid(True)
+
+    # Mostra il grafico
+    plt.show()
+
+
+def evaluate_single_column_two_files(csv_file1, csv_file2, csv_file3, column, title):
+
+    # Carica i dati dai file CSV usando il delimitatore ';'
+    data1 = pd.read_csv(csv_file1, delimiter=',')
+    data2 = pd.read_csv(csv_file2, delimiter=',')
+    data3 = pd.read_csv(csv_file3, delimiter=',')
+
+    # Estrai le colonne di interesse
+    apx1 = data1['Apx_3Opt']
+    apx2 = data2['APX']
+    apx3 = data3['APX']
+
+    # Crea il grafico
+    plt.figure(figsize=(10, 6))
+    plt.plot(apx1, marker='o', linestyle='-', label='SWEEP')
+    plt.plot(apx2, marker='s', linestyle='--', label='CW')
+    plt.plot(apx3, marker='x', linestyle='-.', label='RANDOM')
+
+    # Etichette del grafico
+    plt.title(title)
+    plt.xlabel('Istanza')
+    plt.ylabel(column)
+    plt.legend()
+    plt.grid(True)
+
+    # Mostra il grafico
+    plt.show()
+
+
+
+# Esempio di utilizzo
+
+SWEEP = 'Results/Heuristic_Solutions/Sweep/'
+CW = 'Results/Heuristic_Solutions/Clarke_&_Wright_run/'
+RANDOM = 'Results/Random_Solutions/'
+
+csv_file = 'Results/Heuristic_Solutions/Sweep/All.csv'
+evaluate_two_column(csv_file, 'Size', 'Apx_3Opt', 'Performance dell\'Algoritmo di Sweep nel VRP')
+
+
+cvs1 = 'Results/Heuristic_Solutions/Sweep/small_Sweep_APX_and_Time.csv'
+cvs2 = CW + 'small_CW_APX_and_Time.csv'
+cvs3 = RANDOM + "small_Random_APX_and_Time.csv"
+
+evaluate_single_column_two_files(cvs1, cvs2, cvs3, 'APX', 'Confronto tra Sweep, Clarke & Wright e Random')
+
+
+

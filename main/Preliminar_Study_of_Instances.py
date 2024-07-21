@@ -250,4 +250,4 @@ def modify_optimal_cost_sol(filepath, new_optimal_value):
 # Esempio di utilizzo per la directory specificata
 directory_path_sol = "../resources/vrplib/Solutions/"
 directory_path_name_instances = "../resources/vrplib/Name_of_instances_by_dimension/"
-fix_cost(directory_path_sol, f"{directory_path_name_instances}x_large_instances_name.txt")
+#fix_cost(directory_path_sol, f"{directory_path_name_instances}x_large_instances_name.txt")

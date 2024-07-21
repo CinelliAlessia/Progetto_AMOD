@@ -4,7 +4,7 @@ import Config
 from Model.Node import Node
 from Model.Truck import Truck
 
-VERBOSE = False
+VERBOSE = True
 ACTION = Config.ACTION_PARSE
 
 if ACTION:
