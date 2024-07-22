@@ -31,13 +31,13 @@ def vrp_random(nodes, capacity, demands, id_depots):
         else:
             routes.append([client])     # Crea una nuova rotta se non può essere aggiunto a nessun cluster
 
-    processed_roots = []
+    processed_routes = []
     for i, route in enumerate(routes):
         if route:  # Controlla se la rotta non è vuota e aggiunge il deposito all'inizio e alla fine
-            processed_root = [id_depots] + [c.get_id() for c in route] + [id_depots]
-            processed_roots.append(processed_root)
+            processed_route = [id_depots] + [c.get_id() for c in route] + [id_depots]
+            processed_routes.append(processed_route)
 
-    return processed_roots, sum(costs)
+    return processed_routes, sum(costs)
 
 
 def vrp_random_alternative(nodes, capacity, demands, id_depots):
@@ -51,23 +51,23 @@ def vrp_random_alternative(nodes, capacity, demands, id_depots):
     truck_max = int(demands/capacity) + 1
 
     # List to store all clusters inizialmente n clusters vuoti
-    roots = [[] for _ in range(truck_max)]
+    routes = [[] for _ in range(truck_max)]
     rem_capacities = [0 for _ in range(len(nodes))]
 
-    for i, root in enumerate(roots):
+    for i, route in enumerate(routes):
         for client in nodes:
             if rem_capacities[i] + client.get_demand() <= capacity:
                 rem_capacities[i] += client.get_demand()
-                root.append(client)
+                route.append(client)
                 nodes.remove(client)
 
             if rem_capacities[i] == capacity:
                 break
 
-    processed_roots = []
-    for root in roots:
-        if root:  # Controlla se la rotta non è vuota e aggiunge il deposito all'inizio e alla fine
-            processed_root = [id_depots] + [c.get_id() for c in root] + [id_depots]
-            processed_roots.append(processed_root)
+    processed_routes = []
+    for route in routes:
+        if route:  # Controlla se la rotta non è vuota e aggiunge il deposito all'inizio e alla fine
+            processed_route = [id_depots] + [c.get_id() for c in route] + [id_depots]
+            processed_routes.append(processed_route)
 
-    return processed_roots
+    return processed_routes

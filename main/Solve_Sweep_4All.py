@@ -11,12 +11,12 @@ SWEEP_SELECTOR = 1
 # Selezionando come primo parametro selector = 1, verrà eseguito l'algoritmo di Sweep di Alessia
 # ------------------------------------------------------------------------------------------------------------
 
-SMALL = True
+SMALL = False
 MID_SMALL = False
-MID = True
-MID_LARGE = True
+MID = False
+MID_LARGE = False
 LARGE = False
-X_LARGE = False
+X_LARGE = True
 
 # ------------------------------------------------------------------------------------------------------------
 
@@ -68,7 +68,7 @@ def solve_sweep_for_instance_name_in_file(size, file_path):
     f = open(f"{OUTPUT_PATH}{filename}.csv", "w")
 
     # Intestazione del file csv
-    f.write("Size,Instance_Name,#Node,#Truck,Capacity,Optimal_Cost,Cost_NoOpt,Apx_NoOpt,Execution_time_NoOpt,Cost_2Opt,Apx_2Opt,Execution_time_2Opt,Cost_3Opt,Apx_3Opt,Execution_time_3Opt\n")
+    f.write("Size,Instance_Name,#Node,#Truck,Capacity,Optimal_Cost,Cost_NoOpt,Apx_NoOpt,Execution_time_NoOpt,Cost_2Opt,Apx_2Opt,Execution_time_2Opt,Cost_3Opt,Apx_3Opt,Execution_time_3Opt,#Truck_Opt3\n")
 
     # -----------------------------------------------------------------------------------------
     # Per ogni riga (riga = file_name) in n (file_path),
@@ -138,7 +138,7 @@ def calculate_sweep_and_write_in_csv(line, f, size):
             n_truck = None
 
         # Salva tali valori, con lo stesso formato su una nuova riga del file APX_and_Time.txt
-        f.write(f"{size},{file_name},{n_nodes},{n_truck},{capacity},{opt},{costs_no_opt},{apx_no_opt},{execution_time_no_opt},{costs_2_opt},{apx_2_opt},{execution_time_2_opt},{costs_3_opt},{apx_3_opt},{execution_time_3_opt}\n")
+        f.write(f"{size},{file_name},{n_nodes},{n_truck},{capacity},{opt},{costs_no_opt},{apx_no_opt},{execution_time_no_opt},{costs_2_opt},{apx_2_opt},{execution_time_2_opt},{costs_3_opt},{apx_3_opt},{execution_time_3_opt},{len(routes_3_opt)}\n")
 
 
 if SMALL:

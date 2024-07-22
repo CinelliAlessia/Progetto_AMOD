@@ -12,7 +12,7 @@ def check_merge(r_i, r_j, capacity, nodes):
 def start(nodes, truck):
     depots = []
     clients = []
-    roots = []  # Lista delle rotte, tanti quanti sono i nodi
+    routes = []  # Lista delle rotte, tanti quanti sono i nodi
 
     for u in nodes:
         if u.get_is_depots():
@@ -24,27 +24,27 @@ def start(nodes, truck):
     # Calcolo della matrice delle distanze (costi)
     costo = get_distance(nodes)
 
-    # Creo le root iniziali
+    # Creo le routes iniziali
     for c in clients:
-        roots.append([depots.get_id(), c.get_id(), depots.get_id()])
+        routes.append([depots.get_id(), c.get_id(), depots.get_id()])
 
     # Calcolo i savings
-    savings = calculate_saving(costo, roots)
+    savings = calculate_saving(costo, routes)
 
     for saving in savings:
         if saving[2] >= 0:
-            mergedRoots(saving, roots, truck, nodes)
+            mergedRoutes(saving, routes, truck, nodes)
 
-    return roots
+    return routes
 
 
 # Calcolo i savings ! attenzione se inserisce nel saving 3,8 non inserisce 8,3
-def calculate_saving(costo, roots):
+def calculate_saving(costo, routes):
     saving = []
     considered_pairs = set()  # Set to track considered pairs
-    for i, r_i in enumerate(roots):
-        for j in range(i + 1, len(roots)):
-            r_j = roots[j]
+    for i, r_i in enumerate(routes):
+        for j in range(i + 1, len(routes)):
+            r_j = routes[j]
             if r_i != r_j:
                 u = r_i[-2]
                 v = r_j[1]
@@ -59,11 +59,11 @@ def calculate_saving(costo, roots):
     return saving
 
 
-def mergedRoots(saving, roots, truck, nodes):
-    # Trova le due root interessate all'unione
+def mergedRoutes(saving, routes, truck, nodes):
+    # Trova le due routes interessate all'unione
     r_i, r_j = 0, 0
     check = 0
-    for r in roots:
+    for r in routes:
         if saving[0] in r:
             r_i = r
             check += 1
@@ -81,15 +81,15 @@ def mergedRoots(saving, roots, truck, nodes):
 
     # Se i è l'ultimo e j il primo -> i[:-1] + j[1:]
     if r_i[-2] == saving[0] and r_j[1] == saving[1]:
-        new_root = r_i[:-1] + r_j[1:]
+        new_route = r_i[:-1] + r_j[1:]
     # Se i il primo e j è l'ultimo -> j[:-1] + i[1:]
     elif r_j[-2] == saving[1] and r_i[1] == saving[0]:
-        new_root = r_j[:-1] + r_i[1:]
+        new_route = r_j[:-1] + r_i[1:]
     else:
         return False
 
-    roots.remove(r_i)
-    roots.remove(r_j)
-    roots.append(new_root)
-    #print(f"Merge tra {r_i} e {r_j}, new route: {new_root}")
+    routes.remove(r_i)
+    routes.remove(r_j)
+    routes.append(new_route)
+    #print(f"Merge tra {r_i} e {r_j}, new route: {new_route}")
     return True

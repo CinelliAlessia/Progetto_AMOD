@@ -130,35 +130,40 @@ def sweep_inner(nodes, vehicle_capacity, opt_2, opt_3):
     if not opt_2 and not opt_3:
         return get_incumbent()
     else:
-        return optimize_2opt(clusters, opt_3)
+        return optimize_2opt(clusters, costs, opt_3)
 
 
-def optimize_2opt(clusters, opt_3):
+def optimize_2opt(clusters, costs, opt_3):
     """
     Applica l'algoritmo 2-opt su ogni cluster.
-    :param clusters:
-    :param opt_3:
+    :param costs: Vettore dei costi di ogni cluster.
+    :param clusters: Clusters da ottimizzare.
+    :param opt_3: Se True, applica l'algoritmo 3-opt dopo il 2-opt.
     :return:
     """
 
     optimized_clusters_2 = []
     costs_2opt = []
-    new_clusters = clusters
 
-    for cluster in clusters:
+    for i, cluster in enumerate(clusters):
+        #print(f"Cluster {i} -> {cluster}")
         cluster_2opt, cost = two_opt(cluster)   # Calcolo il 2-opt
-
-        new_clusters.append(cluster_2opt)
-        new_clusters.remove(cluster)
-
-        if stop_requested:
-            print("Stoppo in optimize_2opt")
-            update_incumbent(new_clusters, calculate_cost(new_clusters, nodes_global))
-            return get_incumbent()
+        #print(f"Cluster 2opt {cluster_2opt}")
 
         # Aggiorno i valori
         costs_2opt.append(cost)
         optimized_clusters_2.append(cluster_2opt)
+
+        if stop_requested:
+            print("Stoppo in optimize_2opt")
+
+            # Aggiungo i cluster non ottimizzati rimanenti
+            optimized_clusters_2.extend(clusters[i:])
+            # Calcolo i costi per i cluster non ottimizzati e li aggiungo a costs_2opt
+            costs_2opt.extend(costs[i:])
+
+            update_incumbent(optimized_clusters_2, sum(costs_2opt))
+            return get_incumbent()
 
     best_route, best_costs = optimized_clusters_2, sum(costs_2opt)
     update_incumbent(best_route, best_costs)
@@ -166,7 +171,7 @@ def optimize_2opt(clusters, opt_3):
     if not opt_3:
         return get_incumbent()
     else:
-        return optimize_3opt(best_route, best_costs)
+        return optimize_3opt(best_route, costs_2opt)
 
 
 def two_opt_swap(tour, i, j):
@@ -214,24 +219,26 @@ def optimize_3opt(clusters_2opt, costs_2opt):
 
     optimized_clusters_3 = []
     costs_3opt = []
-    new_clusters = clusters_2opt
 
-    for cluster in clusters_2opt:
+    for i, cluster in enumerate(clusters_2opt):
         # Calcolo la nuova route con 3-opt
         cluster_3opt, cost = three_opt(cluster)
-
-        new_clusters.append(cluster_3opt)
-        new_clusters.remove(cluster)
-
-        if stop_requested:
-            print("Stoppo in optimize_3opt")
-            update_incumbent(new_clusters, calculate_cost(new_clusters, nodes_global))
-            return get_incumbent()
 
         # Aggiorno i valori
         optimized_clusters_3.append(cluster_3opt)
         costs_3opt.append(cost)
 
+        if stop_requested:
+            print("Stoppo in optimize_3opt")
+            # Aggiungo i cluster non ottimizzati rimanenti
+            optimized_clusters_3.extend(clusters_2opt[i:])
+            # Calcolo i costi per i cluster non ottimizzati e li aggiungo a costs_2opt
+            costs_3opt.extend(costs_2opt[i:])
+            update_incumbent(optimized_clusters_3, sum(costs_3opt))
+            return get_incumbent()
+
+
+    costs_2opt = sum(costs_2opt)
     costs_3opt = sum(costs_3opt)
 
     if costs_2opt <= costs_3opt:

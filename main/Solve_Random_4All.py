@@ -82,7 +82,7 @@ def solve_random_for_instance_name_in_file(size, file_path):
             id_depots = Parser.get_depots_index(instance)[0]
 
             best_cost = float("inf")
-            best_root = []
+            best_routes = []
 
             # Registra il tempo di inizio
             start_time = time.perf_counter()
@@ -90,7 +90,7 @@ def solve_random_for_instance_name_in_file(size, file_path):
                 routes, costs = Random.vrp_random(nodes, truck.get_capacity(), total_demand, id_depots)
                 if costs < best_cost:
                     best_cost = costs
-                    best_root = routes
+                    best_routes = routes
             # Registra il tempo di fine
             end_time = time.perf_counter()
 
