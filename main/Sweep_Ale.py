@@ -146,9 +146,7 @@ def optimize_2opt(clusters, costs, opt_3):
     costs_2opt = []
 
     for i, cluster in enumerate(clusters):
-        #print(f"Cluster {i} -> {cluster}")
         cluster_2opt, cost = two_opt(cluster)   # Calcolo il 2-opt
-        #print(f"Cluster 2opt {cluster_2opt}")
 
         # Aggiorno i valori
         costs_2opt.append(cost)

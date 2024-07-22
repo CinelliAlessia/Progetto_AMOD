@@ -105,9 +105,9 @@ def boxPlot():
 
 #boxPlot()
 
-def evaluate_two_column(csv_file, column1, column2, title):
+def evaluate_two_column(csv_file, column1, column2, column3, title):
     # Carica i dati dal file CSV usando il delimitatore ';'
-    data = pd.read_csv(csv_file, delimiter=';')
+    data = pd.read_csv(csv_file, delimiter=',')
 
     # Crea il grafico
     plt.figure(figsize=(10, 6))
@@ -115,17 +115,67 @@ def evaluate_two_column(csv_file, column1, column2, title):
     # Raggruppa i dati
     grouped_data = data.groupby(column1)[column2].mean().reset_index()
 
-    plt.plot(grouped_data[column1], grouped_data[column2], marker='o', linestyle='-')
+    #Raggruppa i dati e calcola la media di column2 e column3 per ogni valore di column1
+    grouped_data = data.groupby(column1).agg({column2: 'mean', column3: 'mean'}).reset_index()
+
+    # Ordina i dati in base alla colonna numerica
+    grouped_data = grouped_data.sort_values(by=column3)
+
+    plt.plot(grouped_data[column1], grouped_data[column2], marker='o', linestyle='-', markersize=5)
+
+    # Aggiungi annotazioni per alcuni valori di column3
+    num_annotations = 10  # Numero di annotazioni da mostrare
+    step = max(1, len(grouped_data) // num_annotations)  # Passo per selezionare le annotazioni
+    for i in range(0, len(grouped_data), step):
+        plt.annotate(f'{grouped_data[column3].iloc[i]:.2f}',
+                     (grouped_data[column1].iloc[i], grouped_data[column2].iloc[i]),
+                     textcoords="offset points",
+                     xytext=(0, 10),
+                     ha='center',
+                     fontsize=8)
 
     # Etichette del grafico
     plt.title(title)
-    plt.xlabel(column1)
-    plt.ylabel(column2)
-    plt.grid(True)
+    plt.xlabel('Instance ordered by dimension')
+    plt.ylabel('Secondi')
+
+    # Personalizza la griglia per mostrare solo le linee orizzontali
+    plt.grid(True, which='both', axis='y', linestyle='--')
+
+    # Nascondi le etichette dell'asse x ma mostra la label
+    plt.xticks([])  # Rimuove i numeri delle etichette dell'asse x
 
     # Mostra il grafico
     plt.show()
 
+
+def evaluate_3_columns(csv_file, column1, column2, column3, title):
+    # Carica i dati dal file CSV usando il delimitatore ','
+    data = pd.read_csv(csv_file, delimiter=',')
+
+    # Calcola il rapporto tra column1 e column2
+    data['Ratio'] = data[column1] / data[column2]
+
+    # Ordina i dati in base al rapporto
+    data_sorted = data.sort_values(by='Ratio')
+
+    # Crea il grafico
+    plt.figure(figsize=(10, 6))
+
+    # Crea il grafico: rapporto sull'asse x e column3 sull'asse y
+    plt.plot(data_sorted['Ratio'], data_sorted[column3], marker='o', linestyle='-', markersize=5, label=f'{column3}')
+
+    # Etichette del grafico
+    plt.title(title)
+    plt.xlabel(f'Ratio ({column1} / {column2})')
+    plt.ylabel(column3)
+    plt.legend()
+
+    # Personalizza la griglia per mostrare solo le linee orizzontali
+    plt.grid(True, which='both', axis='y', linestyle='--')
+
+    # Mostra il grafico
+    plt.show()
 
 def evaluate_single_column_two_files(csv_file1, csv_file2, csv_file3, column, title):
 
@@ -161,9 +211,9 @@ def evaluate_apx_sweep(csv_file, title):
     data = pd.read_csv(csv_file, delimiter=',')
 
     # Estrai le colonne di interesse
-    apx1 = data['Apx_NoOpt']
-    apx2 = data['Apx_2Opt']
-    apx3 = data['Apx_3Opt']
+    apx1 = data['Execution_time_NoOpt']
+    apx2 = data['Execution_time_2Opt']
+    apx3 = data['Execution_time_3Opt']
 
     # Crea il grafico
     plt.figure(figsize=(10, 6))
@@ -174,7 +224,7 @@ def evaluate_apx_sweep(csv_file, title):
     # Etichette del grafico
     plt.title(title)
     plt.xlabel('Istanze')
-    plt.ylabel("APX")
+    plt.ylabel('Tempo di esecuzione')
     plt.legend()
     plt.grid(True)
 
@@ -189,6 +239,44 @@ def evaluate_apx_sweep(csv_file, title):
     plt.show()
 
 
+def valuate_truck(csv_file, title):
+    # Carica i dati dal file CSV usando il delimitatore ';'
+    data = pd.read_csv(csv_file, delimiter=',')
+
+    # Estrai le colonne di interesse
+    truck = data['#Truck']
+    used_truck = data['Used_Truck']
+
+    # Crea il grafico
+    plt.figure(figsize=(10, 6))
+
+    feasible = 0
+    infeasible = 0
+    for i in range(len(truck)):
+        if used_truck[i] <= truck[i] or truck[i] == 0 or truck[i] == None:
+            feasible += 1
+        else:
+            infeasible += 1
+
+    # Grafico a torta
+    labels = ['Feasible', 'Infeasible']
+    sizes = [feasible, infeasible]
+    colors = ['#4CAF50', '#F44336']  # Verde e Rosso per facilitare la distinzione
+    explode = (0.1, 0)  # Esplodi il segmento "Feasible" per evidenziarlo
+
+    # Crea il grafico a torta
+    plt.figure(figsize=(8, 8))
+    plt.pie(sizes, explode=explode, labels=labels, colors=colors, autopct='%1.1f%%', startangle=140, shadow=True)
+
+    # Etichetta del grafico
+    plt.title(title)
+
+    # Mostra il grafico
+    plt.show()
+
+
+
+
 # Esempio di utilizzo
 
 RESULT_SWEEP = 'Results/Heuristic_Solutions/Sweep/'
@@ -199,8 +287,16 @@ SMALL_SWEEP = RESULT_SWEEP + 'small_Sweep_APX_and_Time.csv'
 MID_SMALL_SWEEP = RESULT_SWEEP + 'mid_small_Sweep_APX_and_Time.csv'
 MID_SWEEP = RESULT_SWEEP + 'mid_Sweep_APX_and_Time.csv'
 MID_LARGE_SWEEP = RESULT_SWEEP + 'mid_large_Sweep_APX_and_Time.csv'
-LARGE_SWEEP = RESULT_SWEEP + 'large_Sweep_APX_and_Time_No_Timeout.csv'
+LARGE_SWEEP = RESULT_SWEEP + 'large_Sweep_APX_and_Time.csv'
 X_LARGE_SWEEP = RESULT_SWEEP + 'x_large_Sweep_APX_and_Time2OPT.csv'
+
+SMALL_RANDOM = RESULT_RANDOM + "small_Random_APX_and_Time.csv"
+
+SMALL_CW = RESULT_CW + 'small_CW_APX_and_Time.csv'
+LARGE_CW = RESULT_CW + 'large_CW_APX_and_Time.csv'
+
+ALL_SWEEP = RESULT_SWEEP + 'Sweep_all.csv'
+ALL_CW = RESULT_CW + 'CW_All.csv'
 
 PLOT = True
 if PLOT:
@@ -208,14 +304,16 @@ if PLOT:
     evaluate_apx_sweep(MID_SMALL_SWEEP, 'Performance dell\'Algoritmo di Sweep nel VRP - mid small')
     evaluate_apx_sweep(MID_SWEEP, 'Performance dell\'Algoritmo di Sweep nel VRP - mid')
     evaluate_apx_sweep(MID_LARGE_SWEEP, 'Performance dell\'Algoritmo di Sweep nel VRP - mid large')
-    #evaluate_apx_sweep(LARGE_SWEEP, 'Performance dell\'Algoritmo di Sweep nel VRP - large')
-    #evaluate_apx_sweep(X_LARGE_SWEEP, 'Performance dell\'Algoritmo di Sweep nel VRP - x large')
+    evaluate_apx_sweep(LARGE_SWEEP, 'Performance dell\'Algoritmo di Sweep nel VRP - large')
+    evaluate_apx_sweep(X_LARGE_SWEEP, 'Performance dell\'Algoritmo di Sweep nel VRP - x large')
+    #evaluate_single_column_two_files(SMALL_SWEEP, SMALL_CW, SMALL_RANDOM, 'APX', 'Confronto tra Sweep, Clarke & Wright e Random')
+    #evaluate_two_column(ALL_CW, 'Instance_Name', 'Execution_time', '#Node', 'Clarke & Wright - Apx_3Opt per Size')
+    #evaluate_3_columns(ALL_SWEEP, '#Node', 'Capacity', 'Execution_time_3Opt','Sweep - Apx_3Opt per Size')
+    #valuate_truck(ALL_SWEEP, 'Feasibility of the solution Sweep')
+    #valuate_truck(SMALL_CW, 'Feasibility of the solution Clarke & Wright')
 
 
-SMALL_CW = RESULT_CW + 'small_CW_APX_and_Time.csv'
-SMALL_RANDOM = RESULT_RANDOM + "small_Random_APX_and_Time.csv"
 
-#evaluate_single_column_two_files(SMALL_SWEEP, SMALL_CW, SMALL_RANDOM, 'APX', 'Confronto tra Sweep, Clarke & Wright e Random')
 
 
 
