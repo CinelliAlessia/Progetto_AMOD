@@ -30,10 +30,10 @@ else:
 # ------------------------------------------------------------------------------------------------------------
 # Se impostati a True, eseguirà l'euristica di Clarke e Wright per le istanze di quel tipo
 SMALL = True
-MID_SMALL = False
-MID = False
-MID_LARGE = False
-LARGE = False
+MID_SMALL = True
+MID = True
+MID_LARGE = True
+LARGE = True
 X_LARGE = False
 # ------------------------------------------------------------------------------------------------------------
 
@@ -71,7 +71,7 @@ def solve_cw_for_instance_name_in_file(size, file_path):
     f = open(f"{OUTPUT_PATH}{filename}.csv", "w")
 
     # Scrivi nel file l'intestazione
-    f.write("Size,Instance_Name,#Node,#Truck,Capacity,Optimal_Cost,CW_cost,APX,Execution_time,Status\n")
+    f.write("Size,Instance_Name,#Node,#Truck,Capacity,Optimal_Cost,CW_cost,APX,Execution_time,Status,Used_Truck\n")
 
     # ----------------------------------------------------------------------------------------------
     # Per ogni riga (riga = file_name) in n (file_path),
@@ -89,7 +89,7 @@ def solve_cw_for_instance_name_in_file(size, file_path):
             if CW_SELECTOR == 0:  # CW Andrea
 
                 start_time = time.perf_counter()    # Registra il tempo di inizio
-                _, cw_cost, status = CwAndre.solve_clarke_and_wright_on_instance(instance)
+                routes, cw_cost, status = CwAndre.solve_clarke_and_wright_on_instance(instance)
                 end_time = time.perf_counter()  # Registra il tempo di fine
                 execution_time = end_time - start_time  # Calcola la durata dell'esecuzione
 
@@ -119,7 +119,7 @@ def solve_cw_for_instance_name_in_file(size, file_path):
                   execution_time, "Stato", status)
             # Salva tali valori, con lo stesso formato su una nuova riga del file APX_and_Time.txt
             f.write(f"{size},{file_name},{n_nodes},{n_truck},{capacity},{opt},{cw_cost},{apx},{execution_time},"
-                    f"{status}\n")
+                    f"{status},{len(routes)}\n")
     print(f"Finished solving for {size} instances")
     f.close()
 
