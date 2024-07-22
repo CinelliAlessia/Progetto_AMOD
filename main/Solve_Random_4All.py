@@ -7,11 +7,11 @@ import os
 import Utils
 
 # Se impostati a True, eseguirà l'euristica di Clarke e Wright per le istanze di quel tipo
-SMALL = False
+SMALL = True
 MID_SMALL = False
 MID = False
 MID_LARGE = False
-LARGE = True
+LARGE = False
 X_LARGE = False
 
 # ------------------------------------------------------------------------------------------------------------
@@ -31,7 +31,7 @@ else:
     INSTANCES_DIRECTORY = "../resources/vrplib/Instances/"  # Directory delle istanze
 
 OUTPUT_BASE_FILE_NAME = "RANDOM_APX_and_Time"  # Aggiungere come prefisso il numero del run
-RANDOM_ITERATION_NUMBER = 1000
+RANDOM_ITERATION_NUMBER = 10000
 
 
 def solve_random_for_instance_name_in_file(size, file_path):
