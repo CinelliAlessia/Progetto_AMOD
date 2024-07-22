@@ -12,7 +12,7 @@ MID_SMALL = False
 MID = False
 MID_LARGE = False
 LARGE = True
-X_LARGE = True
+X_LARGE = False
 
 # ------------------------------------------------------------------------------------------------------------
 

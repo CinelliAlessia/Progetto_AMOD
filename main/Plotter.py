@@ -248,7 +248,7 @@ def valuate_truck(csv_file, title):
     used_truck = data['Used_Truck']
 
     # Crea il grafico
-    plt.figure(figsize=(10, 6))
+    plt.figure(figsize=(12, 10))
 
     feasible = 0
     infeasible = 0
@@ -265,11 +265,10 @@ def valuate_truck(csv_file, title):
     explode = (0.1, 0)  # Esplodi il segmento "Feasible" per evidenziarlo
 
     # Crea il grafico a torta
-    plt.figure(figsize=(8, 8))
-    plt.pie(sizes, explode=explode, labels=labels, colors=colors, autopct='%1.1f%%', startangle=140, shadow=True)
+    plt.pie(sizes, explode=explode, labels=labels, colors=colors, autopct='%1.1f%%', startangle=140, shadow=True, textprops={'fontsize': 24})
 
     # Etichetta del grafico
-    plt.title(title)
+    plt.title(title, fontsize=24)
 
     # Mostra il grafico
     plt.show()
@@ -310,9 +309,9 @@ if PLOT:
     #evaluate_single_column_two_files(SMALL_SWEEP, SMALL_CW, SMALL_RANDOM, 'APX', 'Confronto tra Sweep, Clarke & Wright e Random')
     #evaluate_two_column(ALL_CW, 'Instance_Name', 'Execution_time', '#Node', 'Clarke & Wright - Apx_3Opt per Size')
     #evaluate_3_columns(ALL_SWEEP, '#Node', 'Capacity', 'Execution_time_3Opt','Sweep - Apx_3Opt per Size')
-    valuate_truck(ALL_SWEEP, 'Feasibility of the solution Sweep')
-    valuate_truck(ALL_CW, 'Feasibility of the solution Clarke & Wright')
-    valuate_truck(ALL_RANDOM, 'Feasibility of the solution Random')
+    valuate_truck(ALL_SWEEP, 'Sweep - Feasibility of the solution')
+    valuate_truck(ALL_CW, 'Clarke & Wright - Feasibility of the solution')
+    valuate_truck(ALL_RANDOM, 'Random - Feasibility of the solution')
 
 
 
