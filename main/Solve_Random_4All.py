@@ -8,9 +8,9 @@ import Utils
 
 # Se impostati a True, eseguirà l'euristica di Clarke e Wright per le istanze di quel tipo
 SMALL = True
-MID_SMALL = False
-MID = False
-MID_LARGE = False
+MID_SMALL = True
+MID = True
+MID_LARGE = True
 LARGE = False
 X_LARGE = False
 
@@ -64,7 +64,7 @@ def solve_random_for_instance_name_in_file(size, file_path):
     f = open(f"{OUTPUT_PATH}{filename}.csv", "w")
 
     # Scrivi nel file l'intestazione
-    f.write("Size,Instance_Name,#Node,#Truck,Capacity,Optimal_Cost,BEST_Random,APX,Execution_time,#Iteration\n")
+    f.write("Size,Instance_Name,#Node,#Truck,Capacity,Optimal_Cost,BEST_Random,APX,Execution_time,#Iteration,Used_truck\n")
 
     # -----------------------------------------------------------------------------------------
     # Per ogni riga (riga = file_name) in n (file_path),
@@ -114,7 +114,7 @@ def solve_random_for_instance_name_in_file(size, file_path):
                   execution_time)
             # Salva tali valori, con lo stesso formato su una nuova riga del file APX_and_Time.txt
             f.write(f"{size},{file_name},{n_nodes},{n_truck},{capacity},{opt},{best_cost},{apx},"
-                    f"{execution_time},{RANDOM_ITERATION_NUMBER}\n")
+                    f"{execution_time},{RANDOM_ITERATION_NUMBER},{len(best_routes)}\n")
 
     f.close()
 
