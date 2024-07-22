@@ -288,7 +288,7 @@ MID_SMALL_SWEEP = RESULT_SWEEP + 'mid_small_Sweep_APX_and_Time.csv'
 MID_SWEEP = RESULT_SWEEP + 'mid_Sweep_APX_and_Time.csv'
 MID_LARGE_SWEEP = RESULT_SWEEP + 'mid_large_Sweep_APX_and_Time.csv'
 LARGE_SWEEP = RESULT_SWEEP + 'large_Sweep_APX_and_Time.csv'
-X_LARGE_SWEEP = RESULT_SWEEP + 'x_large_Sweep_APX_and_Time2OPT.csv'
+X_LARGE_SWEEP = RESULT_SWEEP + 'x_large_Sweep_APX_and_Time_Timeout.csv'
 
 SMALL_RANDOM = RESULT_RANDOM + "small_Random_APX_and_Time.csv"
 
@@ -297,20 +297,22 @@ LARGE_CW = RESULT_CW + 'large_CW_APX_and_Time.csv'
 
 ALL_SWEEP = RESULT_SWEEP + 'Sweep_all.csv'
 ALL_CW = RESULT_CW + 'CW_All.csv'
+ALL_RANDOM = RESULT_RANDOM + 'Random_All.csv'
 
 PLOT = True
 if PLOT:
-    evaluate_apx_sweep(SMALL_SWEEP, 'Performance dell\'Algoritmo di Sweep nel VRP - small')
-    evaluate_apx_sweep(MID_SMALL_SWEEP, 'Performance dell\'Algoritmo di Sweep nel VRP - mid small')
-    evaluate_apx_sweep(MID_SWEEP, 'Performance dell\'Algoritmo di Sweep nel VRP - mid')
-    evaluate_apx_sweep(MID_LARGE_SWEEP, 'Performance dell\'Algoritmo di Sweep nel VRP - mid large')
-    evaluate_apx_sweep(LARGE_SWEEP, 'Performance dell\'Algoritmo di Sweep nel VRP - large')
-    evaluate_apx_sweep(X_LARGE_SWEEP, 'Performance dell\'Algoritmo di Sweep nel VRP - x large')
+    # evaluate_apx_sweep(SMALL_SWEEP, 'Performance dell\'Algoritmo di Sweep nel VRP - small')
+    #     evaluate_apx_sweep(MID_SMALL_SWEEP, 'Performance dell\'Algoritmo di Sweep nel VRP - mid small')
+    #     evaluate_apx_sweep(MID_SWEEP, 'Performance dell\'Algoritmo di Sweep nel VRP - mid')
+    #     evaluate_apx_sweep(MID_LARGE_SWEEP, 'Performance dell\'Algoritmo di Sweep nel VRP - mid large')
+    #     evaluate_apx_sweep(LARGE_SWEEP, 'Performance dell\'Algoritmo di Sweep nel VRP - large')
+    #     evaluate_apx_sweep(X_LARGE_SWEEP, 'Performance dell\'Algoritmo di Sweep nel VRP - x large')
     #evaluate_single_column_two_files(SMALL_SWEEP, SMALL_CW, SMALL_RANDOM, 'APX', 'Confronto tra Sweep, Clarke & Wright e Random')
     #evaluate_two_column(ALL_CW, 'Instance_Name', 'Execution_time', '#Node', 'Clarke & Wright - Apx_3Opt per Size')
     #evaluate_3_columns(ALL_SWEEP, '#Node', 'Capacity', 'Execution_time_3Opt','Sweep - Apx_3Opt per Size')
-    #valuate_truck(ALL_SWEEP, 'Feasibility of the solution Sweep')
-    #valuate_truck(SMALL_CW, 'Feasibility of the solution Clarke & Wright')
+    valuate_truck(ALL_SWEEP, 'Feasibility of the solution Sweep')
+    valuate_truck(ALL_CW, 'Feasibility of the solution Clarke & Wright')
+    valuate_truck(ALL_RANDOM, 'Feasibility of the solution Random')
 
 
 
