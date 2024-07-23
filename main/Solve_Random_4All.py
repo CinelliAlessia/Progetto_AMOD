@@ -1,23 +1,23 @@
 import time
-
-import Config
 import Random_Ale as Random
 import ParseInstances as Parser
 import os
 import Utils
+import Config
+
 
 # Se impostati a True, eseguirà l'euristica di Clarke e Wright per le istanze di quel tipo
-SMALL = False
-MID_SMALL = True
-MID = True
-MID_LARGE = True
-LARGE = True
+SMALL = True
+MID_SMALL = False
+MID = False
+MID_LARGE = False
+LARGE = False
 X_LARGE = False
 
 # ------------------------------------------------------------------------------------------------------------
-
 ACTIONS = Config.ACTION_RANDOM
-
+TIMEOUT = Config.TIMEOUT_ON
+# ------------------------------------------------------------------------------------------------------------
 if ACTIONS:
     # Directory dei file contenenti i nomi delle istanze
     NAME_BY_SIZE_PATH = "./resources/vrplib/Name_of_instances_by_dimension/"
@@ -84,18 +84,28 @@ def solve_random_for_instance_name_in_file(size, file_path):
             best_cost = float("inf")
             best_routes = []
 
-            # Registra il tempo di inizio
-            start_time = time.perf_counter()
-            for i in range(RANDOM_ITERATION_NUMBER): # Ripeti l'algoritmo RANDOM_ITERATION_NUMBER volte
-                routes, costs = Random.vrp_random(nodes, truck.get_capacity(), total_demand, id_depots)
-                if costs < best_cost:
-                    best_cost = costs
-                    best_routes = routes
-            # Registra il tempo di fine
-            end_time = time.perf_counter()
+            if TIMEOUT:
+                # Registra il tempo di inizio
+                start_time = time.perf_counter()
+                while(time.perf_counter() - start_time < TIMEOUT):
+                    routes, costs = Random.vrp_random(nodes, truck.get_capacity(), total_demand, id_depots)
+                    if costs < best_cost:
+                        best_cost = costs
+                        best_routes = routes
+                execution_time = TIMEOUT
+            else:
+                # Registra il tempo di inizio
+                start_time = time.perf_counter()
+                for i in range(RANDOM_ITERATION_NUMBER):  # Ripeti l'algoritmo RANDOM_ITERATION_NUMBER volte
+                    routes, costs = Random.vrp_random(nodes, truck.get_capacity(), total_demand, id_depots)
+                    if costs < best_cost:
+                        best_cost = costs
+                        best_routes = routes
+                # Registra il tempo di fine
+                end_time = time.perf_counter()
 
-            # Calcola la durata dell'esecuzione
-            execution_time = end_time - start_time
+                # Calcola la durata dell'esecuzione
+                execution_time = end_time - start_time
 
             opt = Parser.get_optimal_cost_from_path(instance_path)
             if opt is not None:
