@@ -17,6 +17,7 @@ X_LARGE = False
 # ------------------------------------------------------------------------------------------------------------
 ACTIONS = Config.ACTION_RANDOM
 TIMEOUT = Config.TIMEOUT_ON
+TIMEOUT_VALUE = 300  # Timeout di 5 minuti (300 secondi)
 # ------------------------------------------------------------------------------------------------------------
 if ACTIONS:
     # Directory dei file contenenti i nomi delle istanze
@@ -87,12 +88,12 @@ def solve_random_for_instance_name_in_file(size, file_path):
             if TIMEOUT:
                 # Registra il tempo di inizio
                 start_time = time.perf_counter()
-                while(time.perf_counter() - start_time < TIMEOUT):
+                while(time.perf_counter() - start_time < TIMEOUT_VALUE):
                     routes, costs = Random.vrp_random(nodes, truck.get_capacity(), total_demand, id_depots)
                     if costs < best_cost:
                         best_cost = costs
                         best_routes = routes
-                execution_time = TIMEOUT
+                execution_time = TIMEOUT_VALUE
             else:
                 # Registra il tempo di inizio
                 start_time = time.perf_counter()
