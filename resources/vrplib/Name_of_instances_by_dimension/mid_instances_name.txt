@@ -1,11 +1,4 @@
-E-n101-k14.vrp
-E-n101-k8.vrp
-F-n135-k7.vrp
 Golden_1.vrp
 Golden_17.vrp
 Golden_5.vrp
 M-n101-k10.vrp
-M-n121-k7.vrp
-M-n151-k12.vrp
-M-n200-k16.vrp
-M-n200-k17.vrp

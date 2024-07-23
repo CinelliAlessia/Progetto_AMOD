@@ -46,6 +46,7 @@ def get_data_csv_all(file):
 
 
 def boxPlot_apx(path_file, string_apx, title):
+
     # Carica il file CSV
     df = get_data_csv_all(path_file)
 
@@ -125,6 +126,7 @@ def evaluate_two_column(csv_file, column1, column2, column3, title):
 
 
 def evaluate_three_column(csv_file, column1, column2, column3, x_label, y_label, title):
+
     # Carica i dati dal file CSV usando il delimitatore ';'
     data = pd.read_csv(csv_file, delimiter=',')
 
@@ -193,6 +195,7 @@ def evaluate_3_columns_ratio12(csv_file, column1, column2, column3, title):
 
 
 def evaluate_single_column_two_files(csv_file1, csv_file2, csv_file3, column, title):
+
     # Carica i dati dai file CSV usando il delimitatore ';'
     data1 = pd.read_csv(csv_file1, delimiter=',')
     data2 = pd.read_csv(csv_file2, delimiter=',')
@@ -355,6 +358,219 @@ def evaluate_3time(column, title):
     plt.show()
 
 
+def evaluate_3time2(column, title, csv):
+    if csv == 'SMALL':
+        csv_file1 = SMALL_CW
+        csv_file2 = SMALL_SWEEP
+    elif csv == 'MID_SMALL':
+        csv_file1 = MID_SMALL_CW
+        csv_file2 = MID_SMALL_SWEEP
+    elif csv == 'MID':
+        csv_file1 = MID_CW
+        csv_file2 = MID_SWEEP
+    elif csv == 'MID_LARGE':
+        csv_file1 = MID_LARGE_CW
+        csv_file2 = MID_LARGE_SWEEP
+    elif csv == 'LARGE':
+        csv_file1 = LARGE_CW
+        csv_file2 = LARGE_SWEEP
+    else:
+        return
+
+    # Carica i dati dai file CSV usando il delimitatore ';'
+    data1 = pd.read_csv(csv_file1, delimiter=',').sort_values(by="#Node")
+    data2 = pd.read_csv(csv_file2, delimiter=',').sort_values(by="#Node")
+
+    data1 = data1.rename(columns={
+        'Execution_time': 'Execution_time_CW'})
+    data2 = data2.rename(columns={
+        'Execution_time_2Opt': 'Execution_time_SWEEP2'})
+
+    # Unisci i dati sui nodi
+    merged_data = data1[['Instance_Name', 'Execution_time_CW']].merge(
+        data2[['Instance_Name', 'Execution_time_SWEEP2']],
+        on='Instance_Name',
+        how='outer'
+    )
+
+    # Verifica i nomi delle colonne dopo la rinominazione
+    print("Colonne merged_data dopo rinominazione:", merged_data.columns)
+
+    # Estrai le colonne di interesse
+    nodes = merged_data['Instance_Name']
+    t1 = merged_data['Execution_time_CW']
+    t2 = merged_data['Execution_time_SWEEP2']
+
+    # Crea il grafico
+    plt.figure(figsize=(14, 10))
+    plt.plot(nodes, t1, marker='s', linestyle='--', label='CW')
+    plt.plot(nodes, t2, marker='o', linestyle='-', label='SWEEP 2-Opt')
+
+
+    # Etichette del grafico
+    plt.title(title, fontsize=18)
+    plt.xlabel(f'Istanze {csv}', fontsize=18)
+    plt.ylabel(column, fontsize=18)
+    plt.legend(fontsize=18)
+
+    plt.tick_params(labelsize=18)
+    plt.grid(True)
+
+    # Determine the range of your data to set appropriate y-ticks
+    y_min = min(t1.min(), t2.min())
+    y_max = max(t1.max(), t2.max(),)
+
+    # Set y-ticks at more granular intervals
+    plt.xticks("")
+    #plt.xticks(np.arange(len(nodes)), nodes, rotation=90)
+    plt.yticks(np.arange(y_min, y_max, step=(y_max - y_min) / 20))  # Adjust the step as needed
+
+    # Mostra il grafico
+    plt.show()
+
+
+def evaluate_2time_sweep(column, title, csv):
+    if csv == 'SMALL':
+        csv_file1 = SMALL_SWEEP
+    elif csv == 'MID_SMALL':
+        csv_file1 = MID_SMALL_SWEEP
+    elif csv == 'MID':
+        csv_file1 = MID_SWEEP
+    elif csv == 'MID_LARGE':
+        csv_file1 = MID_LARGE_SWEEP
+    elif csv == 'LARGE':
+        csv_file1 = LARGE_SWEEP
+    elif csv == 'X_LARGE':
+        csv_file1 = X_LARGE_SWEEP
+    else:
+        return
+
+    # Carica i dati dai file CSV usando il delimitatore ';'
+    data1 = pd.read_csv(csv_file1, delimiter=',').sort_values(by="#Node")
+
+    data1 = data1.rename(columns={
+        'Execution_time_2Opt': 'Execution_time_SWEEP2'})
+    data2 = data1.rename(columns={
+        'Execution_time_3Opt': 'Execution_time_SWEEP3'})
+
+    # Unisci i dati sui nodi
+    merged_data = data1[['Instance_Name', 'Execution_time_SWEEP2']].merge(
+        data2[['Instance_Name', 'Execution_time_SWEEP3']],
+        on='Instance_Name',
+        how='outer')
+
+    # Verifica i nomi delle colonne dopo la rinominazione
+    print("Colonne merged_data dopo rinominazione:", merged_data.columns)
+
+    # Estrai le colonne di interesse
+    nodes = merged_data['Instance_Name']
+    t1 = merged_data['Execution_time_SWEEP2']
+    t2 = merged_data['Execution_time_SWEEP3']
+
+    # Crea il grafico
+    plt.figure(figsize=(14, 10))
+    plt.plot(nodes, t1, marker='o', linestyle='-', label='SWEEP 2-Opt')
+    plt.plot(nodes, t2, marker='x', linestyle='-.', label='SWEEP 3-Opt')
+
+    # Etichette del grafico
+    plt.title(title, fontsize=18)
+    plt.xlabel(f'Istanze {csv}', fontsize=18)
+    plt.ylabel(column, fontsize=18)
+    plt.legend(fontsize=18)
+
+    plt.tick_params(labelsize=18)
+    plt.grid(True)
+
+    # Determine the range of your data to set appropriate y-ticks
+    y_min = min(t1.min(), t2.min())
+    y_max = max(t1.max(), t2.max())
+
+    # Set y-ticks at more granular intervals
+    plt.xticks("")
+    #plt.xticks(np.arange(len(nodes)), nodes, rotation=90)
+    plt.yticks(np.arange(y_min, y_max, step=(y_max - y_min) / 20))  # Adjust the step as needed
+
+    # Mostra il grafico
+    plt.show()
+
+
+def winner_algorithm():
+    # Carica i dati dai file CSV usando il delimitatore ';'
+    data1 = pd.read_csv(SMALL_SWEEP, delimiter=',').sort_values(by="#Node")
+    data2 = pd.read_csv(SMALL_CW, delimiter=',').sort_values(by="#Node")
+    data3 = pd.read_csv(SMALL_RANDOM, delimiter=',').sort_values(by="#Node")
+
+    data1 = data1.rename(columns={
+        'Cost_2Opt': 'Cost_SWEEP',
+        'Apx_2Opt': 'Apx_SWEEP'})
+    data2 = data2.rename(columns={
+        'CW_cost': 'Cost_CW',
+        'APX': 'Apx_CW'})
+    data3 = data3.rename(columns={
+        'BEST_Random': 'Cost_RANDOM',
+        'APX': 'Apx_RANDOM'})
+
+    # Unisci i dati sui nodi
+    merged_data = data1[['Instance_Name', 'Cost_SWEEP', 'Apx_SWEEP']].merge(
+        data2[['Instance_Name', 'Cost_CW', 'Apx_CW']],
+        on='Instance_Name',
+        how='outer'
+    ).merge(
+        data3[['Instance_Name', 'Cost_RANDOM', 'Apx_RANDOM']],
+        on='Instance_Name',
+        how='outer'
+    )
+
+    print("dataset")
+    for r in merged_data:
+        print(merged_data[r])
+
+    # Estrai le colonne di interesse
+    instance = merged_data['Instance_Name']
+    t1 = merged_data['Cost_SWEEP']
+    t2 = merged_data['Cost_CW']
+    t3 = merged_data['Cost_RANDOM']
+
+    apx1 = merged_data['Apx_SWEEP']
+    apx2 = merged_data['Apx_CW']
+    apx3 = merged_data['Apx_RANDOM']
+
+    # Controlla il vincitore per ogni istanza
+    winner = []
+
+    for i in range(len(instance)):
+        t1_valid = t1[i] != "NaN" and apx1[i] != "NaN" and apx1[i] >= 1
+        t2_valid = t2[i] != "NaN" and apx2[i] != "NaN" and apx2[i] >= 1
+        t3_valid = t3[i] != "NaN" and apx3[i] != "NaN" and apx3[i] >= 1
+
+        if t1_valid:
+            if (t1[i] <= t2[i] or not t2_valid) and (t1[i] <= t3[i] or not t3_valid):
+                winner.append('SWEEP')
+        elif t2_valid:
+            if (t2[i] <= t1[i] or not t1_valid) and (t2[i] <= t3[i] or not t3_valid):
+                winner.append('CW')
+        elif t3_valid:
+            if (t3[i] <= t1[i] or not t1_valid) and (t3[i] <= t2[i] or not t2_valid):
+                winner.append('RANDOM')
+        else:
+            winner.append('UNKNOWN')
+
+
+    # Crea il grafico a torta
+    plt.figure(figsize=(14, 10))
+    labels = ['SWEEP', 'CW', 'RANDOM', 'UNKNOWN']
+    sizes = [winner.count('SWEEP'), winner.count('CW'), winner.count('RANDOM'), winner.count('UNKNOWN')]
+    colors = ['#FFC107', '#4CAF50', '#800080', '#F44336']  # Verde, Giallo Viola e Rosso per facilitare la distinzione
+
+    plt.pie(sizes, labels=labels, colors=colors, autopct='%1.1f%%', startangle=140, shadow=True, textprops={'fontsize': 24})
+
+    # Etichetta del grafico
+    plt.title("", fontsize=24)
+
+    # Mostra il grafico
+    plt.show()
+
+
 def plot_apx_all_random(file, title):
     """
     Crea un grafico basato sui dati della colonna APX nel file ALL_RANDOM
@@ -443,9 +659,10 @@ def random_apx_for_num_run(files, title):
     # Mostra il grafico
     plt.show()
 
+# Esempio di utilizzo
 
-random_files = [SMALL_RANDOM, SMALL_RANDOM_10k, SMALL_RANDOM_100k, SMALL_RANDOM_1M]
-random_apx_for_num_run(random_files, "Confronto APX all'aumentare del numero di run (Small)")
+#random_files = [SMALL_RANDOM, SMALL_RANDOM_10k, SMALL_RANDOM_100k, SMALL_RANDOM_1M]
+#random_apx_for_num_run(random_files, "Confronto APX all'aumentare del numero di run (Small)")
 #plot_apx_all_random(ALL_RANDOM, "APX di Random 1K al crescere di n (Tutte le istanze)")
 
 BOX_PLOT = False
@@ -454,8 +671,13 @@ if BOX_PLOT:
     boxPlot_apx(ALL_RANDOM, 'APX', "Random 1K")
     boxPlot_apx(ALL_CW, 'APX', "Clarke & Wright")
 
-ECX_TIME = True
+ECX_TIME = False
 if ECX_TIME:
-    evaluate_2time_sweep("Secondi", "Confronto dei Tempi di Esecuzione")
+    evaluate_3time2("Secondi", "Confronto dei Tempi di Esecuzione", "SMALL")
+    evaluate_3time2("Secondi", "Confronto dei Tempi di Esecuzione", "MID")
+    evaluate_3time2("Secondi", "Confronto dei Tempi di Esecuzione", "LARGE")
     #evaluate_3time("Secondi", "Confronto dei Tempi di Esecuzione")
 
+WINNER_COST = True
+if WINNER_COST:
+    winner_algorithm()
