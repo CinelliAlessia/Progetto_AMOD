@@ -12,6 +12,7 @@ MID_SWEEP = RESULT_SWEEP + 'mid_Sweep_APX_and_Time.csv'
 MID_LARGE_SWEEP = RESULT_SWEEP + 'mid_large_Sweep_APX_and_Time.csv'
 LARGE_SWEEP = RESULT_SWEEP + 'large_Sweep_APX_and_Time.csv'
 X_LARGE_SWEEP = RESULT_SWEEP + 'x_large_Sweep_APX_and_Time_Timeout.csv'
+SMALL_MID_SWEEP = RESULT_SWEEP + 'small_mid_sweep.csv'
 
 SMALL_RANDOM = RESULT_RANDOM + "small_Random_APX_and_Time.csv"
 MID_SMALL_RANDOM = RESULT_RANDOM + "mid_small_Random_APX_and_Time.csv"
@@ -53,7 +54,7 @@ def boxPlot_apx(path_file, string_apx, title):
     grouped_data = df_selected.groupby('Size')[string_apx].apply(list).to_dict()
 
     # Definisci l'ordine desiderato
-    ordered_sizes = ['small', 'mid_small', 'mid', 'mid_large', 'large']
+    ordered_sizes = ['small', 'mid_small', 'mid', 'mid_large', 'large', 'x_large']
 
 # Estrai i dati per il box plot
     boxplot_data = [grouped_data[size] for size in ordered_sizes]
@@ -68,7 +69,7 @@ def boxPlot_apx(path_file, string_apx, title):
     # Imposta i ticks dell'asse y da 0 a 1 con passo 0.1
     min_y = min(min(values) for values in grouped_data.values())
     max_y = max(max(values) for values in grouped_data.values())
-    plt.yticks(np.arange(min_y, max_y + 0.05, step=(max_y - min_y) / 10))
+    plt.yticks(np.arange(min_y, max_y + 0.05, step=(max_y - min_y) / 30))
 
     plt.grid(True)
     plt.show()
@@ -288,7 +289,7 @@ def valuate_truck(csv_file, title):
     plt.show()
 
 
-def evaluate_single_column_3_files(column, title):
+def evaluate_3time(column, title):
     csv_file1 = SMALL_SWEEP
     csv_file2 = SMALL_CW
     csv_file3 = SMALL_RANDOM
@@ -296,14 +297,14 @@ def evaluate_single_column_3_files(column, title):
     # Carica i dati dai file CSV usando il delimitatore ';'
     data1 = pd.read_csv(csv_file1, delimiter=',').sort_values(by="#Node")
     data2 = pd.read_csv(csv_file2, delimiter=',').sort_values(by="#Node")
-    data3 = pd.read_csv(csv_file1, delimiter=',').sort_values(by="#Node")
+    data3 = pd.read_csv(csv_file3, delimiter=',').sort_values(by="#Node")
 
     data1 = data1.rename(columns={
-        'Execution_time_3Opt': 'Execution_time_SWEEP'})
+        'Execution_time_2Opt': 'Execution_time_SWEEP'})
     data2 = data2.rename(columns={
         'Execution_time': 'Execution_time_CW'})
     data3 = data3.rename(columns={
-        'Execution_time_2Opt': 'Execution_time_RANDOM'})
+        'Execution_time': 'Execution_time_RANDOM'})
 
     print("Colonne merged_data dopo rinominazione:", data1.columns)
     print("Colonne merged_data dopo rinominazione:", data2.columns)
@@ -329,17 +330,78 @@ def evaluate_single_column_3_files(column, title):
     t2 = merged_data['Execution_time_CW']
     t3 = merged_data['Execution_time_RANDOM']
 
-      # Crea il grafico
+    # Crea il grafico
     plt.figure(figsize=(14, 10))
-    plt.plot(nodes, t1, marker='o', linestyle='-', label='SWEEP')
+    plt.plot(nodes, t1, marker='o', linestyle='-', label='SWEEP 2-Opt')
     plt.plot(nodes, t2, marker='s', linestyle='--', label='CW')
-    plt.plot(nodes, t3, marker='x', linestyle='-.', label='RANDOM')
+    plt.plot(nodes, t3, marker='x', linestyle='-.', label='RANDOM 1K')
 
     # Etichette del grafico
     plt.title(title)
-    plt.xlabel('Istanza')
+    plt.xlabel('Istanze SMALL')
     plt.ylabel(column)
-    plt.legend("Opt3", "CW", "Opt2")
+    plt.legend()
+    plt.grid(True)
+
+    # Determine the range of your data to set appropriate y-ticks
+    y_min = min(t1.min(), t2.min(), t3.min())
+    y_max = max(t1.max(), t2.max(), t3.max())
+
+    # Set y-ticks at more granular intervals
+    #plt.xticks(np.arange(len(nodes)), nodes, rotation=90)
+    plt.xticks("")
+    #plt.yticks(np.arange(y_min, y_max, step=(y_max - y_min) / 20))  # Adjust the step as needed
+
+    # Mostra il grafico
+    plt.show()
+
+
+def evaluate_3time2(column, title):
+    csv_file1 = MID_CW
+    csv_file2 = MID_SWEEP
+
+    # Carica i dati dai file CSV usando il delimitatore ';'
+    data1 = pd.read_csv(csv_file1, delimiter=',').sort_values(by="#Node")
+    data2 = pd.read_csv(csv_file2, delimiter=',').sort_values(by="#Node")
+
+    data1 = data1.rename(columns={
+        'Execution_time': 'Execution_time_CW'})
+    data2 = data2.rename(columns={
+        'Execution_time_2Opt': 'Execution_time_SWEEP2'})
+    data3 = data2.rename(columns={
+        'Execution_time_3Opt': 'Execution_time_SWEEP3'})
+
+    # Unisci i dati sui nodi
+    merged_data = data1[['Instance_Name', 'Execution_time_CW']].merge(
+        data2[['Instance_Name', 'Execution_time_SWEEP2']],
+        on='Instance_Name',
+        how='outer'
+    ).merge(
+        data3[['Instance_Name', 'Execution_time_SWEEP3']],
+        on='Instance_Name',
+        how='outer'
+    )
+
+    # Verifica i nomi delle colonne dopo la rinominazione
+    print("Colonne merged_data dopo rinominazione:", merged_data.columns)
+
+    # Estrai le colonne di interesse
+    nodes = merged_data['Instance_Name']
+    t1 = merged_data['Execution_time_CW']
+    t2 = merged_data['Execution_time_SWEEP2']
+    t3 = merged_data['Execution_time_SWEEP3']
+
+    # Crea il grafico
+    plt.figure(figsize=(18, 15))
+    plt.plot(nodes, t1, marker='s', linestyle='--', label='CW')
+    plt.plot(nodes, t2, marker='o', linestyle='-', label='SWEEP 2-Opt')
+    plt.plot(nodes, t3, marker='x', linestyle='-.', label='SWEEP 3-Opt')
+
+    # Etichette del grafico
+    plt.title(title)
+    plt.xlabel('Istanze SMALL')
+    plt.ylabel(column)
+    plt.legend()
     plt.grid(True)
 
     # Determine the range of your data to set appropriate y-ticks
@@ -348,20 +410,22 @@ def evaluate_single_column_3_files(column, title):
 
     # Set y-ticks at more granular intervals
     plt.xticks(np.arange(len(nodes)), nodes, rotation=90)
-    #plt.yticks(np.arange(y_min, y_max, step=(y_max - y_min) / 20))  # Adjust the step as needed
+    plt.yticks(np.arange(y_min, y_max, step=(y_max - y_min) / 20))  # Adjust the step as needed
 
     # Mostra il grafico
     plt.show()
 
 
+
 # Esempio di utilizzo
 BOX_PLOT = False
 if BOX_PLOT:
-    boxPlot_apx(ALL_SWEEP, 'Apx_3Opt', "Sweep")
-    boxPlot_apx(ALL_RANDOM, 'APX', "Random")
+    boxPlot_apx(ALL_SWEEP, 'Apx_3Opt', "Sweep 3-Opt")
+    boxPlot_apx(ALL_RANDOM, 'APX', "Random 1K")
     boxPlot_apx(ALL_CW, 'APX', "Clarke & Wright")
 
 ECX_TIME = True
 if ECX_TIME:
-    evaluate_single_column_3_files("secondi", "Confronto dei Tempi di Esecuzione")
+    evaluate_3time2("Secondi", "Confronto dei Tempi di Esecuzione")
+    #evaluate_3time("Secondi", "Confronto dei Tempi di Esecuzione")
 

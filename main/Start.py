@@ -29,7 +29,7 @@ else:
     work_on_explicit = False
 
 
-path_instance = "../resources/vrplib/Instances/CMT8.vrp"
+path_instance = "../resources/vrplib/Instances/Golden_5.vrp"
 instance = Parse.make_instance_from_path_name(path_instance)
 all_nodes, truck = Parse.work_on_instance(instance, work_on_explicit)
 print("Fine Parsing")
@@ -80,15 +80,27 @@ def start():
 
         # Registra il tempo di inizio
         start_time = time.perf_counter()
-        # Chiamata alla funzione che vuoi misurare
-
-        routes, costs = sweepAle.sweep_algorithm(all_nodes, truck_capacity, False, True)
-
-        # Registra il tempo di fine
+        routes, costs = sweepAle.sweep_algorithm(all_nodes, truck_capacity, False, False)
         end_time = time.perf_counter()
         # Calcola la durata dell'esecuzione
         execution_time = end_time - start_time
         print(f"Tempo di esecuzione sweep Ale: {execution_time} secondi")
+
+        # Registra il tempo di inizio
+        start_time = time.perf_counter()
+        routes, costs = sweepAle.sweep_algorithm(all_nodes, truck_capacity, True, False)
+        end_time = time.perf_counter()
+        # Calcola la durata dell'esecuzione
+        execution_time = end_time - start_time
+        print(f"Tempo di esecuzione sweep Ale 2-Opt: {execution_time} secondi")
+
+        # Registra il tempo di inizio
+        start_time = time.perf_counter()
+        routes, costs = sweepAle.sweep_algorithm(all_nodes, truck_capacity, False, True)
+        end_time = time.perf_counter()
+        # Calcola la durata dell'esecuzione
+        execution_time = end_time - start_time
+        print(f"Tempo di esecuzione sweep Ale 3-Opt: {execution_time} secondi")
 
         Plotter.plot_if_not_explicit(routes, all_nodes)
         print("Routes opt3:")
