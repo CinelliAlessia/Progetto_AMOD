@@ -10,8 +10,9 @@ SMALL_SWEEP = RESULT_SWEEP + 'small_Sweep_APX_and_Time.csv'
 MID_SMALL_SWEEP = RESULT_SWEEP + 'mid_small_Sweep_APX_and_Time.csv'
 MID_SWEEP = RESULT_SWEEP + 'mid_Sweep_APX_and_Time.csv'
 MID_LARGE_SWEEP = RESULT_SWEEP + 'mid_large_Sweep_APX_and_Time.csv'
-LARGE_SWEEP = RESULT_SWEEP + 'large_Sweep_APX_and_Time.csv'
+LARGE_SWEEP = RESULT_SWEEP + 'large_Sweep_APX_and_Time_Timeout.csv'
 X_LARGE_SWEEP = RESULT_SWEEP + 'x_large_Sweep_APX_and_Time_Timeout.csv'
+SMALL_MID_SWEEP = RESULT_SWEEP + 'small_mid_sweep.csv'
 
 SMALL_RANDOM = RESULT_RANDOM + "small_Random_APX_and_Time.csv"
 SMALL_RANDOM_10k = RESULT_RANDOM + "small_Random_APX_and_Time10K.csv"
@@ -55,7 +56,7 @@ def boxPlot_apx(path_file, string_apx, title):
     grouped_data = df_selected.groupby('Size')[string_apx].apply(list).to_dict()
 
     # Definisci l'ordine desiderato
-    ordered_sizes = ['small', 'mid_small', 'mid', 'mid_large', 'large']
+    ordered_sizes = ['small', 'mid_small', 'mid', 'mid_large', 'large', 'x_large']
 
     # Estrai i dati per il box plot
     boxplot_data = [grouped_data[size] for size in ordered_sizes]
@@ -70,7 +71,7 @@ def boxPlot_apx(path_file, string_apx, title):
     # Imposta i ticks dell'asse y da 0 a 1 con passo 0.1
     min_y = min(min(values) for values in grouped_data.values())
     max_y = max(max(values) for values in grouped_data.values())
-    plt.yticks(np.arange(min_y, max_y + 0.05, step=(max_y - min_y) / 10))
+    plt.yticks(np.arange(min_y, max_y + 0.05, step=(max_y - min_y) / 30))
 
     plt.grid(True)
     plt.show()
@@ -278,8 +279,7 @@ def valuate_truck(csv_file, title):
     explode = (0.1, 0)  # Esplodi il segmento "Feasible" per evidenziarlo
 
     # Crea il grafico a torta
-    plt.pie(sizes, explode=explode, labels=labels, colors=colors, autopct='%1.1f%%', startangle=140, shadow=True,
-            textprops={'fontsize': 24})
+    plt.pie(sizes, explode=explode, labels=labels, colors=colors, autopct='%1.1f%%', startangle=140, shadow=True, textprops={'fontsize': 24})
 
     # Etichetta del grafico
     plt.title(title, fontsize=24)
@@ -288,7 +288,7 @@ def valuate_truck(csv_file, title):
     plt.show()
 
 
-def evaluate_single_column_3_files(column, title):
+def evaluate_3time(column, title):
     csv_file1 = SMALL_SWEEP
     csv_file2 = SMALL_CW
     csv_file3 = SMALL_RANDOM
@@ -296,14 +296,14 @@ def evaluate_single_column_3_files(column, title):
     # Carica i dati dai file CSV usando il delimitatore ';'
     data1 = pd.read_csv(csv_file1, delimiter=',').sort_values(by="#Node")
     data2 = pd.read_csv(csv_file2, delimiter=',').sort_values(by="#Node")
-    data3 = pd.read_csv(csv_file1, delimiter=',').sort_values(by="#Node")
+    data3 = pd.read_csv(csv_file3, delimiter=',').sort_values(by="#Node")
 
     data1 = data1.rename(columns={
-        'Execution_time_3Opt': 'Execution_time_SWEEP'})
+        'Execution_time_2Opt': 'Execution_time_SWEEP'})
     data2 = data2.rename(columns={
         'Execution_time': 'Execution_time_CW'})
     data3 = data3.rename(columns={
-        'Execution_time_2Opt': 'Execution_time_RANDOM'})
+        'Execution_time': 'Execution_time_RANDOM'})
 
     print("Colonne merged_data dopo rinominazione:", data1.columns)
     print("Colonne merged_data dopo rinominazione:", data2.columns)
@@ -331,15 +331,15 @@ def evaluate_single_column_3_files(column, title):
 
     # Crea il grafico
     plt.figure(figsize=(14, 10))
-    plt.plot(nodes, t1, marker='o', linestyle='-', label='SWEEP')
+    plt.plot(nodes, t1, marker='o', linestyle='-', label='SWEEP 2-Opt')
     plt.plot(nodes, t2, marker='s', linestyle='--', label='CW')
-    plt.plot(nodes, t3, marker='x', linestyle='-.', label='RANDOM')
+    plt.plot(nodes, t3, marker='x', linestyle='-.', label='RANDOM 1K')
 
     # Etichette del grafico
     plt.title(title)
-    plt.xlabel('Istanza')
+    plt.xlabel('Istanze SMALL')
     plt.ylabel(column)
-    plt.legend("Opt3", "CW", "Opt2")
+    plt.legend()
     plt.grid(True)
 
     # Determine the range of your data to set appropriate y-ticks
@@ -347,7 +347,8 @@ def evaluate_single_column_3_files(column, title):
     y_max = max(t1.max(), t2.max(), t3.max())
 
     # Set y-ticks at more granular intervals
-    plt.xticks(np.arange(len(nodes)), nodes, rotation=90)
+    #plt.xticks(np.arange(len(nodes)), nodes, rotation=90)
+    plt.xticks("")
     #plt.yticks(np.arange(y_min, y_max, step=(y_max - y_min) / 20))  # Adjust the step as needed
 
     # Mostra il grafico
@@ -449,10 +450,12 @@ random_apx_for_num_run(random_files, "Confronto APX all'aumentare del numero di 
 
 BOX_PLOT = False
 if BOX_PLOT:
-    boxPlot_apx(ALL_SWEEP, 'Apx_3Opt', "Sweep")
-    boxPlot_apx(ALL_RANDOM, 'APX', "Random")
+    boxPlot_apx(ALL_SWEEP, 'Apx_3Opt', "Sweep 3-Opt")
+    boxPlot_apx(ALL_RANDOM, 'APX', "Random 1K")
     boxPlot_apx(ALL_CW, 'APX', "Clarke & Wright")
 
-ECX_TIME = False
+ECX_TIME = True
 if ECX_TIME:
-    evaluate_single_column_3_files("secondi", "Confronto dei Tempi di Esecuzione")
+    evaluate_2time_sweep("Secondi", "Confronto dei Tempi di Esecuzione")
+    #evaluate_3time("Secondi", "Confronto dei Tempi di Esecuzione")
+
