@@ -14,6 +14,9 @@ LARGE_SWEEP = RESULT_SWEEP + 'large_Sweep_APX_and_Time.csv'
 X_LARGE_SWEEP = RESULT_SWEEP + 'x_large_Sweep_APX_and_Time_Timeout.csv'
 
 SMALL_RANDOM = RESULT_RANDOM + "small_Random_APX_and_Time.csv"
+SMALL_RANDOM_10k = RESULT_RANDOM + "small_Random_APX_and_Time10K.csv"
+SMALL_RANDOM_100k = RESULT_RANDOM + "small_Random_APX_and_Time100K.csv"
+SMALL_RANDOM_1M = RESULT_RANDOM + "small_Random_APX_and_Time1M.csv"
 MID_SMALL_RANDOM = RESULT_RANDOM + "mid_small_Random_APX_and_Time.csv"
 MID_RANDOM = RESULT_RANDOM + "mid_Random_APX_and_Time.csv"
 MID_LARGE_RANDOM = RESULT_RANDOM + "mid_large_Random_APX_and_Time.csv"
@@ -42,7 +45,6 @@ def get_data_csv_all(file):
 
 
 def boxPlot_apx(path_file, string_apx, title):
-
     # Carica il file CSV
     df = get_data_csv_all(path_file)
 
@@ -55,7 +57,7 @@ def boxPlot_apx(path_file, string_apx, title):
     # Definisci l'ordine desiderato
     ordered_sizes = ['small', 'mid_small', 'mid', 'mid_large', 'large']
 
-# Estrai i dati per il box plot
+    # Estrai i dati per il box plot
     boxplot_data = [grouped_data[size] for size in ordered_sizes]
 
     # Crea il box plot
@@ -122,7 +124,6 @@ def evaluate_two_column(csv_file, column1, column2, column3, title):
 
 
 def evaluate_three_column(csv_file, column1, column2, column3, x_label, y_label, title):
-
     # Carica i dati dal file CSV usando il delimitatore ';'
     data = pd.read_csv(csv_file, delimiter=',')
 
@@ -156,7 +157,6 @@ def evaluate_three_column(csv_file, column1, column2, column3, x_label, y_label,
     # Set y-ticks at more granular intervals
     plt.xticks(np.arange(min(nodes), max(nodes) + 1, step=75))
     plt.yticks(np.arange(y_min, y_max, step=(y_max - y_min) / 20))  # Adjust the step as needed
-
 
     # Mostra il grafico
     plt.show()
@@ -192,7 +192,6 @@ def evaluate_3_columns_ratio12(csv_file, column1, column2, column3, title):
 
 
 def evaluate_single_column_two_files(csv_file1, csv_file2, csv_file3, column, title):
-
     # Carica i dati dai file CSV usando il delimitatore ';'
     data1 = pd.read_csv(csv_file1, delimiter=',')
     data2 = pd.read_csv(csv_file2, delimiter=',')
@@ -279,7 +278,8 @@ def valuate_truck(csv_file, title):
     explode = (0.1, 0)  # Esplodi il segmento "Feasible" per evidenziarlo
 
     # Crea il grafico a torta
-    plt.pie(sizes, explode=explode, labels=labels, colors=colors, autopct='%1.1f%%', startangle=140, shadow=True, textprops={'fontsize': 24})
+    plt.pie(sizes, explode=explode, labels=labels, colors=colors, autopct='%1.1f%%', startangle=140, shadow=True,
+            textprops={'fontsize': 24})
 
     # Etichetta del grafico
     plt.title(title, fontsize=24)
@@ -329,7 +329,7 @@ def evaluate_single_column_3_files(column, title):
     t2 = merged_data['Execution_time_CW']
     t3 = merged_data['Execution_time_RANDOM']
 
-      # Crea il grafico
+    # Crea il grafico
     plt.figure(figsize=(14, 10))
     plt.plot(nodes, t1, marker='o', linestyle='-', label='SWEEP')
     plt.plot(nodes, t2, marker='s', linestyle='--', label='CW')
@@ -354,14 +354,105 @@ def evaluate_single_column_3_files(column, title):
     plt.show()
 
 
-# Esempio di utilizzo
+def plot_apx_all_random(file, title):
+    """
+    Crea un grafico basato sui dati della colonna APX nel file ALL_RANDOM
+    :param file: file CSV
+    :param title: titolo del grafico
+    """
+    plt.figure(figsize=(15, 10))  # Dimensione della figura e DPI elevato
+
+    # Carica il file CSV
+    data = get_data_csv_all(file)
+
+    # Ordina i dati in base alla colonna '#Node'
+    data_sorted = data.sort_values(by='#Node')
+
+    # Estrai i dati di interesse
+    instance_names = data_sorted['Instance_Name']
+    apx_values = data_sorted['APX']
+
+    # Aggiungi una linea al grafico
+    plt.plot(instance_names, apx_values, marker='o', linestyle='-', markersize=7, label='Random 1K')
+
+    # Configura il grafico
+    plt.title(title, fontsize=20)  # Aumenta la dimensione del titolo
+    plt.xlabel('Istanze ordinate al crescere di N', fontsize=18)  # Aumenta la dimensione dell'etichetta dell'asse x
+    plt.ylabel('APX', fontsize=20)  # Aumenta la dimensione dell'etichetta dell'asse y
+    plt.legend(fontsize=20)  # Legenda più grande
+
+    # Imposta i valori dei tick dell'asse y per maggiore chiarezza
+    y_min = apx_values.min()
+    y_max = apx_values.max()
+    plt.yticks(np.arange(y_min, y_max + 0.1, step=(y_max - y_min) / 50), fontsize=11)  # Imposta ticks e dimensione
+
+    plt.xticks([], fontsize=12)  # Rimuove le etichette dell'asse x ma mantiene la label
+    plt.grid(True)
+
+    # Mostra il grafico
+    plt.show()
+
+
+def random_apx_for_num_run(files, title):
+    """
+    Crea un grafico con una linea per ogni file basato sui dati della colonna APX
+    :param files: lista di file CSV
+    :param title: titolo del grafico
+    """
+    plt.figure(figsize=(15, 10))  # Dimensione della figura e DPI elevato
+
+    markers = ['o', 's', '^', 'x']  # cerchio, quadrato, triangolo, croce
+    colors = ['b', '#FFA500', 'g', 'r']  # blu, arancione, verde, rosso
+    linestyles = ['-', '--', '-.', ':']  # stili delle righe
+    labels = ['1 K', '10 K', '100 K', '1 MLN']
+
+    all_apx_values = []
+
+    for i, file in enumerate(files):
+        # Carica il file CSV
+        data = get_data_csv_all(file)
+
+        # Ordina i dati in base alla colonna '#Node'
+        data_sorted = data.sort_values(by='#Node')
+
+        # Estrai i dati di interesse
+        instance_names = data_sorted['Instance_Name']
+        apx_values = data_sorted['APX']
+
+        all_apx_values.append(apx_values)  # Raccogli i valori APX per calcolare i tick dell'asse y
+
+        # Aggiungi una linea al grafico
+        plt.plot(instance_names, apx_values, marker=markers[i], linestyle=linestyles[i], color=colors[i], markersize=7, label=labels[i])
+
+    # Configura il grafico
+    plt.title(title, fontsize=20)  # Aumenta la dimensione del titolo
+    plt.xlabel('Istanze ordinate al crescere di N', fontsize=20)  # Aumenta la dimensione dell'etichetta dell'asse x
+    plt.ylabel('APX', fontsize=20)  # Aumenta la dimensione dell'etichetta dell'asse y
+    plt.legend(fontsize=18)  # Legenda più grande
+    plt.xticks([])  # Nascondi le etichette dell'asse x
+
+    # Imposta i valori dei tick dell'asse y per maggiore chiarezza
+    all_apx_values = np.concatenate(all_apx_values)  # Concatenate all APX values to get min and max
+    y_min = all_apx_values.min()
+    y_max = all_apx_values.max()
+    plt.yticks(np.arange(y_min, y_max + 0.1, step=(y_max - y_min) / 20), fontsize=14)  # Imposta ticks e dimensione
+
+    plt.grid(True)
+
+    # Mostra il grafico
+    plt.show()
+
+
+random_files = [SMALL_RANDOM, SMALL_RANDOM_10k, SMALL_RANDOM_100k, SMALL_RANDOM_1M]
+random_apx_for_num_run(random_files, "Confronto APX all'aumentare del numero di run (Small)")
+#plot_apx_all_random(ALL_RANDOM, "APX di Random 1K al crescere di n (Tutte le istanze)")
+
 BOX_PLOT = False
 if BOX_PLOT:
     boxPlot_apx(ALL_SWEEP, 'Apx_3Opt', "Sweep")
     boxPlot_apx(ALL_RANDOM, 'APX', "Random")
     boxPlot_apx(ALL_CW, 'APX', "Clarke & Wright")
 
-ECX_TIME = True
+ECX_TIME = False
 if ECX_TIME:
     evaluate_single_column_3_files("secondi", "Confronto dei Tempi di Esecuzione")
-
