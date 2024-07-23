@@ -10,7 +10,7 @@ SMALL_SWEEP = RESULT_SWEEP + 'small_Sweep_APX_and_Time.csv'
 MID_SMALL_SWEEP = RESULT_SWEEP + 'mid_small_Sweep_APX_and_Time.csv'
 MID_SWEEP = RESULT_SWEEP + 'mid_Sweep_APX_and_Time.csv'
 MID_LARGE_SWEEP = RESULT_SWEEP + 'mid_large_Sweep_APX_and_Time.csv'
-LARGE_SWEEP = RESULT_SWEEP + 'large_Sweep_APX_and_Time.csv'
+LARGE_SWEEP = RESULT_SWEEP + 'large_Sweep_APX_and_Time_Timeout.csv'
 X_LARGE_SWEEP = RESULT_SWEEP + 'x_large_Sweep_APX_and_Time_Timeout.csv'
 SMALL_MID_SWEEP = RESULT_SWEEP + 'small_mid_sweep.csv'
 
@@ -357,8 +357,8 @@ def evaluate_3time(column, title):
 
 
 def evaluate_3time2(column, title):
-    csv_file1 = MID_CW
-    csv_file2 = MID_SWEEP
+    csv_file1 = LARGE_CW
+    csv_file2 = LARGE_SWEEP
 
     # Carica i dati dai file CSV usando il delimitatore ';'
     data1 = pd.read_csv(csv_file1, delimiter=',').sort_values(by="#Node")
@@ -392,7 +392,7 @@ def evaluate_3time2(column, title):
     t3 = merged_data['Execution_time_SWEEP3']
 
     # Crea il grafico
-    plt.figure(figsize=(18, 15))
+    plt.figure(figsize=(14, 10))
     plt.plot(nodes, t1, marker='s', linestyle='--', label='CW')
     plt.plot(nodes, t2, marker='o', linestyle='-', label='SWEEP 2-Opt')
     plt.plot(nodes, t3, marker='x', linestyle='-.', label='SWEEP 3-Opt')
@@ -409,7 +409,58 @@ def evaluate_3time2(column, title):
     y_max = max(t1.max(), t2.max(), t3.max())
 
     # Set y-ticks at more granular intervals
-    plt.xticks(np.arange(len(nodes)), nodes, rotation=90)
+    plt.xticks("")
+    #plt.xticks(np.arange(len(nodes)), nodes, rotation=90)
+    plt.yticks(np.arange(y_min, y_max, step=(y_max - y_min) / 20))  # Adjust the step as needed
+
+    # Mostra il grafico
+    plt.show()
+
+
+def evaluate_2time_sweep(column, title):
+    csv_file1 = MID_SWEEP
+
+    # Carica i dati dai file CSV usando il delimitatore ';'
+    data1 = pd.read_csv(csv_file1, delimiter=',').sort_values(by="#Node")
+
+    data1 = data1.rename(columns={
+        'Execution_time_2Opt': 'Execution_time_SWEEP2'})
+    data2 = data1.rename(columns={
+        'Execution_time_3Opt': 'Execution_time_SWEEP3'})
+
+    # Unisci i dati sui nodi
+    merged_data = data1[['Instance_Name', 'Execution_time_SWEEP2']].merge(
+        data2[['Instance_Name', 'Execution_time_SWEEP3']],
+        on='Instance_Name',
+        how='outer')
+
+    # Verifica i nomi delle colonne dopo la rinominazione
+    print("Colonne merged_data dopo rinominazione:", merged_data.columns)
+
+    # Estrai le colonne di interesse
+    nodes = merged_data['Instance_Name']
+    t1 = merged_data['Execution_time_SWEEP2']
+    t2 = merged_data['Execution_time_SWEEP3']
+
+    # Crea il grafico
+    plt.figure(figsize=(14, 10))
+    plt.plot(nodes, t1, marker='o', linestyle='-', label='SWEEP 2-Opt')
+    plt.plot(nodes, t2, marker='x', linestyle='-.', label='SWEEP 3-Opt')
+
+    # Etichette del grafico
+    plt.title(title)
+    plt.xlabel('Istanze SMALL')
+    plt.ylabel(column)
+    plt.legend()
+    plt.grid(True)
+
+    # Determine the range of your data to set appropriate y-ticks
+    y_min = min(t1.min(), t2.min())
+    y_max = max(t1.max(), t2.max())
+
+    # Set y-ticks at more granular intervals
+    plt.xticks("")
+    #plt.xticks(np.arange(len(nodes)), nodes, rotation=90)
     plt.yticks(np.arange(y_min, y_max, step=(y_max - y_min) / 20))  # Adjust the step as needed
 
     # Mostra il grafico
@@ -426,6 +477,6 @@ if BOX_PLOT:
 
 ECX_TIME = True
 if ECX_TIME:
-    evaluate_3time2("Secondi", "Confronto dei Tempi di Esecuzione")
+    evaluate_2time_sweep("Secondi", "Confronto dei Tempi di Esecuzione")
     #evaluate_3time("Secondi", "Confronto dei Tempi di Esecuzione")
 
