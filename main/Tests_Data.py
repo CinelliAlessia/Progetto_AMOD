@@ -496,9 +496,9 @@ def evaluate_2time_sweep(column, title, csv):
 
 def winner_algorithm():
     # Carica i dati dai file CSV usando il delimitatore ';'
-    data1 = pd.read_csv(ALL_SWEEP, delimiter=',').sort_values(by="#Node")
-    data2 = pd.read_csv(ALL_CW, delimiter=',').sort_values(by="#Node")
-    data3 = pd.read_csv(ALL_RANDOM, delimiter=',').sort_values(by="#Node")
+    data1 = pd.read_csv(SMALL_SWEEP, delimiter=',').sort_values(by="#Node")
+    data2 = pd.read_csv(SMALL_CW, delimiter=',').sort_values(by="#Node")
+    data3 = pd.read_csv(SMALL_RANDOM, delimiter=',').sort_values(by="#Node")
 
     data1 = data1.rename(columns={
         'Cost_2Opt': 'Cost_SWEEP',
@@ -521,6 +521,10 @@ def winner_algorithm():
         how='outer'
     )
 
+    print("dataset")
+    for r in merged_data:
+        print(merged_data[r])
+
     # Estrai le colonne di interesse
     instance = merged_data['Instance_Name']
     t1 = merged_data['Cost_SWEEP']
@@ -533,15 +537,24 @@ def winner_algorithm():
 
     # Controlla il vincitore per ogni istanza
     winner = []
+
     for i in range(len(instance)):
-        if t1[i] <= t2[i] and t1[i] <= t3[i] and apx1[i] >= 1:
-            winner.append('SWEEP')
-        elif t2[i] <= t1[i] and t2[i] <= t3[i] and apx2[i] >= 1:
-            winner.append('CW')
-        elif t3[i] <= t1[i] and t3[i] <= t2[i] and apx3[i] >= 1:
-            winner.append('RANDOM')
+        t1_valid = t1[i] != "NaN" and apx1[i] != "NaN" and apx1[i] >= 1
+        t2_valid = t2[i] != "NaN" and apx2[i] != "NaN" and apx2[i] >= 1
+        t3_valid = t3[i] != "NaN" and apx3[i] != "NaN" and apx3[i] >= 1
+
+        if t1_valid:
+            if (t1[i] <= t2[i] or not t2_valid) and (t1[i] <= t3[i] or not t3_valid):
+                winner.append('SWEEP')
+        elif t2_valid:
+            if (t2[i] <= t1[i] or not t1_valid) and (t2[i] <= t3[i] or not t3_valid):
+                winner.append('CW')
+        elif t3_valid:
+            if (t3[i] <= t1[i] or not t1_valid) and (t3[i] <= t2[i] or not t2_valid):
+                winner.append('RANDOM')
         else:
             winner.append('UNKNOWN')
+
 
     # Crea il grafico a torta
     plt.figure(figsize=(14, 10))
@@ -648,8 +661,8 @@ def random_apx_for_num_run(files, title):
 
 # Esempio di utilizzo
 
-random_files = [SMALL_RANDOM, SMALL_RANDOM_10k, SMALL_RANDOM_100k, SMALL_RANDOM_1M]
-random_apx_for_num_run(random_files, "Confronto APX all'aumentare del numero di run (Small)")
+#random_files = [SMALL_RANDOM, SMALL_RANDOM_10k, SMALL_RANDOM_100k, SMALL_RANDOM_1M]
+#random_apx_for_num_run(random_files, "Confronto APX all'aumentare del numero di run (Small)")
 #plot_apx_all_random(ALL_RANDOM, "APX di Random 1K al crescere di n (Tutte le istanze)")
 
 BOX_PLOT = False
