@@ -83,6 +83,9 @@ def solve_random_for_instance_name_in_file(size, file_path):
             total_demand = Utils.total_demands(nodes)
             id_depots = Parser.get_depots_index(instance)[0]
             k = truck.get_min_num()
+            if k is None or k == 0:
+                k = truck.get_max_num()
+
             best_cost = float("inf")
             best_routes = []
 

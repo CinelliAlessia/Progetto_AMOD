@@ -112,7 +112,7 @@ def evaluate_two_column(csv_file, column1, column2, column3, title):
 
     # Etichette del grafico
     plt.title(title)
-    plt.xlabel('Istanze ordinate per dimensione')
+    plt.xlabel('Instance ordered by dimension')
     plt.ylabel('Secondi')
 
     # Personalizza la griglia per mostrare solo le linee orizzontali
@@ -543,15 +543,12 @@ def winner_algorithm():
         t2_valid = t2[i] != "NaN" and apx2[i] != "NaN" and apx2[i] >= 1
         t3_valid = t3[i] != "NaN" and apx3[i] != "NaN" and apx3[i] >= 1
 
-        if t1_valid:
-            if (t1[i] <= t2[i] or not t2_valid) and (t1[i] <= t3[i] or not t3_valid):
-                winner.append('SWEEP')
-        elif t2_valid:
-            if (t2[i] <= t1[i] or not t1_valid) and (t2[i] <= t3[i] or not t3_valid):
-                winner.append('CW')
-        elif t3_valid:
-            if (t3[i] <= t1[i] or not t1_valid) and (t3[i] <= t2[i] or not t2_valid):
-                winner.append('RANDOM')
+        if t1_valid and (t1[i] <= t2[i] or not t2_valid) and (t1[i] <= t3[i] or not t3_valid):
+            winner.append('SWEEP')
+        elif t2_valid and (t2[i] <= t1[i] or not t1_valid) and (t2[i] <= t3[i] or not t3_valid):
+            winner.append('CW')
+        elif t3_valid and (t3[i] <= t1[i] or not t1_valid) and (t3[i] <= t2[i] or not t2_valid):
+            winner.append('RANDOM')
         else:
             winner.append('UNKNOWN')
 
@@ -560,6 +557,11 @@ def winner_algorithm():
     plt.figure(figsize=(14, 10))
     labels = ['SWEEP', 'CW', 'RANDOM', 'UNKNOWN']
     sizes = [winner.count('SWEEP'), winner.count('CW'), winner.count('RANDOM'), winner.count('UNKNOWN')]
+    for i, size in enumerate(sizes):
+        if size == 0:
+            sizes.remove(size)
+            labels.remove(labels[i])
+
     colors = ['#FFC107', '#4CAF50', '#800080', '#F44336']  # Verde, Giallo Viola e Rosso per facilitare la distinzione
 
     plt.pie(sizes, labels=labels, colors=colors, autopct='%1.1f%%', startangle=140, shadow=True, textprops={'fontsize': 24})
@@ -660,6 +662,25 @@ def apx_for_num_run_1plot_for_files(files, title, labels = ['1','2','3','4']):
     plt.show()
 
 
+def graph_mip(title):
+    data1 = pd.read_csv('Results/MIP/MIP_Solutions.csv', delimiter=',').sort_values(by="#Node")
+
+    plt.figure(figsize=(10, 8))
+    plt.bar(data1['Instance_Name'], data1['Execution_time'], color='skyblue')
+    plt.title(title, fontsize=20)
+    plt.xlabel('Istanze ordinate al crescere di N', fontsize=18)
+    plt.ylabel('Secondi', fontsize=18)
+    plt.xticks(rotation=90,fontsize=12)
+    plt.yticks(fontsize=18)
+    plt.tight_layout()
+    plt.grid(True)
+    plt.show()
+
+
+#graph_mip('Confronto dei Tempi di Esecuzione')
+
+# Esempio di utilizzo
+
 #random_files = [SMALL_RANDOM, SMALL_RANDOM_10k, SMALL_RANDOM_100k, SMALL_RANDOM_1M]
 random_5min = [RESULT_RANDOM + "small_Random_APX_and_Time_5min.csv", SMALL_RANDOM_1M]
 apx_for_num_run_1plot_for_files(random_5min, "Confronto tra Random(1M) e Random (5min)", ['5 min', '1 MLN'])
@@ -672,12 +693,12 @@ if BOX_PLOT:
     boxPlot_apx(ALL_RANDOM, 'APX', "Random 1K")
     boxPlot_apx(ALL_CW, 'APX', "Clarke & Wright")
 
-ECX_TIME = False
+ECX_TIME = True
 if ECX_TIME:
-    evaluate_3time2("Secondi", "Confronto dei Tempi di Esecuzione", "SMALL")
-    evaluate_3time2("Secondi", "Confronto dei Tempi di Esecuzione", "MID")
-    evaluate_3time2("Secondi", "Confronto dei Tempi di Esecuzione", "LARGE")
-    #evaluate_3time("Secondi", "Confronto dei Tempi di Esecuzione")
+    #evaluate_3time2("Secondi", "Confronto dei Tempi di Esecuzione", "SMALL")
+    #evaluate_3time2("Secondi", "Confronto dei Tempi di Esecuzione", "MID")
+    #evaluate_3time2("Secondi", "Confronto dei Tempi di Esecuzione", "LARGE")
+    evaluate_2time_sweep("Secondi", "Confronto dei Tempi di Esecuzione", "MID")
 
 WINNER_COST = False
 if WINNER_COST:
