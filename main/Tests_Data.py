@@ -15,8 +15,8 @@ X_LARGE_SWEEP = RESULT_SWEEP + 'x_large_Sweep_APX_and_Time_Timeout.csv'
 SMALL_MID_SWEEP = RESULT_SWEEP + 'small_mid_sweep.csv'
 
 SMALL_RANDOM_1K = RESULT_RANDOM + "small_Random_APX_and_Time1K.csv"
-SMALL_RANDOM_10k = RESULT_RANDOM + "small_Random_APX_and_Time10K.csv"
-SMALL_RANDOM_100k = RESULT_RANDOM + "small_Random_APX_and_Time100K.csv"
+SMALL_RANDOM_10K = RESULT_RANDOM + "small_Random_APX_and_Time10K.csv"
+SMALL_RANDOM_100K = RESULT_RANDOM + "small_Random_APX_and_Time100K.csv"
 SMALL_RANDOM_1M = RESULT_RANDOM + "small_Random_APX_and_Time1M.csv"
 MID_SMALL_RANDOM_1K = RESULT_RANDOM + "mid_small_Random_APX_and_Time1K.csv"
 MID_RANDOM_1K = RESULT_RANDOM + "mid_Random_APX_and_Time1K.csv"
@@ -33,7 +33,7 @@ X_LARGE_CW = RESULT_CW + 'x_large_CW_APX_and_Time.csv'
 
 ALL_SWEEP = RESULT_SWEEP + 'Sweep_all.csv'
 ALL_CW = RESULT_CW + 'CW_All.csv'
-ALL_RANDOM = RESULT_RANDOM + 'All_Random_1K.csv'
+ALL_RANDOM_1K = RESULT_RANDOM + 'All_Random_1K.csv'
 
 
 def get_data_csv_all(file):
@@ -668,10 +668,10 @@ def apx_for_num_run_1plot_for_files(files, title, labels = ['1','2','3','4']):
     plt.show()
 
 
-random_files = [SMALL_RANDOM_1K, SMALL_RANDOM_10k, SMALL_RANDOM_100k, SMALL_RANDOM_1M]
+random_files = [SMALL_RANDOM_1K, SMALL_RANDOM_10K, SMALL_RANDOM_100K, SMALL_RANDOM_1M]
 #random_5min = [RESULT_RANDOM + "small_Random_APX_and_Time_5min.csv", SMALL_RANDOM_1M]
-apx_for_num_run_1plot_for_files(random_files, "Confronto APX in relazione al numero di run", ['1 K', '10 K', '100 K', '1 M'])
-#plot_apx_all_random(ALL_RANDOM, "APX di Random 1K al crescere di n (Tutte le istanze)")
+#apx_for_num_run_1plot_for_files(random_files, "Confronto APX in relazione al numero di run", ['1 K', '10 K', '100 K', '1 M'])
+plot_apx_all_random(ALL_RANDOM_1K, "APX di Random 1K al crescere di n (Tutte le istanze)")
 
 
 def graph_mip(title):
@@ -689,7 +689,7 @@ def graph_mip(title):
     plt.show()
 
 
-BOX_PLOT = True
+BOX_PLOT = False
 if BOX_PLOT:
     #boxPlot_apx(ALL_SWEEP, 'Apx_3Opt', "Sweep 3-Opt")
     #boxPlot_apx(ALL_RANDOM, 'APX', "Random 1K")

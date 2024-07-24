@@ -7,12 +7,12 @@ import Config
 
 
 # Se impostati a True, eseguirà l'euristica di Clarke e Wright per le istanze di quel tipo
-SMALL = True
-MID_SMALL = True
+SMALL = False
+MID_SMALL = False
 MID = True
-MID_LARGE = True
-LARGE = True
-X_LARGE = False
+MID_LARGE = False
+LARGE = False
+X_LARGE = True
 
 # ------------------------------------------------------------------------------------------------------------
 ACTIONS = Config.ACTION_RANDOM
@@ -82,7 +82,6 @@ def solve_random_for_instance_name_in_file(size, file_path):
 
             distance = Parser.get_edge_weight(instance)
 
-            total_demand = Utils.total_demands(nodes)
             id_depots = Parser.get_depots_index(instance)[0]
             k = truck.get_min_num()
             if k is None or k == 0:
@@ -94,7 +93,7 @@ def solve_random_for_instance_name_in_file(size, file_path):
             if TIMEOUT:
                 # Registra il tempo di inizio
                 start_time = time.perf_counter()
-                while(time.perf_counter() - start_time < TIMEOUT_VALUE):
+                while time.perf_counter() - start_time < TIMEOUT_VALUE:
                     routes, costs = Random.vrp_random(nodes, truck.get_capacity(), distance, id_depots)
                     if len(routes) <= k or not SKIP_SOLUTION_OUT_OF_TRUCK:  # Se il numero di veicoli usati è minore o uguale a k
                         if costs < best_cost:
