@@ -16,7 +16,7 @@ X_LARGE = False
 
 # ------------------------------------------------------------------------------------------------------------
 ACTIONS = Config.ACTION_RANDOM
-TIMEOUT = False
+TIMEOUT = Config.TIMEOUT_ON
 TIMEOUT_VALUE = 300  # Timeout di 5 minuti (300 secondi)
 SKIP_SOLUTION_OUT_OF_TRUCK = True
 # ------------------------------------------------------------------------------------------------------------
@@ -80,6 +80,8 @@ def solve_random_for_instance_name_in_file(size, file_path):
             nodes, truck = Parser.work_on_instance(instance, True)
             print("Fine parsing")
 
+            distance = Parser.get_edge_weight(instance)
+
             total_demand = Utils.total_demands(nodes)
             id_depots = Parser.get_depots_index(instance)[0]
             k = truck.get_min_num()
@@ -93,7 +95,7 @@ def solve_random_for_instance_name_in_file(size, file_path):
                 # Registra il tempo di inizio
                 start_time = time.perf_counter()
                 while(time.perf_counter() - start_time < TIMEOUT_VALUE):
-                    routes, costs = Random.vrp_random(nodes, truck.get_capacity(), total_demand, id_depots)
+                    routes, costs = Random.vrp_random(nodes, truck.get_capacity(), distance, id_depots)
                     if len(routes) <= k or not SKIP_SOLUTION_OUT_OF_TRUCK:  # Se il numero di veicoli usati è minore o uguale a k
                         if costs < best_cost:
                             best_cost = costs
@@ -103,7 +105,7 @@ def solve_random_for_instance_name_in_file(size, file_path):
                 # Registra il tempo di inizio
                 start_time = time.perf_counter()
                 for i in range(RANDOM_ITERATION_NUMBER):  # Ripeti l'algoritmo RANDOM_ITERATION_NUMBER volte
-                    routes, costs = Random.vrp_random(nodes, truck.get_capacity(), total_demand, id_depots)
+                    routes, costs = Random.vrp_random(nodes, truck.get_capacity(), distance, id_depots)
                     if len(routes) <= k or not SKIP_SOLUTION_OUT_OF_TRUCK:  # Se il numero di veicoli usati è minore o uguale a k
                         if costs < best_cost:
                             best_cost = costs
@@ -132,7 +134,6 @@ def solve_random_for_instance_name_in_file(size, file_path):
             # Salva tali valori, con lo stesso formato su una nuova riga del file APX_and_Time.txt
             f.write(f"{size},{file_name},{n_nodes},{n_truck},{capacity},{opt},{best_cost},{apx},"
                     f"{execution_time},{RANDOM_ITERATION_NUMBER},{len(best_routes)}\n")
-            Utils.save_results_to_file(best_routes, best_cost, "Results/Random_Solutions/", file_name)
 
     f.close()
 

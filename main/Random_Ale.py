@@ -1,12 +1,12 @@
 from random import shuffle
 
 
-def vrp_random(nodes, capacity, demands, id_depots):
+def vrp_random(nodes, capacity, distance, id_depots):
     """ Preso un client a caso, controlla se puo essere aggiunto al primo cluster, se cosi non è,
     controlla se puo essere aggiunto al secondo cluster, ecc. se non puo essere aggiunto a nessun cluster
     se ne crea uno nuovo
     :param id_depots: indice del deposito
-    :param demands: domanda totale di tutti i clienti
+    :param distance: domanda totale di tutti i clienti
     :param nodes: lista di clienti
     :param capacity: capacità dei veicoli
     :return:
@@ -14,9 +14,12 @@ def vrp_random(nodes, capacity, demands, id_depots):
 
     nodes = nodes[:id_depots] + nodes[id_depots + 1:]  # Rimuove il deposito dalla lista dei clienti
 
-    truck_max = int(demands/capacity) + 1
-    taken_capacities = [0 for _ in range(truck_max)]
-    costs = [0 for _ in range(truck_max)]
+    # truck_max = int(demands/capacity) + 1
+    #     taken_capacities = [0 for _ in range(truck_max)]
+    #     costs = [0 for _ in range(truck_max)]
+
+    taken_capacities = []
+    costs = []
 
     shuffle(nodes)  # Randomizza la lista dei clienti
     routes = []
@@ -29,14 +32,15 @@ def vrp_random(nodes, capacity, demands, id_depots):
                 route.append(client)
                 break
         else:
-            taken_capacities[len(routes)] = client.get_demand()
-            costs[len(routes)] = client.get_distance(id_depots)
-            routes.append([client])     # Crea una nuova rotta se non può essere aggiunto a nessun cluster
+            taken_capacities.append(client.get_demand())
+            costs.append(client.get_distance(id_depots))
+            routes.append([client])  # Crea una nuova rotta se non può essere aggiunto a nessun cluster
 
     processed_routes = []
     for i, route in enumerate(routes):
         if route:  # Controlla se la rotta non è vuota e aggiunge il deposito all'inizio e alla fine
             processed_route = [id_depots] + [c.get_id() for c in route] + [id_depots]
+            costs[i] += route[-1].get_distance(id_depots)  # Aggiunge il costo del cliente al costo totale
             processed_routes.append(processed_route)
 
     return processed_routes, sum(costs)

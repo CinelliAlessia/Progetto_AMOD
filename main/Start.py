@@ -127,7 +127,7 @@ def start():
         print(f"Costi SWEEP ANDREA {cost}")
 
     if RANDOM:
-        total_demand = Utils.total_demands(all_nodes)
+        distance = Parse.get_edge_weight(instance)
         id_depots = Parse.get_depots_index(instance)[0]
 
         best_cost = float("inf")
@@ -136,7 +136,7 @@ def start():
         # Registra il tempo di inizio
         start_time = time.perf_counter()
         for i in range(RANDOM_ITERATION_NUMBER):
-            routes, costs = vrp_random(all_nodes, truck.get_capacity(), total_demand, id_depots)
+            routes, costs = vrp_random(all_nodes, truck.get_capacity(), distance, id_depots)
             if costs < best_cost:
                 best_cost = costs
                 best_routes = routes  # Registra il tempo di fine
