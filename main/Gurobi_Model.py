@@ -11,6 +11,8 @@ CURRENT_INSTANCE = None
 
 
 def solve_vrp_with_gurobi(instance, verbose=False, max_time_seconds=300, gap=0.0001, integrality_focus=1):
+    print(f"Risoluzione del problema VRP per l'istanza {CURRENT_INSTANCE} con Gurobi.")
+
     # Parametri del problema
     n_customers = Parser.get_nodes_dimension(instance)  # Numero di nodi nel sistema, incluso il deposito
     vehicle_capacity = Parser.get_truck(instance).get_capacity()  # Capacità del veicolo
@@ -21,7 +23,6 @@ def solve_vrp_with_gurobi(instance, verbose=False, max_time_seconds=300, gap=0.0
 
     # Matrice delle distanze (simmetrica)
     dist = Parser.get_edge_weight(instance)
-    print(dist)
 
     # Verifica che la matrice delle distanze abbia le dimensioni corrette
     assert dist.shape == (n_customers, n_customers), "Dimensione della matrice dist non corretta"
@@ -137,7 +138,7 @@ def write(routes, total_cost, execution_time, status):
     if not os.path.exists(f"{OUTPUT_PATH}{NAME_FILE}"):
         f = open(f"{OUTPUT_PATH}{NAME_FILE}", "w")
         # Intestazione del file csv
-        f.write("Instance_Name,#Node,#Truck,Capacity,Opt_cost,Incumbent,Execution_time,Status,Routes\n")
+        f.write("Instance_Name,#Node,#Truck,Capacity,Opt_cost,Incumbent,APX,Execution_time,Status,Routes\n")
     else:
         f = open(f"{OUTPUT_PATH}{NAME_FILE}", "a")
 
@@ -156,7 +157,7 @@ def write(routes, total_cost, execution_time, status):
     formatted_r = f'[{formatted_r}]'
 
     # Salva tali valori, con lo stesso formato su una nuova riga del file APX_and_Time.txt
-    f.write(f"{CURRENT_INSTANCE},{n_nodes},{n_truck},{capacity},{opt},{total_cost},{execution_time},{status}, {formatted_r}\n")
+    f.write(f"{CURRENT_INSTANCE},{n_nodes},{n_truck},{capacity},{opt},{total_cost},{total_cost/opt},{execution_time},{status}, {formatted_r}\n")
     f.close()
 
 
@@ -170,4 +171,4 @@ for line in n:  # Per ogni istanza scritta nel file
     CURRENT_INSTANCE = line
     instance_path = "../resources/vrplib/Instances/" + line
     instance = Parser.make_instance_from_path_name(instance_path)
-    solve_vrp_with_gurobi(instance, True,300,0.1,0)
+    solve_vrp_with_gurobi(instance, True, 300, 0.1, 0)
