@@ -14,15 +14,15 @@ LARGE_SWEEP = RESULT_SWEEP + 'large_Sweep_APX_and_Time_Timeout.csv'
 X_LARGE_SWEEP = RESULT_SWEEP + 'x_large_Sweep_APX_and_Time_Timeout.csv'
 SMALL_MID_SWEEP = RESULT_SWEEP + 'small_mid_sweep.csv'
 
-SMALL_RANDOM = RESULT_RANDOM + "small_Random_APX_and_Time.csv"
+SMALL_RANDOM_1K = RESULT_RANDOM + "small_Random_APX_and_Time1K.csv"
 SMALL_RANDOM_10k = RESULT_RANDOM + "small_Random_APX_and_Time10K.csv"
 SMALL_RANDOM_100k = RESULT_RANDOM + "small_Random_APX_and_Time100K.csv"
 SMALL_RANDOM_1M = RESULT_RANDOM + "small_Random_APX_and_Time1M.csv"
-MID_SMALL_RANDOM = RESULT_RANDOM + "mid_small_Random_APX_and_Time.csv"
-MID_RANDOM = RESULT_RANDOM + "mid_Random_APX_and_Time.csv"
-MID_LARGE_RANDOM = RESULT_RANDOM + "mid_large_Random_APX_and_Time.csv"
-LARGE_RANDOM = RESULT_RANDOM + "large_Random_APX_and_Time.csv"
-X_LARGE_RANDOM = RESULT_RANDOM + "x_large_Random_APX_and_Time.csv"
+MID_SMALL_RANDOM_1K = RESULT_RANDOM + "mid_small_Random_APX_and_Time1K.csv"
+MID_RANDOM_1K = RESULT_RANDOM + "mid_Random_APX_and_Time1K.csv"
+MID_LARGE_RANDOM_1K = RESULT_RANDOM + "mid_large_Random_APX_and_Time1K.csv"
+LARGE_RANDOM_1K = RESULT_RANDOM + "large_Random_APX_and_Time1K.csv"
+X_LARGE_RANDOM_1K = RESULT_RANDOM + "x_large_Random_APX_and_Time1K.csv"
 
 SMALL_CW = RESULT_CW + 'small_CW_APX_and_Time.csv'
 MID_SMALL_CW = RESULT_CW + 'mid_small_CW_APX_and_Time.csv'
@@ -33,7 +33,7 @@ X_LARGE_CW = RESULT_CW + 'x_large_CW_APX_and_Time.csv'
 
 ALL_SWEEP = RESULT_SWEEP + 'Sweep_all.csv'
 ALL_CW = RESULT_CW + 'CW_All.csv'
-ALL_RANDOM = RESULT_RANDOM + 'Random_All.csv'
+ALL_RANDOM = RESULT_RANDOM + 'All_Random_1K.csv'
 
 
 def get_data_csv_all(file):
@@ -70,9 +70,12 @@ def boxPlot_apx(path_file, string_apx, title):
     plt.ylabel('Apx')
 
     # Imposta i ticks dell'asse y da 0 a 1 con passo 0.1
-    min_y = min(min(values) for values in grouped_data.values())
-    max_y = max(max(values) for values in grouped_data.values())
-    plt.yticks(np.arange(min_y, max_y + 0.05, step=(max_y - min_y) / 30))
+    # Filtra i valori per evitare "inf" e calcolare min_y e max_y
+    all_values = [value for values in grouped_data.values() for value in values if value != float('inf')]
+    if all_values:
+        min_y = min(all_values)
+        max_y = max(all_values)
+        plt.yticks(np.arange(min_y, max_y + 0.05, step=(max_y - min_y) / 30))
 
     plt.grid(True)
     plt.show()
@@ -294,7 +297,7 @@ def valuate_truck(csv_file, title):
 def evaluate_3time(column, title):
     csv_file1 = SMALL_SWEEP
     csv_file2 = SMALL_CW
-    csv_file3 = SMALL_RANDOM
+    csv_file3 = SMALL_RANDOM_1K
 
     # Carica i dati dai file CSV usando il delimitatore ';'
     data1 = pd.read_csv(csv_file1, delimiter=',').sort_values(by="#Node")
@@ -498,7 +501,7 @@ def winner_algorithm():
     # Carica i dati dai file CSV usando il delimitatore ';'
     data1 = pd.read_csv(SMALL_SWEEP, delimiter=',').sort_values(by="#Node")
     data2 = pd.read_csv(SMALL_CW, delimiter=',').sort_values(by="#Node")
-    data3 = pd.read_csv(SMALL_RANDOM, delimiter=',').sort_values(by="#Node")
+    data3 = pd.read_csv(SMALL_RANDOM_1K, delimiter=',').sort_values(by="#Node")
 
     data1 = data1.rename(columns={
         'Cost_2Opt': 'Cost_SWEEP',
@@ -682,16 +685,16 @@ def graph_mip(title):
 # Esempio di utilizzo
 
 #random_files = [SMALL_RANDOM, SMALL_RANDOM_10k, SMALL_RANDOM_100k, SMALL_RANDOM_1M]
-random_5min = [RESULT_RANDOM + "small_Random_APX_and_Time_5min.csv", SMALL_RANDOM_1M]
-apx_for_num_run_1plot_for_files(random_5min, "Confronto tra Random(1M) e Random (5min)", ['5 min', '1 MLN'])
+#random_5min = [RESULT_RANDOM + "small_Random_APX_and_Time_5min.csv", SMALL_RANDOM_1M]
+#apx_for_num_run_1plot_for_files(random_5min, "Confronto tra Random(1M) e Random (5min)", ['5 min', '1 MLN'])
 #plot_apx_all_random(ALL_RANDOM, "APX di Random 1K al crescere di n (Tutte le istanze)")
 
 
-BOX_PLOT = False
+BOX_PLOT = True
 if BOX_PLOT:
-    boxPlot_apx(ALL_SWEEP, 'Apx_3Opt', "Sweep 3-Opt")
+    #boxPlot_apx(ALL_SWEEP, 'Apx_3Opt', "Sweep 3-Opt")
     boxPlot_apx(ALL_RANDOM, 'APX', "Random 1K")
-    boxPlot_apx(ALL_CW, 'APX', "Clarke & Wright")
+    #boxPlot_apx(ALL_CW, 'APX', "Clarke & Wright")
 
 ECX_TIME = True
 if ECX_TIME:
