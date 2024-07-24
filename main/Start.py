@@ -17,11 +17,11 @@ def print_routes(routes):
 
 
 CW_ALE = False
-CW_ANDRE = False
-SWEEP_ALE = True
+CW_ANDRE = True
+SWEEP_ALE = False
 SWEEP_ANDRE = False
-RANDOM = False
-RANDOM_ITERATION_NUMBER = 750
+RANDOM = True
+RANDOM_ITERATION_NUMBER = 10000
 
 if CW_ALE or CW_ANDRE or RANDOM:
     work_on_explicit = True
@@ -29,7 +29,7 @@ else:
     work_on_explicit = False
 
 
-path_instance = "../resources/vrplib/Instances/Golden_5.vrp"
+path_instance = "../resources/vrplib/Instances/P-n16-k8.vrp"
 instance = Parse.make_instance_from_path_name(path_instance)
 all_nodes, truck = Parse.work_on_instance(instance, work_on_explicit)
 print("Fine Parsing")

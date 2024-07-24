@@ -29,8 +29,8 @@ else:
 
 # ------------------------------------------------------------------------------------------------------------
 # Se impostati a True, eseguirà l'euristica di Clarke e Wright per le istanze di quel tipo
-SMALL = False
-MID_SMALL = False
+SMALL = True
+MID_SMALL = True
 MID = False
 MID_LARGE = False
 LARGE = False

@@ -24,7 +24,7 @@ def plot_routes_graph(nodes, routes):
     for index, r in enumerate(routes):
         colore_arco = colori[index % len(colori)]  # Seleziona un colore dalla lista, usa modulo per evitare errori di indice
         for i in range(len(r)-1):
-            G.add_edge(r[i], r[i+1], color=colore_arco, weight=2.5)
+            G.add_edge(r[i], r[i+1], color=colore_arco, weight=4)
 
     # Disegno del grafo
     pos = nx.get_node_attributes(G, 'pos')
@@ -40,7 +40,7 @@ def plot_routes_graph(nodes, routes):
     # Imposta la dimensione della figura e la risoluzione
     plt.figure(figsize=(10, 7), dpi=100)  # Dimensioni in pollici (larghezza, altezza) e dpi per la risoluzione
 
-    nx.draw(G, pos, node_size=500, node_color=colors, edge_color=edge_colors)
+    nx.draw(G, pos, node_size=600, node_color=colors, edge_color=edge_colors)
     nx.draw_networkx_labels(G, pos, labels=node_labels, font_size=10)
 
     # Mostra il grafo

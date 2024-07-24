@@ -163,4 +163,4 @@ for line in n:  # Per ogni istanza scritta nel file
     CURRENT_INSTANCE = line
     instance_path = "../resources/vrplib/Instances/" + line
     instance = Parser.make_instance_from_path_name(instance_path)
-    solve_vrp_with_gurobi(instance, True)
+    solve_vrp_with_gurobi(instance, True,300,0.1,0)

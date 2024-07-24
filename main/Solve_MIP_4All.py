@@ -1,6 +1,4 @@
-import time
 import os
-import pandas as pd
 import ParseInstances as Parser
 import Config
 from Gurobi_Model import solve_vrp_with_gurobi
