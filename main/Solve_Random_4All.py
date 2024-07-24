@@ -8,8 +8,8 @@ import Config
 # Se impostati a True, eseguirà l'euristica di Clarke e Wright per le istanze di quel tipo
 SMALL = False
 MID_SMALL = False
-MID = True
-MID_LARGE = False
+MID = False
+MID_LARGE = True
 LARGE = False
 X_LARGE = False
 
