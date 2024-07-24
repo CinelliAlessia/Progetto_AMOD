@@ -18,11 +18,13 @@ SMALL_RANDOM_1K = RESULT_RANDOM + "small_Random_APX_and_Time1K.csv"
 SMALL_RANDOM_10K = RESULT_RANDOM + "small_Random_APX_and_Time10K.csv"
 SMALL_RANDOM_100K = RESULT_RANDOM + "small_Random_APX_and_Time100K.csv"
 SMALL_RANDOM_1M = RESULT_RANDOM + "small_Random_APX_and_Time1M.csv"
+SMALL_RANDOM_5min = RESULT_RANDOM + "small_Random_APX_and_Time_5min.csv"
 MID_SMALL_RANDOM_1K = RESULT_RANDOM + "mid_small_Random_APX_and_Time1K.csv"
 MID_RANDOM_1K = RESULT_RANDOM + "mid_Random_APX_and_Time1K.csv"
 MID_LARGE_RANDOM_1K = RESULT_RANDOM + "mid_large_Random_APX_and_Time1K.csv"
 LARGE_RANDOM_1K = RESULT_RANDOM + "large_Random_APX_and_Time1K.csv"
 X_LARGE_RANDOM_1K = RESULT_RANDOM + "x_large_Random_APX_and_Time1K.csv"
+
 
 SMALL_CW = RESULT_CW + 'small_CW_APX_and_Time.csv'
 MID_SMALL_CW = RESULT_CW + 'mid_small_CW_APX_and_Time.csv'
@@ -47,6 +49,7 @@ def get_data_csv_all(file):
 
 
 def boxPlot_apx(path_file, string_apx, title):
+
     # Carica il file CSV
     df = get_data_csv_all(path_file)
 
@@ -129,6 +132,7 @@ def evaluate_two_column(csv_file, column1, column2, column3, title):
 
 
 def evaluate_three_column(csv_file, column1, column2, column3, x_label, y_label, title):
+
     # Carica i dati dal file CSV usando il delimitatore ';'
     data = pd.read_csv(csv_file, delimiter=',')
 
@@ -270,8 +274,8 @@ def valuate_truck(csv_file, title):
 
     feasible = 0
     infeasible = 0
-    for i, t in enumerate(truck):
-        if (used_truck[i] <= truck[i] and used_truck[i] != 0) or truck[i] == 0 or truck[i] == None:
+    for i in range(len(truck)):
+        if used_truck[i] <= truck[i] or truck[i] == 0 or truck[i] == None:
             feasible += 1
         else:
             infeasible += 1
@@ -553,6 +557,7 @@ def winner_algorithm():
         else:
             winner.append('UNKNOWN')
 
+
     # Crea il grafico a torta
     plt.figure(figsize=(14, 10))
     labels = ['SWEEP', 'CW', 'RANDOM', 'UNKNOWN']
@@ -580,7 +585,7 @@ def plot_apx_all_random(file, title):
     :param file: file CSV
     :param title: titolo del grafico
     """
-    plt.figure(figsize=(15, 10))  # Dimensione della figura e DPI elevato
+    plt.figure(figsize=(15, 10))  # Dimensione della figura
 
     # Carica il file CSV
     data = get_data_csv_all(file)
@@ -588,9 +593,12 @@ def plot_apx_all_random(file, title):
     # Ordina i dati in base alla colonna '#Node'
     data_sorted = data.sort_values(by='#Node')
 
+    # Filtra i dati per rimuovere le righe con inf in APX
+    data_filtered = data_sorted[data_sorted['APX'] != float('inf')]
+
     # Estrai i dati di interesse
-    instance_names = data_sorted['Instance_Name']
-    apx_values = data_sorted['APX']
+    instance_names = data_filtered['Instance_Name']
+    apx_values = data_filtered['APX']
 
     # Aggiungi una linea al grafico
     plt.plot(instance_names, apx_values, marker='o', linestyle='-', markersize=7, label='Random 1K')
@@ -602,15 +610,12 @@ def plot_apx_all_random(file, title):
     plt.legend(fontsize=20)  # Legenda più grande
 
     # Imposta i valori dei tick dell'asse y per maggiore chiarezza
-    all_values = [values for values in apx_values if values != float('inf')]
-    if all_values:
-        y_min = min(all_values)
-        y_max = max(all_values)
-        plt.yticks(np.arange(y_min, y_max + 0.1, step=(y_max - y_min) / 50), fontsize=11)  # Imposta ticks e dimensione
+    y_min = min(apx_values)
+    y_max = max(apx_values)
+    plt.yticks(np.arange(y_min, y_max + 0.1, step=(y_max - y_min) / 50), fontsize=11)  # Imposta ticks e dimensione
 
     plt.xticks([], fontsize=12)  # Rimuove le etichette dell'asse x ma mantiene la label
-    plt.grid(True)
-
+    plt.grid(axis='y', linestyle='--', linewidth=0.7)
     # Mostra il grafico
     plt.show()
 
@@ -620,11 +625,11 @@ def apx_for_num_run_1plot_for_files(files, title, labels=['1', '2', '3', '4']):
     Crea un grafico con una linea per ogni file basato sui dati della colonna APX
     :param files: lista di file CSV
     :param title: titolo del grafico
+    :param labels: etichette per le linee
     """
     plt.figure(figsize=(15, 10))  # Dimensione della figura e DPI elevato
 
     markers = ['o', 's', '^', 'x']  # cerchio, quadrato, triangolo, croce
-    #colors = ['b', '#FFA500', 'g', 'r']  # blu, arancione, verde, rosso
     linestyles = ['-', '--', '-.', ':']  # stili delle righe
 
     all_apx_values = []
@@ -636,41 +641,48 @@ def apx_for_num_run_1plot_for_files(files, title, labels=['1', '2', '3', '4']):
         # Ordina i dati in base alla colonna '#Node'
         data_sorted = data.sort_values(by='#Node')
 
+        # Filtra i dati per rimuovere le righe con inf in APX
+        data_filtered = data_sorted[data_sorted['APX'] != float('inf')]
+
         # Estrai i dati di interesse
-        instance_names = data_sorted['Instance_Name']
-        apx_values = data_sorted['APX']
+        instance_names = data_filtered['Instance_Name']
+        apx_values = data_filtered['APX']
 
         all_apx_values.append(apx_values)  # Raccogli i valori APX per calcolare i tick dell'asse y
 
         # Aggiungi una linea al grafico
         plt.plot(instance_names, apx_values, marker=markers[i], linestyle=linestyles[i], markersize=7, label=labels[i])
 
-    # Configura il grafico
-    plt.title(title, fontsize=20)  # Aumenta la dimensione del titolo
-    plt.xlabel('Istanze ordinate al crescere di N', fontsize=20)  # Aumenta la dimensione dell'etichetta dell'asse x
-    plt.ylabel('APX', fontsize=20)  # Aumenta la dimensione dell'etichetta dell'asse y
-    plt.legend(fontsize=18)  # Legenda più grande
-    plt.xticks([])  # Nascondi le etichette dell'asse x
+    # Concatena tutti i valori APX in una singola Serie
+    all_apx_values_series = pd.concat(all_apx_values)
+
+    # Filtra i valori 'inf'
+    all_apx_values_filtered = all_apx_values_series[all_apx_values_series != float('inf')]
 
     # Imposta i valori dei tick dell'asse y per maggiore chiarezza
-    all_values = [value for values in all_apx_values for value in values if value != float('inf')]
-    if all_values:
-        min_y = min(all_values)
-        max_y = max(all_values)
+    if not all_apx_values_filtered.empty:
+        min_y = all_apx_values_filtered.min()
+        max_y = all_apx_values_filtered.max()
         plt.yticks(np.arange(min_y, max_y + 0.05, step=(max_y - min_y) / 20))
 
-    plt.grid(True)
+    # Configura il grafico
+    plt.title(title, fontsize=20)  # Aumenta la dimensione del titolo
+    plt.xlabel('Istanze ordinate al crescere di N', fontsize=11)  # Aumenta la dimensione dell'etichetta dell'asse x
+    plt.ylabel('APX', fontsize=20)  # Aumenta la dimensione dell'etichetta dell'asse y
+    plt.legend(fontsize=18)  # Legenda più grande
+    #plt.xticks([])  # Nascondi le etichette dell'asse x
+    plt.grid(axis='y', linestyle='--', linewidth=0.7)  # Solo griglie orizzontali
 
     # Mostra il grafico
     plt.show()
 
 
-ANDREA = False
+ANDREA = True
 if ANDREA:
-    random_files = [SMALL_RANDOM_1K, SMALL_RANDOM_10K, SMALL_RANDOM_100K, SMALL_RANDOM_1M]
-    #random_5min = [RESULT_RANDOM + "small_Random_APX_and_Time_5min.csv", SMALL_RANDOM_1M]
-    #apx_for_num_run_1plot_for_files(random_files, "Confronto APX in relazione al numero di run", ['1 K', '10 K', '100 K', '1 M'])
-    plot_apx_all_random(ALL_RANDOM_1K, "APX di Random 1K al crescere di n (Tutte le istanze)")
+    #random_files = [SMALL_RANDOM_1K, SMALL_RANDOM_10K, SMALL_RANDOM_100K, SMALL_RANDOM_1M]
+    random_5minVS1M = [RESULT_RANDOM + "small_Random_APX_and_Time_5min.csv", SMALL_RANDOM_1M]
+    #apx_for_num_run_1plot_for_files(random_5minVS1M, "Confronto APX Random(5min) vs Random(1M) per istanze Small", ['5 min', '1 M'])
+    #plot_apx_all_random(ALL_RANDOM_1K, "APX di Random 1K al crescere di n (Tutte le istanze)")
 
 
 def graph_mip(title):
@@ -705,7 +717,7 @@ WINNER_COST = False
 if WINNER_COST:
     winner_algorithm()
 
-PROBLEM_TRUCK = True
+PROBLEM_TRUCK = False
 if PROBLEM_TRUCK:
     valuate_truck(ALL_SWEEP, "Sweep - Tutte le istanze")
     valuate_truck(ALL_CW, "Clarke & Wright - Tutte le istanze")

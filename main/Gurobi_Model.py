@@ -41,7 +41,7 @@ def solve_vrp_with_gurobi(instance, verbose=False, max_time_seconds=300, gap=0.0
     # Variabili binarie y[i, h] che indicano se il cliente i è servito dal veicolo h
     y = m.addVars(n_customers, k, vtype=GRB.BINARY, name="y")
 
-    # Variabili continue u[i, h] che rappresentano la carica del veicolo h dopo aver servito il cliente i
+    # Variabili continue u[i, h] che rappresentano l'ordine di visita per eliminare i sottotour
     u = m.addVars(n_customers, k, vtype=GRB.CONTINUOUS, name="u")
 
     # Funzione obiettivo: minimizzare la distanza totale percorsa
@@ -52,11 +52,9 @@ def solve_vrp_with_gurobi(instance, verbose=False, max_time_seconds=300, gap=0.0
     # Vincoli
     # 1. Ogni cliente deve essere visitato esattamente una volta
     m.addConstrs(
-        quicksum(x[i, j, h] for j in range(n_customers) if i != j) == y[i, h] for i in range(1, n_customers) for h in
-        range(k))
+        quicksum(x[i, j, h] for j in range(n_customers) if i != j) == y[i, h] for i in range(1, n_customers) for h in range(k))
     m.addConstrs(
-        quicksum(x[j, i, h] for j in range(n_customers) if i != j) == y[i, h] for i in range(1, n_customers) for h in
-        range(k))
+        quicksum(x[j, i, h] for j in range(n_customers) if i != j) == y[i, h] for i in range(1, n_customers) for h in range(k))
 
     # 2. I veicoli devono partire e tornare al deposito
     m.addConstrs(quicksum(x[0, j, h] for j in range(1, n_customers)) == 1 for h in range(k))
@@ -65,13 +63,16 @@ def solve_vrp_with_gurobi(instance, verbose=False, max_time_seconds=300, gap=0.0
     # 3. Ogni cliente deve essere servito da esattamente un veicolo
     m.addConstrs(quicksum(y[i, h] for h in range(k)) == 1 for i in range(1, n_customers))
 
-    # 4. Vincoli di capacità (subtour elimination constraints)
+    # 4. Vincoli di capacità
     m.addConstrs(
-        (u[i, h] - u[j, h] + vehicle_capacity * x[i, j, h] <= vehicle_capacity - demands[j]
-         for i in range(1, n_customers) for j in range(1, n_customers) if i != j for h in range(k)), "Capacity")
+        quicksum(demands[i] * y[i, h] for i in range(1, n_customers)) <= vehicle_capacity for h in range(k))
 
-    # 5. Domanda del deposito è zero
-    m.addConstrs(u[0, h] == 0 for h in range(k))
+    # 5. Vincoli di eliminazione dei sottotour (MTZ)
+    m.addConstrs(u[i, h] >= 2 for i in range(1, n_customers) for h in range(k))
+    m.addConstrs(u[i, h] <= n_customers for i in range(1, n_customers) for h in range(k))
+    m.addConstrs(
+        (u[i, h] - u[j, h] + n_customers * x[i, j, h] <= n_customers - 1 for i in range(1, n_customers) for j in range(1, n_customers) if i != j for h in range(k)),
+        "SubtourElimination")
 
     # Risoluzione del modello
     start_time = time.perf_counter()
