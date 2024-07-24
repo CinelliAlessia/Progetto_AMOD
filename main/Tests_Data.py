@@ -112,7 +112,7 @@ def evaluate_two_column(csv_file, column1, column2, column3, title):
 
     # Etichette del grafico
     plt.title(title)
-    plt.xlabel('Instance ordered by dimension')
+    plt.xlabel('Istanze ordinate per dimensione')
     plt.ylabel('Secondi')
 
     # Personalizza la griglia per mostrare solo le linee orizzontali
@@ -610,7 +610,7 @@ def plot_apx_all_random(file, title):
     plt.show()
 
 
-def random_apx_for_num_run(files, title):
+def apx_for_num_run_1plot_for_files(files, title, labels = ['1','2','3','4']):
     """
     Crea un grafico con una linea per ogni file basato sui dati della colonna APX
     :param files: lista di file CSV
@@ -621,7 +621,7 @@ def random_apx_for_num_run(files, title):
     markers = ['o', 's', '^', 'x']  # cerchio, quadrato, triangolo, croce
     colors = ['b', '#FFA500', 'g', 'r']  # blu, arancione, verde, rosso
     linestyles = ['-', '--', '-.', ':']  # stili delle righe
-    labels = ['1 K', '10 K', '100 K', '1 MLN']
+
 
     all_apx_values = []
 
@@ -639,7 +639,7 @@ def random_apx_for_num_run(files, title):
         all_apx_values.append(apx_values)  # Raccogli i valori APX per calcolare i tick dell'asse y
 
         # Aggiungi una linea al grafico
-        plt.plot(instance_names, apx_values, marker=markers[i], linestyle=linestyles[i], color=colors[i], markersize=7, label=labels[i])
+        plt.plot(instance_names, apx_values, marker=markers[i], linestyle=linestyles[i], markersize=7, label=labels[i])
 
     # Configura il grafico
     plt.title(title, fontsize=20)  # Aumenta la dimensione del titolo
@@ -659,11 +659,12 @@ def random_apx_for_num_run(files, title):
     # Mostra il grafico
     plt.show()
 
-# Esempio di utilizzo
 
 #random_files = [SMALL_RANDOM, SMALL_RANDOM_10k, SMALL_RANDOM_100k, SMALL_RANDOM_1M]
-#random_apx_for_num_run(random_files, "Confronto APX all'aumentare del numero di run (Small)")
+random_5min = [RESULT_RANDOM + "small_Random_APX_and_Time_5min.csv", SMALL_RANDOM_1M]
+apx_for_num_run_1plot_for_files(random_5min, "Confronto tra Random(1M) e Random (5min)", ['5 min', '1 MLN'])
 #plot_apx_all_random(ALL_RANDOM, "APX di Random 1K al crescere di n (Tutte le istanze)")
+
 
 BOX_PLOT = False
 if BOX_PLOT:
@@ -678,6 +679,6 @@ if ECX_TIME:
     evaluate_3time2("Secondi", "Confronto dei Tempi di Esecuzione", "LARGE")
     #evaluate_3time("Secondi", "Confronto dei Tempi di Esecuzione")
 
-WINNER_COST = True
+WINNER_COST = False
 if WINNER_COST:
     winner_algorithm()

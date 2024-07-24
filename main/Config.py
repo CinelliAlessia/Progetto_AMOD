@@ -1,5 +1,5 @@
 #
-ACTION_RANDOM = True
+ACTION_RANDOM = False
 ACTION_CW = False
 ACTION_SWEEP = False
 ACTION_MIP = False
