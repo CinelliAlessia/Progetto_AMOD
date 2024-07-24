@@ -16,7 +16,7 @@ X_LARGE = False
 
 # ------------------------------------------------------------------------------------------------------------
 ACTIONS = Config.ACTION_RANDOM
-TIMEOUT = True
+TIMEOUT = False
 TIMEOUT_VALUE = 300  # Timeout di 5 minuti (300 secondi)
 SKIP_SOLUTION_OUT_OF_TRUCK = True
 # ------------------------------------------------------------------------------------------------------------
@@ -33,7 +33,7 @@ else:
     INSTANCES_DIRECTORY = "../resources/vrplib/Instances/"  # Directory delle istanze
 
 OUTPUT_BASE_FILE_NAME = "RANDOM_APX_and_Time"  # Aggiungere come prefisso il numero del run
-RANDOM_ITERATION_NUMBER = 1000
+RANDOM_ITERATION_NUMBER = 10000
 
 
 def solve_random_for_instance_name_in_file(size, file_path):
