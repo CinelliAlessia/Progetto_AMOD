@@ -49,7 +49,6 @@ def get_data_csv_all(file):
 
 
 def boxPlot_apx(path_file, string_apx, title):
-
     # Carica il file CSV
     df = get_data_csv_all(path_file)
 
@@ -132,7 +131,6 @@ def evaluate_two_column(csv_file, column1, column2, column3, title):
 
 
 def evaluate_three_column(csv_file, column1, column2, column3, x_label, y_label, title):
-
     # Carica i dati dal file CSV usando il delimitatore ';'
     data = pd.read_csv(csv_file, delimiter=',')
 
@@ -274,8 +272,8 @@ def valuate_truck(csv_file, title):
 
     feasible = 0
     infeasible = 0
-    for i in range(len(truck)):
-        if used_truck[i] <= truck[i] or truck[i] == 0 or truck[i] == None:
+    for i, t in enumerate(truck):
+        if (used_truck[i] <= truck[i] and used_truck[i] != 0) or truck[i] == 0 or truck[i] == None:
             feasible += 1
         else:
             infeasible += 1
@@ -364,7 +362,8 @@ def evaluate_3time(column, title):
     plt.show()
 
 
-def evaluate_3time2(column, title, csv):
+def evaluate_time_CW_Sweep(column, title, csv):
+    # Definisci i percorsi dei file CSV in base all'argomento 'csv'
     if csv == 'SMALL':
         csv_file1 = SMALL_CW
         csv_file2 = SMALL_SWEEP
@@ -381,56 +380,69 @@ def evaluate_3time2(column, title, csv):
         csv_file1 = LARGE_CW
         csv_file2 = LARGE_SWEEP
     else:
+        print("CSV type non riconosciuto.")
         return
 
-    # Carica i dati dai file CSV usando il delimitatore ';'
-    data1 = pd.read_csv(csv_file1, delimiter=',').sort_values(by="#Node")
-    data2 = pd.read_csv(csv_file2, delimiter=',').sort_values(by="#Node")
+    # Carica i dati dai file CSV
+    data1 = pd.read_csv(csv_file1, delimiter=',')
+    data2 = pd.read_csv(csv_file2, delimiter=',')
 
-    data1 = data1.rename(columns={
-        'Execution_time': 'Execution_time_CW'})
-    data2 = data2.rename(columns={
-        'Execution_time_2Opt': 'Execution_time_SWEEP2'})
+    # Rinomina le colonne di interesse
+    data1 = data1.rename(columns={'Execution_time': 'Execution_time_CW'})
+    data2 = data2.rename(columns={'Execution_time_2Opt': 'Execution_time_SWEEP2'})
 
-    # Unisci i dati sui nodi
-    merged_data = data1[['Instance_Name', 'Execution_time_CW']].merge(
-        data2[['Instance_Name', 'Execution_time_SWEEP2']],
+    # Unisci i dati sui nodi e le colonne di interesse
+    merged_data = data1[['#Node', 'Instance_Name', 'Execution_time_CW']].merge(
+        data2[['#Node', 'Instance_Name', 'Execution_time_SWEEP2']],
         on='Instance_Name',
-        how='outer'
+        how='outer')
+
+    # Unisci le colonne '#Node_x' e '#Node_y' in una sola colonna '#Node'
+    # Evita avvisi utilizzando numpy.where per gestire i NaN
+    merged_data['#Node'] = np.where(
+        merged_data['#Node_x'].notna(),
+        merged_data['#Node_x'],
+        merged_data['#Node_y']
     )
 
-    # Verifica i nomi delle colonne dopo la rinominazione
-    print("Colonne merged_data dopo rinominazione:", merged_data.columns)
+    # Rimuovi le colonne temporanee
+    merged_data = merged_data.drop(columns=['#Node_x', '#Node_y'])
+
+    # Ordina i dati in base alla dimensione del nodo
+    merged_data = merged_data.sort_values(by='#Node')
 
     # Estrai le colonne di interesse
-    nodes = merged_data['Instance_Name']
-    t1 = merged_data['Execution_time_CW']
-    t2 = merged_data['Execution_time_SWEEP2']
+    nodes = merged_data['#Node'].values  # Usa i valori direttamente
+    instance_name = merged_data['Instance_Name'].values
+    t1 = merged_data['Execution_time_CW'].values
+    t2 = merged_data['Execution_time_SWEEP2'].values
 
     # Crea il grafico
     plt.figure(figsize=(14, 10))
-    plt.plot(nodes, t1, marker='s', linestyle='--', label='CW')
-    plt.plot(nodes, t2, marker='o', linestyle='-', label='SWEEP 2-Opt')
+
+    # Usa gli indici numerici per l'asse x
+    plt.plot(np.arange(len(nodes)), t1, marker='s', linestyle='--', label='CW')
+    plt.plot(np.arange(len(nodes)), t2, marker='o', linestyle='-', label='SWEEP 2-Opt')
 
     # Etichette del grafico
     plt.title(title, fontsize=18)
-    plt.xlabel(f'Istanze {csv}', fontsize=18)
+    plt.xlabel("Istanze " + csv, fontsize=18)
     plt.ylabel(column, fontsize=18)
     plt.legend(fontsize=18)
 
-    plt.tick_params(labelsize=18)
     plt.grid(True)
 
-    # Determine the range of your data to set appropriate y-ticks
     y_min = min(t1.min(), t2.min())
-    y_max = max(t1.max(), t2.max(), )
+    y_max = max(t1.max(), t2.max())
 
-    # Set y-ticks at more granular intervals
-    plt.xticks("")
-    #plt.xticks(np.arange(len(nodes)), nodes, rotation=90)
-    plt.yticks(np.arange(y_min, y_max, step=(y_max - y_min) / 20))  # Adjust the step as needed
+    # Imposta i tick dell'asse x e y
+    # plt.xticks(ticks=np.arange(len(instance_name)), labels=instance_name, rotation=90)
+    plt.yticks(np.arange(0, y_max, step=(y_max - y_min) / 20))  # Adjust the step as needed
 
-    # Mostra il grafico
+    plt.tick_params(labelsize=18)
+
+    # Migliora l'adattamento del layout
+    plt.tight_layout()
     plt.show()
 
 
@@ -506,8 +518,8 @@ def winner_algorithm():
     data3 = pd.read_csv(SMALL_RANDOM_1K, delimiter=',').sort_values(by="#Node")
 
     data1 = data1.rename(columns={
-        'Cost_2Opt': 'Cost_SWEEP',
-        'Apx_2Opt': 'Apx_SWEEP'})
+        'Cost_3Opt': 'Cost_SWEEP',
+        'Apx_3Opt': 'Apx_SWEEP'})
     data2 = data2.rename(columns={
         'CW_cost': 'Cost_CW',
         'APX': 'Apx_CW'})
@@ -544,9 +556,9 @@ def winner_algorithm():
     winner = []
 
     for i in range(len(instance)):
-        t1_valid = t1[i] != "NaN" and apx1[i] != "NaN" and apx1[i] >= 1
-        t2_valid = t2[i] != "NaN" and apx2[i] != "NaN" and apx2[i] >= 1
-        t3_valid = t3[i] != "NaN" and apx3[i] != "NaN" and apx3[i] >= 1
+        t1_valid = t1[i] != "NaN" and apx1[i] != "NaN" and apx1[i] >= 1 and t1[i] != float('inf')
+        t2_valid = t2[i] != "NaN" and apx2[i] != "NaN" and apx2[i] >= 1 and t2[i] != float('inf')
+        t3_valid = t3[i] != "NaN" and apx3[i] != "NaN" and apx3[i] >= 1 and t3[i] != float('inf')
 
         if t1_valid and (t1[i] <= t2[i] or not t2_valid) and (t1[i] <= t3[i] or not t3_valid):
             winner.append('SWEEP')
@@ -557,23 +569,24 @@ def winner_algorithm():
         else:
             winner.append('UNKNOWN')
 
-
     # Crea il grafico a torta
     plt.figure(figsize=(14, 10))
     labels = ['SWEEP', 'CW', 'RANDOM', 'UNKNOWN']
     sizes = [winner.count('SWEEP'), winner.count('CW'), winner.count('RANDOM'), winner.count('UNKNOWN')]
-    for i, size in enumerate(sizes):
-        if size == 0:
-            sizes.remove(size)
-            labels.remove(labels[i])
+    colors = ['#FFC107', '#4CAF50', '#800080', '#F44336']  # Giallo, Verde, Viola, Rosso
 
-    colors = ['#FFC107', '#4CAF50', '#800080', '#F44336']  # Verde, Giallo Viola e Rosso per facilitare la distinzione
+    # Rimuovi le etichette con valore zero
+    labels, sizes = zip(*((label, size) for label, size in zip(labels, sizes) if size != 0))
 
-    plt.pie(sizes, labels=labels, colors=colors, autopct='%1.1f%%', startangle=140, shadow=True,
-            textprops={'fontsize': 24})
+    # Esplosione delle sezioni
+    explode = [0.05] * len(sizes)  # Leggera esplosione di tutte le sezioni
+
+    # Grafico a torta con miglioramenti estetici
+    plt.pie(sizes, labels=labels, colors=colors, autopct='%1.1f%%', startangle=140, shadow=True, explode=explode,
+            textprops={'fontsize': 20})
 
     # Etichetta del grafico
-    plt.title("", fontsize=24)
+    plt.title("Distribuzione delle strategie vincenti", fontsize=24)
 
     # Mostra il grafico
     plt.show()
@@ -630,6 +643,7 @@ def apx_for_num_run_1plot_for_files(files, title, labels=['1', '2', '3', '4']):
     plt.figure(figsize=(15, 10))  # Dimensione della figura e DPI elevato
 
     markers = ['o', 's', '^', 'x']  # cerchio, quadrato, triangolo, croce
+    #colors = ['b', '#FFA500', 'g', 'r']  # blu, arancione, verde, rosso
     linestyles = ['-', '--', '-.', ':']  # stili delle righe
 
     all_apx_values = []
@@ -702,16 +716,16 @@ def graph_mip(title):
 
 BOX_PLOT = False
 if BOX_PLOT:
-    #boxPlot_apx(ALL_SWEEP, 'Apx_3Opt', "Sweep 3-Opt")
-    #boxPlot_apx(ALL_RANDOM, 'APX', "Random 1K")
+    boxPlot_apx(ALL_SWEEP, 'Apx_3Opt', "Sweep 3-Opt")
+    boxPlot_apx(ALL_RANDOM_10K, 'APX', "Random 10K")
     boxPlot_apx(ALL_CW, 'APX', "Clarke & Wright")
 
-ECX_TIME = False
+ECX_TIME = True
 if ECX_TIME:
-    #evaluate_3time2("Secondi", "Confronto dei Tempi di Esecuzione", "SMALL")
-    #evaluate_3time2("Secondi", "Confronto dei Tempi di Esecuzione", "MID")
-    #evaluate_3time2("Secondi", "Confronto dei Tempi di Esecuzione", "LARGE")
-    evaluate_2time_sweep("Secondi", "Confronto dei Tempi di Esecuzione", "MID")
+    evaluate_time_CW_Sweep("Secondi", "Confronto dei Tempi di Esecuzione", "SMALL")
+    evaluate_time_CW_Sweep("Secondi", "Confronto dei Tempi di Esecuzione", "MID")
+    evaluate_time_CW_Sweep("Secondi", "Confronto dei Tempi di Esecuzione", "LARGE")
+    #evaluate_2time_sweep("Secondi", "Confronto dei Tempi di Esecuzione", "MID")
 
 WINNER_COST = False
 if WINNER_COST:
@@ -721,4 +735,4 @@ PROBLEM_TRUCK = False
 if PROBLEM_TRUCK:
     valuate_truck(ALL_SWEEP, "Sweep - Tutte le istanze")
     valuate_truck(ALL_CW, "Clarke & Wright - Tutte le istanze")
-    valuate_truck(ALL_RANDOM_1K, " Random 1K - Tutte le istanze")
+    valuate_truck(ALL_RANDOM_10K, " Random 1K - Tutte le istanze")

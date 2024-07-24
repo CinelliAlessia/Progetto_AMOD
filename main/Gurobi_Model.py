@@ -149,8 +149,14 @@ def write(routes, total_cost, execution_time, status):
 
     opt = Parser.get_optimal_cost_from_path(INSTANCE_DIRECTORY + CURRENT_INSTANCE)
 
+    # Converti ogni sottolista in una stringa senza virgole
+    formatted_r = ' '.join(' '.join(map(str, sublist)) for sublist in routes)
+    
+    # Aggiungi le parentesi quadre esterne
+    formatted_r = f'[{formatted_r}]'
+
     # Salva tali valori, con lo stesso formato su una nuova riga del file APX_and_Time.txt
-    f.write(f"{CURRENT_INSTANCE},{n_nodes},{n_truck},{capacity},{opt},{total_cost},{execution_time},{status},{routes}\n")
+    f.write(f"{CURRENT_INSTANCE},{n_nodes},{n_truck},{capacity},{opt},{total_cost},{execution_time},{status}, {formatted_r}\n")
     f.close()
 
 
