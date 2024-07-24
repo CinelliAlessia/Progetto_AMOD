@@ -692,9 +692,9 @@ def graph_mip(title):
 
 BOX_PLOT = True
 if BOX_PLOT:
-    #boxPlot_apx(ALL_SWEEP, 'Apx_3Opt', "Sweep 3-Opt")
+    boxPlot_apx(ALL_SWEEP, 'Apx_3Opt', "Sweep 3-Opt")
     boxPlot_apx(ALL_RANDOM, 'APX', "Random 1K")
-    #boxPlot_apx(ALL_CW, 'APX', "Clarke & Wright")
+    boxPlot_apx(ALL_CW, 'APX', "Clarke & Wright")
 
 ECX_TIME = True
 if ECX_TIME:
