@@ -604,9 +604,11 @@ def plot_apx_all_random(file, title):
     plt.legend(fontsize=20)  # Legenda più grande
 
     # Imposta i valori dei tick dell'asse y per maggiore chiarezza
-    y_min = apx_values.min()
-    y_max = apx_values.max()
-    plt.yticks(np.arange(y_min, y_max + 0.1, step=(y_max - y_min) / 50), fontsize=11)  # Imposta ticks e dimensione
+    all_values = [values for values in apx_values if values != float('inf')]
+    if all_values:
+        y_min = min(all_values)
+        y_max = max(all_values)
+        plt.yticks(np.arange(y_min, y_max + 0.1, step=(y_max - y_min) / 50), fontsize=11)  # Imposta ticks e dimensione
 
     plt.xticks([], fontsize=12)  # Rimuove le etichette dell'asse x ma mantiene la label
     plt.grid(True)
@@ -624,7 +626,7 @@ def apx_for_num_run_1plot_for_files(files, title, labels = ['1','2','3','4']):
     plt.figure(figsize=(15, 10))  # Dimensione della figura e DPI elevato
 
     markers = ['o', 's', '^', 'x']  # cerchio, quadrato, triangolo, croce
-    colors = ['b', '#FFA500', 'g', 'r']  # blu, arancione, verde, rosso
+    #colors = ['b', '#FFA500', 'g', 'r']  # blu, arancione, verde, rosso
     linestyles = ['-', '--', '-.', ':']  # stili delle righe
 
 
@@ -654,15 +656,22 @@ def apx_for_num_run_1plot_for_files(files, title, labels = ['1','2','3','4']):
     plt.xticks([])  # Nascondi le etichette dell'asse x
 
     # Imposta i valori dei tick dell'asse y per maggiore chiarezza
-    all_apx_values = np.concatenate(all_apx_values)  # Concatenate all APX values to get min and max
-    y_min = all_apx_values.min()
-    y_max = all_apx_values.max()
-    plt.yticks(np.arange(y_min, y_max + 0.1, step=(y_max - y_min) / 20), fontsize=14)  # Imposta ticks e dimensione
+    all_values = [value for values in all_apx_values for value in values if value != float('inf')]
+    if all_values:
+        min_y = min(all_values)
+        max_y = max(all_values)
+        plt.yticks(np.arange(min_y, max_y + 0.05, step=(max_y - min_y) / 20))
 
     plt.grid(True)
 
     # Mostra il grafico
     plt.show()
+
+
+random_files = [SMALL_RANDOM_1K, SMALL_RANDOM_10k, SMALL_RANDOM_100k, SMALL_RANDOM_1M]
+#random_5min = [RESULT_RANDOM + "small_Random_APX_and_Time_5min.csv", SMALL_RANDOM_1M]
+apx_for_num_run_1plot_for_files(random_files, "Confronto APX in relazione al numero di run", ['1 K', '10 K', '100 K', '1 M'])
+#plot_apx_all_random(ALL_RANDOM, "APX di Random 1K al crescere di n (Tutte le istanze)")
 
 
 def graph_mip(title):
@@ -680,23 +689,13 @@ def graph_mip(title):
     plt.show()
 
 
-#graph_mip('Confronto dei Tempi di Esecuzione')
-
-# Esempio di utilizzo
-
-#random_files = [SMALL_RANDOM, SMALL_RANDOM_10k, SMALL_RANDOM_100k, SMALL_RANDOM_1M]
-#random_5min = [RESULT_RANDOM + "small_Random_APX_and_Time_5min.csv", SMALL_RANDOM_1M]
-#apx_for_num_run_1plot_for_files(random_5min, "Confronto tra Random(1M) e Random (5min)", ['5 min', '1 MLN'])
-#plot_apx_all_random(ALL_RANDOM, "APX di Random 1K al crescere di n (Tutte le istanze)")
-
-
 BOX_PLOT = True
 if BOX_PLOT:
     boxPlot_apx(ALL_SWEEP, 'Apx_3Opt', "Sweep 3-Opt")
     boxPlot_apx(ALL_RANDOM, 'APX', "Random 1K")
     boxPlot_apx(ALL_CW, 'APX', "Clarke & Wright")
 
-ECX_TIME = True
+ECX_TIME = False
 if ECX_TIME:
     #evaluate_3time2("Secondi", "Confronto dei Tempi di Esecuzione", "SMALL")
     #evaluate_3time2("Secondi", "Confronto dei Tempi di Esecuzione", "MID")
