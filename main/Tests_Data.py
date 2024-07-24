@@ -57,7 +57,7 @@ def boxPlot_apx(path_file, string_apx, title):
     grouped_data = df_selected.groupby('Size')[string_apx].apply(list).to_dict()
 
     # Definisci l'ordine desiderato
-    ordered_sizes = ['small', 'mid_small', 'mid', 'mid_large', 'large', 'x_large']
+    ordered_sizes = ['small', 'mid_small', 'mid', 'mid_large', 'large']
 
     # Estrai i dati per il box plot
     boxplot_data = [grouped_data[size] for size in ordered_sizes]
@@ -75,7 +75,7 @@ def boxPlot_apx(path_file, string_apx, title):
     if all_values:
         min_y = min(all_values)
         max_y = max(all_values)
-        plt.yticks(np.arange(min_y, max_y + 0.05, step=(max_y - min_y) / 30))
+        plt.yticks(np.arange(min_y, max_y + 0.05, step=(max_y - min_y) / 10))
 
     plt.grid(True)
     plt.show()
@@ -691,8 +691,8 @@ def graph_mip(title):
 
 BOX_PLOT = True
 if BOX_PLOT:
-    boxPlot_apx(ALL_SWEEP, 'Apx_3Opt', "Sweep 3-Opt")
-    boxPlot_apx(ALL_RANDOM, 'APX', "Random 1K")
+    #boxPlot_apx(ALL_SWEEP, 'Apx_3Opt', "Sweep 3-Opt")
+    #boxPlot_apx(ALL_RANDOM, 'APX', "Random 1K")
     boxPlot_apx(ALL_CW, 'APX', "Clarke & Wright")
 
 ECX_TIME = False
