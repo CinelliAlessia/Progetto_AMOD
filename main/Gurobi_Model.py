@@ -53,9 +53,11 @@ def solve_vrp_with_gurobi(instance, verbose=False, max_time_seconds=300, gap=0.0
     # Vincoli
     # 1. Ogni cliente deve essere visitato esattamente una volta
     m.addConstrs(
-        quicksum(x[i, j, h] for j in range(n_customers) if i != j) == y[i, h] for i in range(1, n_customers) for h in range(k))
+        quicksum(x[i, j, h] for j in range(n_customers) if i != j) == y[i, h] for i in range(1, n_customers) for h in
+        range(k))
     m.addConstrs(
-        quicksum(x[j, i, h] for j in range(n_customers) if i != j) == y[i, h] for i in range(1, n_customers) for h in range(k))
+        quicksum(x[j, i, h] for j in range(n_customers) if i != j) == y[i, h] for i in range(1, n_customers) for h in
+        range(k))
 
     # 2. I veicoli devono partire e tornare al deposito
     m.addConstrs(quicksum(x[0, j, h] for j in range(1, n_customers)) == 1 for h in range(k))
@@ -72,7 +74,8 @@ def solve_vrp_with_gurobi(instance, verbose=False, max_time_seconds=300, gap=0.0
     m.addConstrs(u[i, h] >= 2 for i in range(1, n_customers) for h in range(k))
     m.addConstrs(u[i, h] <= n_customers for i in range(1, n_customers) for h in range(k))
     m.addConstrs(
-        (u[i, h] - u[j, h] + n_customers * x[i, j, h] <= n_customers - 1 for i in range(1, n_customers) for j in range(1, n_customers) if i != j for h in range(k)),
+        (u[i, h] - u[j, h] + n_customers * x[i, j, h] <= n_customers - 1 for i in range(1, n_customers) for j in
+         range(1, n_customers) if i != j for h in range(k)),
         "SubtourElimination")
 
     # Risoluzione del modello
@@ -152,12 +155,18 @@ def write(routes, total_cost, execution_time, status):
 
     # Converti ogni sottolista in una stringa senza virgole
     formatted_r = ' '.join(' '.join(map(str, sublist)) for sublist in routes)
-    
+
     # Aggiungi le parentesi quadre esterne
     formatted_r = f'[{formatted_r}]'
 
+    try:
+        apx = total_cost / opt
+    except:
+        apx = None
+
     # Salva tali valori, con lo stesso formato su una nuova riga del file APX_and_Time.txt
-    f.write(f"{CURRENT_INSTANCE},{n_nodes},{n_truck},{capacity},{opt},{total_cost},{total_cost/opt},{execution_time},{status}, {formatted_r}\n")
+    f.write(
+        f"{CURRENT_INSTANCE},{n_nodes},{n_truck},{capacity},{opt},{total_cost},{apx},{execution_time},{status}, {formatted_r}\n")
     f.close()
 
 
@@ -171,4 +180,4 @@ for line in n:  # Per ogni istanza scritta nel file
     CURRENT_INSTANCE = line
     instance_path = "../resources/vrplib/Instances/" + line
     instance = Parser.make_instance_from_path_name(instance_path)
-    solve_vrp_with_gurobi(instance, True, 300, 0.1, 0)
+    solve_vrp_with_gurobi(instance, True, 300, 0.1)
