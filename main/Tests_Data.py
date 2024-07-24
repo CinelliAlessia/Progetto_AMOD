@@ -34,6 +34,7 @@ X_LARGE_CW = RESULT_CW + 'x_large_CW_APX_and_Time.csv'
 ALL_SWEEP = RESULT_SWEEP + 'Sweep_all.csv'
 ALL_CW = RESULT_CW + 'CW_All.csv'
 ALL_RANDOM_1K = RESULT_RANDOM + 'All_Random_1K.csv'
+ALL_RANDOM_10K = RESULT_RANDOM + 'All_Random_10K.csv'
 
 
 def get_data_csv_all(file):
@@ -46,7 +47,6 @@ def get_data_csv_all(file):
 
 
 def boxPlot_apx(path_file, string_apx, title):
-
     # Carica il file CSV
     df = get_data_csv_all(path_file)
 
@@ -129,7 +129,6 @@ def evaluate_two_column(csv_file, column1, column2, column3, title):
 
 
 def evaluate_three_column(csv_file, column1, column2, column3, x_label, y_label, title):
-
     # Carica i dati dal file CSV usando il delimitatore ';'
     data = pd.read_csv(csv_file, delimiter=',')
 
@@ -198,7 +197,6 @@ def evaluate_3_columns_ratio12(csv_file, column1, column2, column3, title):
 
 
 def evaluate_single_column_two_files(csv_file1, csv_file2, csv_file3, column, title):
-
     # Carica i dati dai file CSV usando il delimitatore ';'
     data1 = pd.read_csv(csv_file1, delimiter=',')
     data2 = pd.read_csv(csv_file2, delimiter=',')
@@ -272,8 +270,8 @@ def valuate_truck(csv_file, title):
 
     feasible = 0
     infeasible = 0
-    for i in range(len(truck)):
-        if used_truck[i] <= truck[i] or truck[i] == 0 or truck[i] == None:
+    for i, t in enumerate(truck):
+        if (used_truck[i] <= truck[i] and used_truck[i] != 0) or truck[i] == 0 or truck[i] == None:
             feasible += 1
         else:
             infeasible += 1
@@ -285,7 +283,8 @@ def valuate_truck(csv_file, title):
     explode = (0.1, 0)  # Esplodi il segmento "Feasible" per evidenziarlo
 
     # Crea il grafico a torta
-    plt.pie(sizes, explode=explode, labels=labels, colors=colors, autopct='%1.1f%%', startangle=140, shadow=True, textprops={'fontsize': 24})
+    plt.pie(sizes, explode=explode, labels=labels, colors=colors, autopct='%1.1f%%', startangle=140, shadow=True,
+            textprops={'fontsize': 24})
 
     # Etichetta del grafico
     plt.title(title, fontsize=24)
@@ -409,7 +408,6 @@ def evaluate_3time2(column, title, csv):
     plt.plot(nodes, t1, marker='s', linestyle='--', label='CW')
     plt.plot(nodes, t2, marker='o', linestyle='-', label='SWEEP 2-Opt')
 
-
     # Etichette del grafico
     plt.title(title, fontsize=18)
     plt.xlabel(f'Istanze {csv}', fontsize=18)
@@ -421,7 +419,7 @@ def evaluate_3time2(column, title, csv):
 
     # Determine the range of your data to set appropriate y-ticks
     y_min = min(t1.min(), t2.min())
-    y_max = max(t1.max(), t2.max(),)
+    y_max = max(t1.max(), t2.max(), )
 
     # Set y-ticks at more granular intervals
     plt.xticks("")
@@ -555,7 +553,6 @@ def winner_algorithm():
         else:
             winner.append('UNKNOWN')
 
-
     # Crea il grafico a torta
     plt.figure(figsize=(14, 10))
     labels = ['SWEEP', 'CW', 'RANDOM', 'UNKNOWN']
@@ -567,7 +564,8 @@ def winner_algorithm():
 
     colors = ['#FFC107', '#4CAF50', '#800080', '#F44336']  # Verde, Giallo Viola e Rosso per facilitare la distinzione
 
-    plt.pie(sizes, labels=labels, colors=colors, autopct='%1.1f%%', startangle=140, shadow=True, textprops={'fontsize': 24})
+    plt.pie(sizes, labels=labels, colors=colors, autopct='%1.1f%%', startangle=140, shadow=True,
+            textprops={'fontsize': 24})
 
     # Etichetta del grafico
     plt.title("", fontsize=24)
@@ -617,7 +615,7 @@ def plot_apx_all_random(file, title):
     plt.show()
 
 
-def apx_for_num_run_1plot_for_files(files, title, labels = ['1','2','3','4']):
+def apx_for_num_run_1plot_for_files(files, title, labels=['1', '2', '3', '4']):
     """
     Crea un grafico con una linea per ogni file basato sui dati della colonna APX
     :param files: lista di file CSV
@@ -628,7 +626,6 @@ def apx_for_num_run_1plot_for_files(files, title, labels = ['1','2','3','4']):
     markers = ['o', 's', '^', 'x']  # cerchio, quadrato, triangolo, croce
     #colors = ['b', '#FFA500', 'g', 'r']  # blu, arancione, verde, rosso
     linestyles = ['-', '--', '-.', ':']  # stili delle righe
-
 
     all_apx_values = []
 
@@ -668,10 +665,12 @@ def apx_for_num_run_1plot_for_files(files, title, labels = ['1','2','3','4']):
     plt.show()
 
 
-random_files = [SMALL_RANDOM_1K, SMALL_RANDOM_10K, SMALL_RANDOM_100K, SMALL_RANDOM_1M]
-#random_5min = [RESULT_RANDOM + "small_Random_APX_and_Time_5min.csv", SMALL_RANDOM_1M]
-#apx_for_num_run_1plot_for_files(random_files, "Confronto APX in relazione al numero di run", ['1 K', '10 K', '100 K', '1 M'])
-plot_apx_all_random(ALL_RANDOM_1K, "APX di Random 1K al crescere di n (Tutte le istanze)")
+ANDREA = False
+if ANDREA:
+    random_files = [SMALL_RANDOM_1K, SMALL_RANDOM_10K, SMALL_RANDOM_100K, SMALL_RANDOM_1M]
+    #random_5min = [RESULT_RANDOM + "small_Random_APX_and_Time_5min.csv", SMALL_RANDOM_1M]
+    #apx_for_num_run_1plot_for_files(random_files, "Confronto APX in relazione al numero di run", ['1 K', '10 K', '100 K', '1 M'])
+    plot_apx_all_random(ALL_RANDOM_1K, "APX di Random 1K al crescere di n (Tutte le istanze)")
 
 
 def graph_mip(title):
@@ -682,7 +681,7 @@ def graph_mip(title):
     plt.title(title, fontsize=20)
     plt.xlabel('Istanze ordinate al crescere di N', fontsize=18)
     plt.ylabel('Secondi', fontsize=18)
-    plt.xticks(rotation=90,fontsize=12)
+    plt.xticks(rotation=90, fontsize=12)
     plt.yticks(fontsize=18)
     plt.tight_layout()
     plt.grid(True)
@@ -705,3 +704,9 @@ if ECX_TIME:
 WINNER_COST = False
 if WINNER_COST:
     winner_algorithm()
+
+PROBLEM_TRUCK = True
+if PROBLEM_TRUCK:
+    valuate_truck(ALL_SWEEP, "Sweep - Tutte le istanze")
+    valuate_truck(ALL_CW, "Clarke & Wright - Tutte le istanze")
+    valuate_truck(ALL_RANDOM_1K, " Random 1K - Tutte le istanze")

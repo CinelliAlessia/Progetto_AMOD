@@ -2,21 +2,20 @@ import time
 import Random_Ale as Random
 import ParseInstances as Parser
 import os
-import Utils
 import Config
 
 
 # Se impostati a True, eseguirà l'euristica di Clarke e Wright per le istanze di quel tipo
 SMALL = False
-MID_SMALL = False
+MID_SMALL = True
 MID = True
 MID_LARGE = False
 LARGE = False
-X_LARGE = True
+X_LARGE = False
 
 # ------------------------------------------------------------------------------------------------------------
 ACTIONS = Config.ACTION_RANDOM
-TIMEOUT = False
+TIMEOUT = True
 TIMEOUT_VALUE = 300  # Timeout di 5 minuti (300 secondi)
 SKIP_SOLUTION_OUT_OF_TRUCK = True
 # ------------------------------------------------------------------------------------------------------------
