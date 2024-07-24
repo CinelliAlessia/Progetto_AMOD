@@ -15,7 +15,7 @@ def vrp_random(nodes, capacity, demands, id_depots):
     nodes = nodes[:id_depots] + nodes[id_depots + 1:]  # Rimuove il deposito dalla lista dei clienti
 
     truck_max = int(demands/capacity) + 1
-    rem_capacities = [0 for _ in range(truck_max)]
+    taken_capacities = [0 for _ in range(truck_max)]
     costs = [0 for _ in range(truck_max)]
 
     shuffle(nodes)  # Randomizza la lista dei clienti
@@ -23,12 +23,14 @@ def vrp_random(nodes, capacity, demands, id_depots):
 
     for client in nodes:
         for i, route in enumerate(routes):
-            if rem_capacities[i] + client.get_demand() <= capacity:
+            if taken_capacities[i] + client.get_demand() <= capacity:
                 costs[i] += client.get_distance(route[-1].get_id())  # Aggiunge il costo del cliente al costo totale
-                rem_capacities[i] += client.get_demand()
+                taken_capacities[i] += client.get_demand()
                 route.append(client)
                 break
         else:
+            taken_capacities[len(routes)] = client.get_demand()
+            costs[len(routes)] = client.get_distance(id_depots)
             routes.append([client])     # Crea una nuova rotta se non può essere aggiunto a nessun cluster
 
     processed_routes = []
