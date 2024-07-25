@@ -40,6 +40,7 @@ ALL_RANDOM_1K = RESULT_RANDOM + 'All_Random_1K.csv'
 ALL_RANDOM_10K = RESULT_RANDOM + 'All_Random_10K.csv'
 ALL_RANDOM_5MIN = RESULT_RANDOM + 'All_Random_5min.csv'
 
+
 def get_data_csv_all(file):
     """
     Carica i dati dal file CSV
@@ -264,6 +265,7 @@ def evaluate_apx_sweep(csv_file, title):
     plt.xticks("")
     plt.yticks(np.arange(y_min, y_max, step=(y_max - y_min) / 25))  # Adjust the step as needed
 
+    # Show the plot
     plt.show()
 
 
@@ -600,7 +602,7 @@ def winner_algorithm():
     plt.show()
 
 
-def plot_apx_all_random(file, title):
+def plot_apx_1file(file, title, legend):
     """
     Crea un grafico basato sui dati della colonna APX nel file ALL_RANDOM
     :param file: file CSV
