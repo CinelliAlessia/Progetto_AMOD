@@ -37,6 +37,7 @@ ALL_SWEEP = RESULT_SWEEP + 'Sweep_all.csv'
 ALL_CW = RESULT_CW + 'CW_All.csv'
 ALL_RANDOM_1K = RESULT_RANDOM + 'All_Random_1K.csv'
 ALL_RANDOM_10K = RESULT_RANDOM + 'All_Random_10K.csv'
+ALL_RANDOM_5MIN = RESULT_RANDOM + 'All_Random_5min.csv'
 
 
 def get_data_csv_all(file):
@@ -592,7 +593,7 @@ def winner_algorithm():
     plt.show()
 
 
-def plot_apx_all_random(file, title):
+def plot_apx_1file(file, title, legend):
     """
     Crea un grafico basato sui dati della colonna APX nel file ALL_RANDOM
     :param file: file CSV
@@ -614,7 +615,7 @@ def plot_apx_all_random(file, title):
     apx_values = data_filtered['APX']
 
     # Aggiungi una linea al grafico
-    plt.plot(instance_names, apx_values, marker='o', linestyle='-', markersize=7, label='Random 1K')
+    plt.plot(instance_names, apx_values, marker='o', linestyle='-', markersize=7, label=legend)
 
     # Configura il grafico
     plt.title(title, fontsize=20)  # Aumenta la dimensione del titolo
@@ -694,9 +695,9 @@ def apx_for_num_run_1plot_for_files(files, title, labels=['1', '2', '3', '4']):
 ANDREA = True
 if ANDREA:
     #random_files = [SMALL_RANDOM_1K, SMALL_RANDOM_10K, SMALL_RANDOM_100K, SMALL_RANDOM_1M]
-    random_5minVS1M = [RESULT_RANDOM + "small_Random_APX_and_Time_5min.csv", SMALL_RANDOM_1M]
-    #apx_for_num_run_1plot_for_files(random_5minVS1M, "Confronto APX Random(5min) vs Random(1M) per istanze Small", ['5 min', '1 M'])
-    #plot_apx_all_random(ALL_RANDOM_1K, "APX di Random 1K al crescere di n (Tutte le istanze)")
+    random_5minVS10K = [ALL_RANDOM_5MIN, ALL_RANDOM_10K]
+    apx_for_num_run_1plot_for_files(random_5minVS10K, "Random(5min) vs Random(10K)", ['5 min', '10 K'])
+    plot_apx_1file(ALL_RANDOM_5MIN, "Andamento dell' APX di Random(5min) all'aumentare di N (Tutte le istanze)", 'Random(5min)')
 
 
 def graph_mip(title):
@@ -720,7 +721,7 @@ if BOX_PLOT:
     boxPlot_apx(ALL_RANDOM_10K, 'APX', "Random 10K")
     boxPlot_apx(ALL_CW, 'APX', "Clarke & Wright")
 
-ECX_TIME = True
+ECX_TIME = False
 if ECX_TIME:
     evaluate_time_CW_Sweep("Secondi", "Confronto dei Tempi di Esecuzione", "SMALL")
     evaluate_time_CW_Sweep("Secondi", "Confronto dei Tempi di Esecuzione", "MID")
