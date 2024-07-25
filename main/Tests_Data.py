@@ -5,7 +5,9 @@ from matplotlib import pyplot as plt
 RESULT_SWEEP = 'Results/Heuristic_Solutions/Sweep/'
 RESULT_CW = 'Results/Heuristic_Solutions/Clarke_&_Wright_run/'
 RESULT_RANDOM = 'Results/Random_Solutions/'
+RESULT_MIP = 'Results/MIP/'
 
+# SWEEP
 SMALL_SWEEP = RESULT_SWEEP + 'small_Sweep_APX_and_Time.csv'
 MID_SMALL_SWEEP = RESULT_SWEEP + 'mid_small_Sweep_APX_and_Time.csv'
 MID_SWEEP = RESULT_SWEEP + 'mid_Sweep_APX_and_Time.csv'
@@ -14,6 +16,7 @@ LARGE_SWEEP = RESULT_SWEEP + 'large_Sweep_APX_and_Time_Timeout.csv'
 X_LARGE_SWEEP = RESULT_SWEEP + 'x_large_Sweep_APX_and_Time_Timeout.csv'
 SMALL_MID_SWEEP = RESULT_SWEEP + 'small_mid_sweep.csv'
 
+# RANDOM
 SMALL_RANDOM_1K = RESULT_RANDOM + "small_Random_APX_and_Time1K.csv"
 SMALL_RANDOM_10K = RESULT_RANDOM + "small_Random_APX_and_Time10K.csv"
 SMALL_RANDOM_100K = RESULT_RANDOM + "small_Random_APX_and_Time100K.csv"
@@ -25,7 +28,7 @@ MID_LARGE_RANDOM_1K = RESULT_RANDOM + "mid_large_Random_APX_and_Time1K.csv"
 LARGE_RANDOM_1K = RESULT_RANDOM + "large_Random_APX_and_Time1K.csv"
 X_LARGE_RANDOM_1K = RESULT_RANDOM + "x_large_Random_APX_and_Time1K.csv"
 
-
+# CW
 SMALL_CW = RESULT_CW + 'small_CW_APX_and_Time.csv'
 MID_SMALL_CW = RESULT_CW + 'mid_small_CW_APX_and_Time.csv'
 MID_CW = RESULT_CW + 'mid_CW_APX_and_Time.csv'
@@ -33,7 +36,14 @@ MID_LARGE_CW = RESULT_CW + 'mid_large_CW_APX_and_Time.csv'
 LARGE_CW = RESULT_CW + 'large_CW_APX_and_Time.csv'
 X_LARGE_CW = RESULT_CW + 'x_large_CW_APX_and_Time.csv'
 
-ALL_MIP = 'Results/MIP/MIP_Solutions.csv'
+# MIP
+SMALL_MIP = RESULT_MIP + 'small_MIP_Solutions.csv'
+MIP_MID_SMALL = RESULT_MIP + 'mid_small_MIP_Solutions.csv'
+MIP_MID = RESULT_MIP + 'mid_MIP_Solutions.csv'
+MIP_MID_LARGE = RESULT_MIP + 'mid_large_MIP_Solutions.csv'
+
+# ALL
+ALL_MIP = RESULT_MIP + 'MIP_Solutions.csv'
 ALL_SWEEP = RESULT_SWEEP + 'Sweep_all.csv'
 ALL_CW = RESULT_CW + 'CW_All.csv'
 ALL_RANDOM_1K = RESULT_RANDOM + 'All_Random_1K.csv'
@@ -733,82 +743,6 @@ def graph_mip(title, x_label, y_label):
     plt.show()
 
 
-def confronti(path_mip_csv, path_cw_csv, path_sweep_csv, path_random_csv):
-    # Carica i dati dai file CSV
-    mip_df = pd.read_csv(path_mip_csv)
-    cw_df = pd.read_csv(path_cw_csv)
-    sweep_df = pd.read_csv(path_sweep_csv)
-    random_df = pd.read_csv(path_random_csv)
-
-    # Converti i tempi di esecuzione dei CW in secondi (se necessario)
-    cw_df['Execution_time'] = cw_df['Execution_time'] * 86400
-
-    # Estrarre i dati rilevanti da ciascun DataFrame
-    mip_data = mip_df[['Instance_Name', 'Incumbent', 'Execution_time']].rename(columns={'Incumbent': 'MIP_Cost', 'Execution_time': 'MIP_Execution_Time'})
-    cw_data = cw_df[['Instance_Name', 'CW_cost', 'Execution_time']].rename(columns={'CW_cost': 'CW_Cost', 'Execution_time': 'CW_Execution_Time'})
-    sweep_data = sweep_df[['Instance_Name', 'Cost_2Opt', 'Execution_time_2Opt', 'Cost_3Opt', 'Execution_time_3Opt']].rename(columns={'Cost_2Opt': 'Sweep_2Opt_Cost', 'Execution_time_2Opt': 'Sweep_2Opt_Execution_Time', 'Cost_3Opt': 'Sweep_3Opt_Cost', 'Execution_time_3Opt': 'Sweep_3Opt_Execution_Time'})
-    random_data = random_df[['Instance_Name', 'BEST_Random', 'Execution_time']].rename(columns={'BEST_Random': 'Random_Cost', 'Execution_time': 'Random_Execution_Time'})
-
-    # Unisci tutti i DataFrame per avere un unico DataFrame completo
-    merged_df = mip_data.merge(cw_data, on='Instance_Name').merge(sweep_data, on='Instance_Name').merge(random_data, on='Instance_Name', how='outer')
-
-    # Creazione dei subplots
-    fig, axs = plt.subplots(2, 2, figsize=(16, 12))
-
-    # Grafico dei costi trovati dagli algoritmi
-    axs[0, 0].bar(merged_df['Instance_Name'], merged_df['MIP_Cost'], label='MIP Cost')
-    axs[0, 0].bar(merged_df['Instance_Name'], merged_df['CW_Cost'], label='CW Cost')
-    axs[0, 0].bar(merged_df['Instance_Name'], merged_df['Sweep_2Opt_Cost'], label='Sweep 2-Opt Cost')
-    axs[0, 0].bar(merged_df['Instance_Name'], merged_df['Sweep_3Opt_Cost'], label='Sweep 3-Opt Cost')
-    axs[0, 0].bar(merged_df['Instance_Name'], merged_df['Random_Cost'], label='Random Cost')
-    axs[0, 0].set_xlabel('Instance')
-    axs[0, 0].set_ylabel('Cost')
-    axs[0, 0].set_title('Algorithm Costs Comparison')
-    axs[0, 0].legend()
-    axs[0, 0].grid(True)
-
-    # Grafico dei tempi di esecuzione degli algoritmi
-    axs[0, 1].bar(merged_df['Instance_Name'], merged_df['MIP_Execution_Time'], label='MIP Execution Time')
-    axs[0, 1].bar(merged_df['Instance_Name'], merged_df['CW_Execution_Time'], label='CW Execution Time')
-    axs[0, 1].bar(merged_df['Instance_Name'], merged_df['Sweep_2Opt_Execution_Time'], label='Sweep 2-Opt Execution Time')
-    axs[0, 1].bar(merged_df['Instance_Name'], merged_df['Sweep_3Opt_Execution_Time'], label='Sweep 3-Opt Execution Time')
-    axs[0, 1].bar(merged_df['Instance_Name'], merged_df['Random_Execution_Time'], label='Random Execution Time')
-    axs[0, 1].set_xlabel('Instance')
-    axs[0, 1].set_ylabel('Execution Time (seconds)')
-    axs[0, 1].set_title('Algorithm Execution Time Comparison')
-    axs[0, 1].set_yscale('log')  # Utilizzo della scala logaritmica per i tempi di esecuzione
-    axs[0, 1].legend()
-    axs[0, 1].grid(True)
-
-    # Grafico dei costi trovati dagli algoritmi (solo costi)
-    axs[1, 0].bar(merged_df['Instance_Name'], merged_df['MIP_Cost'], label='MIP Cost')
-    axs[1, 0].bar(merged_df['Instance_Name'], merged_df['CW_Cost'], label='CW Cost')
-    axs[1, 0].bar(merged_df['Instance_Name'], merged_df['Sweep_2Opt_Cost'], label='Sweep 2-Opt Cost')
-    axs[1, 0].bar(merged_df['Instance_Name'], merged_df['Sweep_3Opt_Cost'], label='Sweep 3-Opt Cost')
-    axs[1, 0].bar(merged_df['Instance_Name'], merged_df['Random_Cost'], label='Random Cost')
-    axs[1, 0].set_xlabel('Instance')
-    axs[1, 0].set_ylabel('Cost')
-    axs[1, 0].set_title('Algorithm Costs Comparison (Bar Chart)')
-    axs[1, 0].legend()
-    axs[1, 0].grid(True)
-
-    # Grafico dei tempi di esecuzione degli algoritmi (solo tempi di esecuzione)
-    axs[1, 1].bar(merged_df['Instance_Name'], merged_df['MIP_Execution_Time'], label='MIP Execution Time')
-    axs[1, 1].bar(merged_df['Instance_Name'], merged_df['CW_Execution_Time'], label='CW Execution Time')
-    axs[1, 1].bar(merged_df['Instance_Name'], merged_df['Sweep_2Opt_Execution_Time'], label='Sweep 2-Opt Execution Time')
-    axs[1, 1].bar(merged_df['Instance_Name'], merged_df['Sweep_3Opt_Execution_Time'], label='Sweep 3-Opt Execution Time')
-    axs[1, 1].bar(merged_df['Instance_Name'], merged_df['Random_Execution_Time'], label='Random Execution Time')
-    axs[1, 1].set_xlabel('Instance')
-    axs[1, 1].set_ylabel('Execution Time (seconds)')
-    axs[1, 1].set_title('Algorithm Execution Time Comparison (Bar Chart)')
-    axs[1, 1].set_yscale('log')  # Utilizzo della scala logaritmica per i tempi di esecuzione
-    axs[1, 1].legend()
-    axs[1, 1].grid(True)
-
-    # Visualizza i grafici
-    plt.tight_layout()
-    plt.show()
-
 BOX_PLOT = False
 if BOX_PLOT:
     boxPlot_apx(ALL_SWEEP, 'Apx_3Opt', "Sweep 3-Opt")
@@ -839,5 +773,4 @@ if APX_SWEEP:
     evaluate_apx_sweep(MID_SWEEP, "Performance di Sweep - Istanze Mid")
     evaluate_apx_sweep(LARGE_SWEEP, "Performance di Sweep - Istanze Large")
 
-graph_mip("Performance MIP - APX migliori", 'Istanze ordinate al crescere di N', 'APX')
-confronti(ALL_MIP, ALL_CW, ALL_SWEEP, ALL_RANDOM_5MIN)
+# graph_mip("Performance MIP - APX migliori", 'Istanze ordinate al crescere di N', 'APX')
