@@ -37,7 +37,7 @@ ALL_SWEEP = RESULT_SWEEP + 'Sweep_all.csv'
 ALL_CW = RESULT_CW + 'CW_All.csv'
 ALL_RANDOM_1K = RESULT_RANDOM + 'All_Random_1K.csv'
 ALL_RANDOM_10K = RESULT_RANDOM + 'All_Random_10K.csv'
-
+ALL_RANDOM_5MIN = RESULT_RANDOM + 'All_Random_5min.csv'
 
 def get_data_csv_all(file):
     """
@@ -720,7 +720,7 @@ if BOX_PLOT:
     boxPlot_apx(ALL_RANDOM_10K, 'APX', "Random 10K")
     boxPlot_apx(ALL_CW, 'APX', "Clarke & Wright")
 
-ECX_TIME = True
+ECX_TIME = False
 if ECX_TIME:
     evaluate_time_CW_Sweep("Secondi", "Confronto dei Tempi di Esecuzione", "SMALL")
     evaluate_time_CW_Sweep("Secondi", "Confronto dei Tempi di Esecuzione", "MID")
@@ -731,8 +731,9 @@ WINNER_COST = False
 if WINNER_COST:
     winner_algorithm()
 
-PROBLEM_TRUCK = False
+PROBLEM_TRUCK = True
 if PROBLEM_TRUCK:
-    valuate_truck(ALL_SWEEP, "Sweep - Tutte le istanze")
-    valuate_truck(ALL_CW, "Clarke & Wright - Tutte le istanze")
+    # valuate_truck(ALL_SWEEP, "Sweep - Tutte le istanze")
+    # valuate_truck(ALL_CW, "Clarke & Wright - Tutte le istanze")
     valuate_truck(ALL_RANDOM_10K, " Random 1K - Tutte le istanze")
+    valuate_truck(ALL_RANDOM_5MIN, " Random 5min - Tutte le istanze")
