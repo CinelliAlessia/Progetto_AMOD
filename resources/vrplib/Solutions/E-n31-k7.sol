@@ -1,9 +1,8 @@
-Route #1: 30 
-Route #2: 26 4 17 5 16 
-Route #3: 29 23 
-Route #4: 21 11 13 9 28 15 
-Route #5: 20 6 22 8 2 19 
-Route #6: 25 1 14 3 24 
-Route #7: 10 18 12 7 27 
-Cost 1254.0
-Costo Gurobi 1254 dopo 1.50 la route è sbagliata
+Route #1: 22 29 1
+Route #2: 30 21
+Route #3: 20 25 2
+Route #4: 12 14 9 15 16 7 13 11 5 6 23
+Route #5: 18 10 19 8
+Route #6: 24 3 28 4
+Route #7: 17 27 26
+Cost 1252.0

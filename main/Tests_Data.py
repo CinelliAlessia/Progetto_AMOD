@@ -33,6 +33,7 @@ MID_LARGE_CW = RESULT_CW + 'mid_large_CW_APX_and_Time.csv'
 LARGE_CW = RESULT_CW + 'large_CW_APX_and_Time.csv'
 X_LARGE_CW = RESULT_CW + 'x_large_CW_APX_and_Time.csv'
 
+ALL_MIP = 'Results/MIP/MIP_Solutions.csv'
 ALL_SWEEP = RESULT_SWEEP + 'Sweep_all.csv'
 ALL_CW = RESULT_CW + 'CW_All.csv'
 ALL_RANDOM_1K = RESULT_RANDOM + 'All_Random_1K.csv'
@@ -228,24 +229,30 @@ def evaluate_single_column_two_files(csv_file1, csv_file2, csv_file3, column, ti
 
 def evaluate_apx_sweep(csv_file, title):
     # Carica i dati dal file CSV usando il delimitatore ';'
-    data = pd.read_csv(csv_file, delimiter=',')
+    data = pd.read_csv(csv_file, delimiter=',').sort_values(by="#Node")
 
     # Estrai le colonne di interesse
     apx1 = data['Apx_NoOpt']
     apx2 = data['Apx_2Opt']
     apx3 = data['Apx_3Opt']
+    instance_name = data['Instance_Name']
+    nodes = data['#Node']
 
     # Crea il grafico
     plt.figure(figsize=(10, 6))
-    plt.plot(apx1, marker='o', linestyle='-', label='Sweep')
-    plt.plot(apx2, marker='s', linestyle='--', label='2 Opt')
-    plt.plot(apx3, marker='x', linestyle='-.', label='3 Opt')
+    plt.plot(instance_name, apx1, marker='o', linestyle='-', label='Sweep')
+    plt.plot(instance_name, apx2, marker='s', linestyle='--', label='2 Opt')
+    plt.plot(instance_name, apx3, marker='x', linestyle='-.', label='3 Opt')
+
+    # Annotazioni per punti selezionati (ogni 10 punti in questo esempio)
+    step = 8
+    for i in range(0, len(instance_name), step):
+        plt.annotate(nodes.iloc[i], (instance_name.iloc[i], apx1.iloc[i]), textcoords="offset points", xytext=(5, 5))
 
     # Etichette del grafico
-    plt.title(title)
-    plt.xlabel('Istanze')
-    plt.ylabel('APX')
-    plt.legend()
+    plt.title(title, fontsize=16)
+    plt.legend(fontsize=16)
+    plt.ylabel('APX', fontsize=16)  # Aumenta la dimensione dell'etichetta dell'asse y
     plt.grid(True)
 
     # Determine the range of your data to set appropriate y-ticks
@@ -253,9 +260,10 @@ def evaluate_apx_sweep(csv_file, title):
     y_max = max(max(apx1), max(apx2), max(apx3))
 
     # Set y-ticks at more granular intervals
-    plt.yticks(np.arange(y_min, y_max, step=(y_max - y_min) / 30))  # Adjust the step as needed
+    # plt.xticks(np.arange(len(instance_name), step=5), rotation=90)
+    plt.xticks("")
+    plt.yticks(np.arange(y_min, y_max, step=(y_max - y_min) / 25))  # Adjust the step as needed
 
-    # Show the plot
     plt.show()
 
 
@@ -289,7 +297,7 @@ def valuate_truck(csv_file, title):
             textprops={'fontsize': 24})
 
     # Etichetta del grafico
-    plt.title(title, fontsize=24)
+    plt.title(title, fontsize=28)
 
     # Mostra il grafico
     plt.show()
@@ -354,8 +362,8 @@ def evaluate_3time(column, title):
     y_max = max(t1.max(), t2.max(), t3.max())
 
     # Set y-ticks at more granular intervals
-    #plt.xticks(np.arange(len(nodes)), nodes, rotation=90)
-    plt.xticks("")
+    plt.xticks(np.arange(len(nodes)), nodes, rotation=90)
+    #plt.xticks("")
     #plt.yticks(np.arange(y_min, y_max, step=(y_max - y_min) / 20))  # Adjust the step as needed
 
     # Mostra il grafico
@@ -515,7 +523,7 @@ def winner_algorithm():
     # Carica i dati dai file CSV usando il delimitatore ';'
     data1 = pd.read_csv(SMALL_SWEEP, delimiter=',').sort_values(by="#Node")
     data2 = pd.read_csv(SMALL_CW, delimiter=',').sort_values(by="#Node")
-    data3 = pd.read_csv(SMALL_RANDOM_1K, delimiter=',').sort_values(by="#Node")
+    data3 = pd.read_csv(SMALL_RANDOM_5min, delimiter=',').sort_values(by="#Node")
 
     data1 = data1.rename(columns={
         'Cost_3Opt': 'Cost_SWEEP',
@@ -691,7 +699,7 @@ def apx_for_num_run_1plot_for_files(files, title, labels=['1', '2', '3', '4']):
     plt.show()
 
 
-ANDREA = True
+ANDREA = False
 if ANDREA:
     #random_files = [SMALL_RANDOM_1K, SMALL_RANDOM_10K, SMALL_RANDOM_100K, SMALL_RANDOM_1M]
     random_5minVS1M = [RESULT_RANDOM + "small_Random_APX_and_Time_5min.csv", SMALL_RANDOM_1M]
@@ -699,20 +707,105 @@ if ANDREA:
     #plot_apx_all_random(ALL_RANDOM_1K, "APX di Random 1K al crescere di n (Tutte le istanze)")
 
 
-def graph_mip(title):
+def graph_mip(title, x_label, y_label):
     data1 = pd.read_csv('Results/MIP/MIP_Solutions.csv', delimiter=',').sort_values(by="#Node")
 
-    plt.figure(figsize=(10, 8))
-    plt.bar(data1['Instance_Name'], data1['Execution_time'], color='skyblue')
+    # Filtrare righe dove 'APX' non è infinito e non è NaN
+    data_filtered = data1[(data1['APX'] != float('inf')) & (pd.notna(data1['APX']))]
+
+    plt.figure(figsize=(10, 4))
+    plt.plot(data_filtered['Instance_Name'], data_filtered['APX'], marker='o', linestyle='-', markersize=5)
+    #plt.bar(data1['Instance_Name'], data1['Execution_time'], color='skyblue')
+
     plt.title(title, fontsize=20)
-    plt.xlabel('Istanze ordinate al crescere di N', fontsize=18)
-    plt.ylabel('Secondi', fontsize=18)
-    plt.xticks(rotation=90, fontsize=12)
-    plt.yticks(fontsize=18)
+    plt.xlabel(x_label, fontsize=18)
+    plt.ylabel(y_label, fontsize=18)
+
+    y_min = min(data_filtered['APX'])
+    y_max = max(data_filtered['APX'])
+
+    plt.xticks("")
+    plt.yticks(np.arange(y_min, y_max + 0.05, step=(y_max - y_min) / 10), fontsize= 18)
     plt.tight_layout()
     plt.grid(True)
     plt.show()
 
+
+def confronti(path_mip_csv, path_cw_csv, path_sweep_csv, path_random_csv):
+    # Carica i dati dai file CSV
+    mip_df = pd.read_csv(path_mip_csv)
+    cw_df = pd.read_csv(path_cw_csv)
+    sweep_df = pd.read_csv(path_sweep_csv)
+    random_df = pd.read_csv(path_random_csv)
+
+    # Converti i tempi di esecuzione dei CW in secondi (se necessario)
+    cw_df['Execution_time'] = cw_df['Execution_time'] * 86400
+
+    # Estrarre i dati rilevanti da ciascun DataFrame
+    mip_data = mip_df[['Instance_Name', 'Incumbent', 'Execution_time']].rename(columns={'Incumbent': 'MIP_Cost', 'Execution_time': 'MIP_Execution_Time'})
+    cw_data = cw_df[['Instance_Name', 'CW_cost', 'Execution_time']].rename(columns={'CW_cost': 'CW_Cost', 'Execution_time': 'CW_Execution_Time'})
+    sweep_data = sweep_df[['Instance_Name', 'Cost_2Opt', 'Execution_time_2Opt', 'Cost_3Opt', 'Execution_time_3Opt']].rename(columns={'Cost_2Opt': 'Sweep_2Opt_Cost', 'Execution_time_2Opt': 'Sweep_2Opt_Execution_Time', 'Cost_3Opt': 'Sweep_3Opt_Cost', 'Execution_time_3Opt': 'Sweep_3Opt_Execution_Time'})
+    random_data = random_df[['Instance_Name', 'BEST_Random', 'Execution_time']].rename(columns={'BEST_Random': 'Random_Cost', 'Execution_time': 'Random_Execution_Time'})
+
+    # Unisci tutti i DataFrame per avere un unico DataFrame completo
+    merged_df = mip_data.merge(cw_data, on='Instance_Name').merge(sweep_data, on='Instance_Name').merge(random_data, on='Instance_Name', how='outer')
+
+    # Creazione dei subplots
+    fig, axs = plt.subplots(2, 2, figsize=(16, 12))
+
+    # Grafico dei costi trovati dagli algoritmi
+    axs[0, 0].bar(merged_df['Instance_Name'], merged_df['MIP_Cost'], label='MIP Cost')
+    axs[0, 0].bar(merged_df['Instance_Name'], merged_df['CW_Cost'], label='CW Cost')
+    axs[0, 0].bar(merged_df['Instance_Name'], merged_df['Sweep_2Opt_Cost'], label='Sweep 2-Opt Cost')
+    axs[0, 0].bar(merged_df['Instance_Name'], merged_df['Sweep_3Opt_Cost'], label='Sweep 3-Opt Cost')
+    axs[0, 0].bar(merged_df['Instance_Name'], merged_df['Random_Cost'], label='Random Cost')
+    axs[0, 0].set_xlabel('Instance')
+    axs[0, 0].set_ylabel('Cost')
+    axs[0, 0].set_title('Algorithm Costs Comparison')
+    axs[0, 0].legend()
+    axs[0, 0].grid(True)
+
+    # Grafico dei tempi di esecuzione degli algoritmi
+    axs[0, 1].bar(merged_df['Instance_Name'], merged_df['MIP_Execution_Time'], label='MIP Execution Time')
+    axs[0, 1].bar(merged_df['Instance_Name'], merged_df['CW_Execution_Time'], label='CW Execution Time')
+    axs[0, 1].bar(merged_df['Instance_Name'], merged_df['Sweep_2Opt_Execution_Time'], label='Sweep 2-Opt Execution Time')
+    axs[0, 1].bar(merged_df['Instance_Name'], merged_df['Sweep_3Opt_Execution_Time'], label='Sweep 3-Opt Execution Time')
+    axs[0, 1].bar(merged_df['Instance_Name'], merged_df['Random_Execution_Time'], label='Random Execution Time')
+    axs[0, 1].set_xlabel('Instance')
+    axs[0, 1].set_ylabel('Execution Time (seconds)')
+    axs[0, 1].set_title('Algorithm Execution Time Comparison')
+    axs[0, 1].set_yscale('log')  # Utilizzo della scala logaritmica per i tempi di esecuzione
+    axs[0, 1].legend()
+    axs[0, 1].grid(True)
+
+    # Grafico dei costi trovati dagli algoritmi (solo costi)
+    axs[1, 0].bar(merged_df['Instance_Name'], merged_df['MIP_Cost'], label='MIP Cost')
+    axs[1, 0].bar(merged_df['Instance_Name'], merged_df['CW_Cost'], label='CW Cost')
+    axs[1, 0].bar(merged_df['Instance_Name'], merged_df['Sweep_2Opt_Cost'], label='Sweep 2-Opt Cost')
+    axs[1, 0].bar(merged_df['Instance_Name'], merged_df['Sweep_3Opt_Cost'], label='Sweep 3-Opt Cost')
+    axs[1, 0].bar(merged_df['Instance_Name'], merged_df['Random_Cost'], label='Random Cost')
+    axs[1, 0].set_xlabel('Instance')
+    axs[1, 0].set_ylabel('Cost')
+    axs[1, 0].set_title('Algorithm Costs Comparison (Bar Chart)')
+    axs[1, 0].legend()
+    axs[1, 0].grid(True)
+
+    # Grafico dei tempi di esecuzione degli algoritmi (solo tempi di esecuzione)
+    axs[1, 1].bar(merged_df['Instance_Name'], merged_df['MIP_Execution_Time'], label='MIP Execution Time')
+    axs[1, 1].bar(merged_df['Instance_Name'], merged_df['CW_Execution_Time'], label='CW Execution Time')
+    axs[1, 1].bar(merged_df['Instance_Name'], merged_df['Sweep_2Opt_Execution_Time'], label='Sweep 2-Opt Execution Time')
+    axs[1, 1].bar(merged_df['Instance_Name'], merged_df['Sweep_3Opt_Execution_Time'], label='Sweep 3-Opt Execution Time')
+    axs[1, 1].bar(merged_df['Instance_Name'], merged_df['Random_Execution_Time'], label='Random Execution Time')
+    axs[1, 1].set_xlabel('Instance')
+    axs[1, 1].set_ylabel('Execution Time (seconds)')
+    axs[1, 1].set_title('Algorithm Execution Time Comparison (Bar Chart)')
+    axs[1, 1].set_yscale('log')  # Utilizzo della scala logaritmica per i tempi di esecuzione
+    axs[1, 1].legend()
+    axs[1, 1].grid(True)
+
+    # Visualizza i grafici
+    plt.tight_layout()
+    plt.show()
 
 BOX_PLOT = False
 if BOX_PLOT:
@@ -731,9 +824,18 @@ WINNER_COST = False
 if WINNER_COST:
     winner_algorithm()
 
-PROBLEM_TRUCK = True
+PROBLEM_TRUCK = False
 if PROBLEM_TRUCK:
-    # valuate_truck(ALL_SWEEP, "Sweep - Tutte le istanze")
-    # valuate_truck(ALL_CW, "Clarke & Wright - Tutte le istanze")
-    valuate_truck(ALL_RANDOM_10K, " Random 1K - Tutte le istanze")
-    valuate_truck(ALL_RANDOM_5MIN, " Random 5min - Tutte le istanze")
+    valuate_truck(ALL_SWEEP, "Sweep - Tutte le istanze")
+    valuate_truck(ALL_CW, "Clarke & Wright - Tutte le istanze")
+    valuate_truck(ALL_RANDOM_1K, " Random 1K - Tutte le istanze")
+    valuate_truck(ALL_RANDOM_5MIN, " Random 5 min - Tutte le istanze")
+
+APX_SWEEP = False
+if APX_SWEEP:
+    evaluate_apx_sweep(SMALL_SWEEP, "Performance di Sweep - Istanze Small")
+    evaluate_apx_sweep(MID_SWEEP, "Performance di Sweep - Istanze Mid")
+    evaluate_apx_sweep(LARGE_SWEEP, "Performance di Sweep - Istanze Large")
+
+graph_mip("Performance MIP - APX migliori", 'Istanze ordinate al crescere di N', 'APX')
+confronti(ALL_MIP, ALL_CW, ALL_SWEEP, ALL_RANDOM_5MIN)
