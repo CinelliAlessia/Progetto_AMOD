@@ -169,7 +169,6 @@ def write(routes, total_cost, execution_time, status):
         f"{CURRENT_INSTANCE},{n_nodes},{n_truck},{capacity},{opt},{total_cost},{apx},{execution_time},{status}, {formatted_r}\n")
     f.close()
 
-
 # Apro il file .txt in lettura per leggere i nomi delle istanze separate per dimensione
 txt_path = "Results/MIP/remaining_small_mip.txt"
 n = open(txt_path, "r")
@@ -180,4 +179,4 @@ for line in n:  # Per ogni istanza scritta nel file
     CURRENT_INSTANCE = line
     instance_path = "../resources/vrplib/Instances/" + line
     instance = Parser.make_instance_from_path_name(instance_path)
-    solve_vrp_with_gurobi(instance, True, 300, 0.1)
+    solve_vrp_with_gurobi(instance, True, 300, 0.000001)
