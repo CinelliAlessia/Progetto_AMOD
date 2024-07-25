@@ -123,5 +123,3 @@ def find_by_id(id, nodes):
     for node in nodes:
         if node.get_id() == id:
             return node
-
-
