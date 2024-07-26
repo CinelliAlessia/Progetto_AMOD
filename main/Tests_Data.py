@@ -22,6 +22,11 @@ SMALL_RANDOM_10K = RESULT_RANDOM + "small_Random_APX_and_Time10K.csv"
 SMALL_RANDOM_100K = RESULT_RANDOM + "small_Random_APX_and_Time100K.csv"
 SMALL_RANDOM_1M = RESULT_RANDOM + "small_Random_APX_and_Time1M.csv"
 SMALL_RANDOM_5min = RESULT_RANDOM + "small_Random_APX_and_Time_5min.csv"
+MID_SMALL_RANDOM_5min = RESULT_RANDOM + "mid_small_Random_APX_and_Time_5min.csv"
+MID_RANDOM_5min = RESULT_RANDOM + "mid_Random_APX_and_Time_5min.csv"
+MID_LARGE_RANDOM_5min = RESULT_RANDOM + "mid_large_Random_APX_and_Time_5min.csv"
+LARGE_RANDOM_5min = RESULT_RANDOM + "large_Random_APX_and_Time_5min.csv"
+X_LARGE_RANDOM_5min = RESULT_RANDOM + "x_large_Random_APX_and_Time_5min.csv"
 MID_SMALL_RANDOM_1K = RESULT_RANDOM + "mid_small_Random_APX_and_Time1K.csv"
 MID_RANDOM_1K = RESULT_RANDOM + "mid_Random_APX_and_Time1K.csv"
 MID_LARGE_RANDOM_1K = RESULT_RANDOM + "mid_large_Random_APX_and_Time1K.csv"
@@ -615,6 +620,7 @@ def winner_algorithm():
 def plot_apx_1file(file, title, legend):
     """
     Crea un grafico basato sui dati della colonna APX nel file ALL_RANDOM
+    :param legend:
     :param file: file CSV
     :param title: titolo del grafico
     """
@@ -634,7 +640,7 @@ def plot_apx_1file(file, title, legend):
     apx_values = data_filtered['APX']
 
     # Aggiungi una linea al grafico
-    plt.plot(instance_names, apx_values, marker='o', linestyle='-', markersize=7, label='Random 1K')
+    plt.plot(instance_names, apx_values, marker='o', linestyle='-', markersize=7, label=legend)
 
     # Configura il grafico
     plt.title(title, fontsize=20)  # Aumenta la dimensione del titolo
@@ -660,43 +666,65 @@ def apx_for_num_run_1plot_for_files(files, title, labels=['1', '2', '3', '4']):
     :param title: titolo del grafico
     :param labels: etichette per le linee
     """
-    plt.figure(figsize=(15, 10))  # Dimensione della figura e DPI elevato
+    plt.figure(figsize=(15, 10))  # Dimensione della figura
 
     markers = ['o', 's', '^', 'x']  # cerchio, quadrato, triangolo, croce
-    #colors = ['b', '#FFA500', 'g', 'r']  # blu, arancione, verde, rosso
-    linestyles = ['-', '--', '-.', ':']  # stili delle righe
+    linestyles = ['-', '-', '-', '-']  # stili delle righe
 
     all_apx_values = []
+
+    # Set per memorizzare i nomi delle istanze unici
+    instance_names_set = set()
+
+    # Trova i nomi delle istanze da tutti i file e aggiungi solo quelli non presenti
+    for file in files:
+        data = get_data_csv_all(file)
+        instance_names_set.update(data['Instance_Name'].unique())
+
+    instance_names_all = sorted(instance_names_set)  # Ordina i nomi delle istanze
 
     for i, file in enumerate(files):
         # Carica il file CSV
         data = get_data_csv_all(file)
 
+        # se il file contiene il nome Sweep
+        if 'Sweep' in file:
+            print("Colonna rinominata")
+            data = data.rename(columns={'Apx_2Opt': 'APX'})
+
+        # Controlla il tipo di dati della colonna '#Node'
+        if not pd.api.types.is_numeric_dtype(data['#Node']):
+            data['#Node'] = pd.to_numeric(data['#Node'], errors='coerce')
+
         # Ordina i dati in base alla colonna '#Node'
         data_sorted = data.sort_values(by='#Node')
 
-        # Filtra i dati per rimuovere le righe con inf in APX
-        data_filtered = data_sorted[data_sorted['APX'] != float('inf')]
+        # Filtra i dati per rimuovere le righe con inf o None in APX
+        data_filtered = data_sorted[~data_sorted['APX'].isin([float('inf'), None])]
 
         # Estrai i dati di interesse
         instance_names = data_filtered['Instance_Name']
         apx_values = data_filtered['APX']
 
-        all_apx_values.append(apx_values)  # Raccogli i valori APX per calcolare i tick dell'asse y
+        # Crea un DataFrame per unire i dati basato sui nomi delle istanze
+        df_temp = pd.DataFrame({'Instance_Name': instance_names, 'APX': apx_values})
+        df_temp = df_temp.set_index('Instance_Name')
+
+        # Allinea i dati con i nomi delle istanze
+        df_temp = df_temp.reindex(instance_names_all)
+
+        all_apx_values.append(df_temp['APX'])  # Raccogli i valori APX per calcolare i tick dell'asse y
 
         # Aggiungi una linea al grafico
-        plt.plot(instance_names, apx_values, marker=markers[i], linestyle=linestyles[i], markersize=7, label=labels[i])
+        plt.plot(instance_names_all, df_temp['APX'], marker=markers[i], linestyle=linestyles[i], markersize=7, label=labels[i])
 
     # Concatena tutti i valori APX in una singola Serie
     all_apx_values_series = pd.concat(all_apx_values)
 
-    # Filtra i valori 'inf'
-    all_apx_values_filtered = all_apx_values_series[all_apx_values_series != float('inf')]
-
     # Imposta i valori dei tick dell'asse y per maggiore chiarezza
-    if not all_apx_values_filtered.empty:
-        min_y = all_apx_values_filtered.min()
-        max_y = all_apx_values_filtered.max()
+    if not all_apx_values_series.empty:
+        min_y = all_apx_values_series.min()
+        max_y = all_apx_values_series.max()
         plt.yticks(np.arange(min_y, max_y + 0.05, step=(max_y - min_y) / 20))
 
     # Configura il grafico
@@ -704,19 +732,31 @@ def apx_for_num_run_1plot_for_files(files, title, labels=['1', '2', '3', '4']):
     plt.xlabel('Istanze ordinate al crescere di N', fontsize=11)  # Aumenta la dimensione dell'etichetta dell'asse x
     plt.ylabel('APX', fontsize=20)  # Aumenta la dimensione dell'etichetta dell'asse y
     plt.legend(fontsize=18)  # Legenda più grande
-    #plt.xticks([])  # Nascondi le etichette dell'asse x
+    plt.xticks([])  # Nascondi le etichette dell'asse x
     plt.grid(axis='y', linestyle='--', linewidth=0.7)  # Solo griglie orizzontali
 
     # Mostra il grafico
     plt.show()
 
 
-ANDREA = False
+ANDREA = True
 if ANDREA:
     #random_files = [SMALL_RANDOM_1K, SMALL_RANDOM_10K, SMALL_RANDOM_100K, SMALL_RANDOM_1M]
-    random_5minVS1M = [RESULT_RANDOM + "small_Random_APX_and_Time_5min.csv", SMALL_RANDOM_1M]
+    #random_5minVS1M = [RESULT_RANDOM + "small_Random_APX_and_Time_5min.csv", SMALL_RANDOM_1M]
     #apx_for_num_run_1plot_for_files(random_5minVS1M, "Confronto APX Random(5min) vs Random(1M) per istanze Small", ['5 min', '1 M'])
-    #plot_apx_all_random(ALL_RANDOM_1K, "APX di Random 1K al crescere di n (Tutte le istanze)")
+    #plot_apx_1file('Results/MIP/MIP_Solutions.csv', "APX del modello MIP", 'MIP')
+    all_small = [SMALL_CW, SMALL_SWEEP, SMALL_MIP]
+    all_mid_small = [MID_SMALL_CW, MID_SMALL_SWEEP, MIP_MID_SMALL]
+    all_mid = [MID_CW, MID_SWEEP, MIP_MID]
+    all_mid_large = [MID_LARGE_CW, MID_LARGE_SWEEP, MIP_MID_LARGE]
+    all_large = [LARGE_CW, LARGE_SWEEP]
+    all_x_large = [X_LARGE_CW, X_LARGE_SWEEP]
+    apx_for_num_run_1plot_for_files(all_small, "Confronto APX per istanze Small", ['CW', 'SWEEP-2Opt', 'MIP'])
+    apx_for_num_run_1plot_for_files(all_mid_small, "Confronto APX per istanze Mid Small", ['CW', 'SWEEP-2Opt', 'MIP'])
+    apx_for_num_run_1plot_for_files(all_mid, "Confronto APX per istanze Mid", ['CW', 'SWEEP-2Opt', 'MIP'])
+    apx_for_num_run_1plot_for_files(all_mid_large, "Confronto APX per istanze Mid Large", ['CW', 'SWEEP-2Opt', 'MIP'])
+    apx_for_num_run_1plot_for_files(all_large, "Confronto APX per istanze Large", ['CW', 'SWEEP-2Opt'])
+    apx_for_num_run_1plot_for_files(all_x_large, "Confronto APX per istanze X Large", ['CW', 'SWEEP-2Opt'])
 
 
 def graph_mip(title, x_label, y_label):
