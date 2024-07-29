@@ -153,6 +153,75 @@ def valuate_truck(csv_file, title):
     plt.show()
 
 
+def plot_3_times(column, title, csv):
+    if csv == 'SMALL':
+        csv_file1 = SMALL_SWEEP
+    elif csv == 'MID_SMALL':
+        csv_file1 = MID_SMALL_SWEEP
+    elif csv == 'MID':
+        csv_file1 = MID_SWEEP
+    elif csv == 'MID_LARGE':
+        csv_file1 = MID_LARGE_SWEEP
+    elif csv == 'LARGE':
+        csv_file1 = LARGE_SWEEP
+    elif csv == 'X_LARGE':
+        csv_file1 = X_LARGE_SWEEP
+    else:
+        return
+
+    # Carica i dati dai file CSV usando il delimitatore ';'
+    data1 = pd.read_csv(csv_file1, delimiter=',').sort_values(by="#Node")
+
+    data1 = data1.rename(columns={
+        'Execution_time_NoOpt': 'Execution_time_SWEEP'})
+    data2 = data1.rename(columns={
+        'Execution_time_2Opt': 'Execution_time_SWEEP2'})
+    data3 = data2.rename(columns={
+        'Execution_time_3Opt': 'Execution_time_SWEEP3'})
+
+    # Unisci i dati sui nodi
+    merged_data = data1[['Instance_Name', '#Node', 'Execution_time_SWEEP']].merge(
+        data2[['Instance_Name', 'Execution_time_SWEEP2']],
+        on='Instance_Name',
+        how='outer').merge(
+        data3[['Instance_Name', 'Execution_time_SWEEP3']],
+        on='Instance_Name',
+        how='outer').sort_values(by="#Node")
+
+    # Estrai le colonne di interesse
+    nodes = merged_data['Instance_Name']
+    t1 = merged_data['Execution_time_SWEEP']
+    t2 = merged_data['Execution_time_SWEEP2']
+    t3 = merged_data['Execution_time_SWEEP3']
+
+    # Crea il grafico
+    plt.figure(figsize=(14, 10))
+    #plt.plot(nodes, t1, marker='o', linestyle='-', label='SWEEP')
+    plt.plot(nodes, t2, marker='x', linestyle='-.', label='SWEEP 2-Opt')
+    plt.plot(nodes, t3, marker='s', linestyle='--', label='SWEEP 3-Opt')
+
+    # Etichette del grafico
+    plt.title(title, fontsize=18)
+    plt.xlabel(f'Istanze {csv}', fontsize=18)
+    plt.ylabel(column, fontsize=18)
+    plt.legend(fontsize=18)
+
+    plt.tick_params(labelsize=18)
+    plt.grid(True)
+
+    # Determine the range of your data to set appropriate y-ticks
+    y_min = min(t1.min(), t2.min(), t3.min())
+    y_max = max(t1.max(), t2.max(), t3.max())
+
+    # Set y-ticks at more granular intervals
+    plt.xticks("")
+    #plt.xticks(np.arange(len(nodes)), nodes, rotation=90)
+    plt.yticks(np.arange(y_min, y_max, step=(y_max - y_min) / 20))  # Adjust the step as needed
+
+    # Mostra il grafico
+    plt.tight_layout()
+    plt.show()
+
 def plot_execution_times(merged_data, columns, title, xlabel, ylabel):
     nodes = merged_data['Instance_Name']
     plt.figure(figsize=(14, 10))
@@ -194,15 +263,15 @@ def evaluate_all_time(column, title, size, sorting, mip=False):
 def evaluate_time_CW_Sweep(column, title, size, sorting):
     csv_file1, csv_file2, _, _ = path_from_size(size)
     data1 = pd.read_csv(csv_file1, delimiter=',').sort_values(by=sorting).rename(columns={'Execution_time': 'Execution_time_CW'})
-    data2 = pd.read_csv(csv_file2, delimiter=',').sort_values(by=sorting).rename(columns={'Execution_time_2Opt': 'Execution_time_SWEEP'})
+    data2 = pd.read_csv(csv_file2, delimiter=',').sort_values(by=sorting).rename(columns={'Execution_time_3Opt': 'Execution_time_SWEEP3', 'Execution_time_2Opt': 'Execution_time_SWEEP2'})
 
-    merged_data = data1[['Instance_Name', sorting, 'Execution_time_CW']].merge(data2[['Instance_Name', sorting, 'Execution_time_SWEEP']], on='Instance_Name')
+    merged_data = data1[['Instance_Name', sorting, 'Execution_time_CW']].merge(data2[['Instance_Name', sorting, 'Execution_time_SWEEP2', 'Execution_time_SWEEP3']], on='Instance_Name')
     if f'{sorting}_x' in merged_data.columns and f'{sorting}_y' in merged_data.columns:
         merged_data[sorting] = merged_data[f'{sorting}_x'].combine_first(merged_data[f'{sorting}_y'])
         merged_data.drop(columns=[f'{sorting}_x', f'{sorting}_y'], inplace=True)
     merged_data.sort_values(by=sorting, inplace=True)
 
-    columns = [('Execution_time_CW', 's', '--', 'CW'), ('Execution_time_SWEEP', 'o', '-', 'SWEEP 2-Opt')]
+    columns = [('Execution_time_CW', 's', '--', 'CW'), ('Execution_time_SWEEP2', 'o', '-', 'SWEEP 2-Opt'), ('Execution_time_SWEEP3', 'x', '-.', 'SWEEP 3-Opt')]
 
     plot_execution_times(merged_data, columns, title, f'Istanze {size}', column)
 
@@ -277,7 +346,6 @@ def winner_algorithm():
 
     # Controlla il vincitore per ogni istanza
     winner = []
-
     for i in range(len(instance)):
         t1_valid = t1[i] != "NaN" and apx1[i] != "NaN" and apx1[i] >= 1 and t1[i] != float('inf')
         t2_valid = t2[i] != "NaN" and apx2[i] != "NaN" and apx2[i] >= 1 and t2[i] != float('inf')
@@ -304,30 +372,26 @@ def winner_algorithm():
     # Rimuovi le etichette con valore zero
     labels, sizes = zip(*((label, size) for label, size in zip(labels, sizes) if size != 0))
 
-    # Esplosione delle sezioni
     explode = [0.05] * len(sizes)  # Leggera esplosione di tutte le sezioni
 
     # Grafico a torta con miglioramenti estetici
     plt.pie(sizes, labels=labels, colors=colors, autopct='%1.1f%%', startangle=140, shadow=True, explode=explode,
             textprops={'fontsize': 20})
 
-    # Etichetta del grafico
     plt.title("Distribuzione delle strategie vincenti", fontsize=24)
-
-    # Mostra il grafico
     plt.tight_layout()
     plt.show()
 
 
-def graph_mip(title, x_label, y_label):
-    data1 = pd.read_csv('Results/MIP/MIP_Solutions.csv', delimiter=',').sort_values(by="#Node")
+def graph_mip(path_csv, title, x_label, y_label):
+    data1 = pd.read_csv(path_csv, delimiter=',').sort_values(by="#Node")
 
     # Filtrare righe dove 'APX' non è infinito e non è NaN
     data_filtered = data1[(data1['APX'] != float('inf')) & (pd.notna(data1['APX']))]
 
     plt.figure(figsize=(10, 4))
     plt.plot(data_filtered['Instance_Name'], data_filtered['APX'], marker='o', linestyle='-', markersize=5)
-    #plt.bar(data1['Instance_Name'], data1['Execution_time'], color='skyblue')
+    # plt.bar(data1['Instance_Name'], data1['Execution_time'], color='skyblue')
 
     plt.title(title, fontsize=20)
     plt.xlabel(x_label, fontsize=18)
@@ -351,18 +415,18 @@ if BOX_PLOT:
     box_plot(ALL_MIP, 'APX', "MIP", ['small', 'mid_small', 'mid'])
     box_plot(ALL_MIP, 'APX', "MIP", ['small', 'mid_small'])
 
-ECX_TIME = True
+ECX_TIME = False
 if ECX_TIME:
     sort_by = "#Node"
-    #evaluate_time_CW_Sweep("Secondi", "Confronto dei Tempi di Esecuzione", "SMALL", sort_by)
-    #evaluate_time_CW_Sweep("Secondi", "Confronto dei Tempi di Esecuzione", "MID", sort_by)
+    evaluate_time_CW_Sweep("Secondi", "Confronto dei Tempi di Esecuzione", "SMALL", sort_by)
+    evaluate_time_CW_Sweep("Secondi", "Confronto dei Tempi di Esecuzione", "MID", sort_by)
     evaluate_time_CW_Sweep("Secondi", "Confronto dei Tempi di Esecuzione", "LARGE", sort_by)
     evaluate_all_time("Secondi", "Confronto dei Tempi di Esecuzione", "SMALL", sort_by)
-    #evaluate_all_time("Secondi", "Confronto dei Tempi di Esecuzione", "SMALL", sortby)
-    #evaluate_all_time("Secondi", "Confronto dei Tempi di Esecuzione", "MID_SMALL", sortby)
-    #evaluate_all_time("Secondi", "Confronto dei Tempi di Esecuzione", "MID", sortby)
-    #evaluate_all_time("Secondi", "Confronto dei Tempi di Esecuzione", "MID_LARGE", sortby)
-    #evaluate_all_time("Secondi", "Confronto dei Tempi di Esecuzione", "LARGE", sortby)
+    # evaluate_all_time("Secondi", "Confronto dei Tempi di Esecuzione", "SMALL", sort_by)
+    # evaluate_all_time("Secondi", "Confronto dei Tempi di Esecuzione", "MID_SMALL", sort_by)
+    # evaluate_all_time("Secondi", "Confronto dei Tempi di Esecuzione", "MID", sort_by)
+    # evaluate_all_time("Secondi", "Confronto dei Tempi di Esecuzione", "MID_LARGE", sort_by)
+    # evaluate_all_time("Secondi", "Confronto dei Tempi di Esecuzione", "LARGE", sort_by)
 
 WINNER_COST = False
 if WINNER_COST:
@@ -383,4 +447,12 @@ if APX_SWEEP:
 
 GRAPH_MIP = False
 if GRAPH_MIP:
-    graph_mip("APX MIP", "Istanze", "APX")
+    graph_mip(ALL_MIP, "APX MIP", "Istanze", "APX")
+
+SWEEP_TIME = True
+if SWEEP_TIME:
+    plot_3_times("Execution_time", "Confronto dei Tempi di Esecuzione", "SMALL")
+    plot_3_times("Execution_time", "Confronto dei Tempi di Esecuzione", "MID_SMALL")
+    plot_3_times("Execution_time", "Confronto dei Tempi di Esecuzione", "MID")
+    plot_3_times("Execution_time", "Confronto dei Tempi di Esecuzione", "MID_LARGE")
+    plot_3_times("Execution_time", "Confronto dei Tempi di Esecuzione", "LARGE")
